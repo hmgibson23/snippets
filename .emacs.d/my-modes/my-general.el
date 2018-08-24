@@ -260,6 +260,7 @@
   :mode "\\.tf\\'"
   :hook (terraform-mode . company-mode)
   :config
+  (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
   (add-hook 'terraform-mode-hook #'company-terraform-init))
 
 (use-package flycheck-yamllint
@@ -343,3 +344,6 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     ("R" markdown-insert-reference-link-dwim :color blue)))
 
 (set-frame-font "Hack 12" nil t)
+
+(use-package browse-kill-ring
+  :config (browse-kill-ring-default-keybindings))

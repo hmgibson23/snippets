@@ -66,6 +66,9 @@
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")))
 
+(global-set-key (kbd "C-x y")
+                'counsel-yank-pop)
+
 (provide 'my-key-bindings)
 
 ;;; my-key-bindings.el ends here

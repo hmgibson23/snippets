@@ -33,8 +33,8 @@
 (global-set-key (kbd "C-M-<")  'previous-buffer)
 (global-set-key (kbd "C-S-n") 'scroll-other-window)
 (global-set-key (kbd "C-S-p") 'scroll-other-window-down)
+(global-set-key (kbd "C-x y") 'counsel-yank-pop)
 (global-set-key "\C-cbs" 'switch-buffer-scratch)
-
 (eval-after-load 'cc-mode
   '(progn
      (define-key c-mode-map  [(tab)] 'company-complete)
@@ -66,8 +66,7 @@
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")))
 
-(global-set-key (kbd "C-x y")
-                'counsel-yank-pop)
+
 
 (provide 'my-key-bindings)
 

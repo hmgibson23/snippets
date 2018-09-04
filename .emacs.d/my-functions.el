@@ -451,6 +451,10 @@ If PATH is remote, return the remote diretory portion of the path."
       (eshell "new")
     (rename-buffer (concat "*eshell-" (car (last (delete "" (split-string default-directory "/")))) "*"))))
 
+(defun simba-dev ()
+  (setenv KUBECONFIG "~/.kube/config-dev")
+  (setenv SIMBA_ENV  "dev"))
+
 (provide 'my-functions)
 
 ;;; my-functions.el ends here

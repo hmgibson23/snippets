@@ -66,7 +66,8 @@
   (auto-complete-mode)
   (rainbow-delimiters-mode)
   (turn-on-eldoc-mode)
-  (paredit-mode 1))
+  (paredit-mode 1)
+  (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
 
 (use-package slime
   :ensure t
@@ -197,26 +198,32 @@
   :config
   (add-hook 'enh-ruby-mode-hook
             (lambda () (flyspell-prog-mode)))
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'ruby-mode-hook 'inf-ruby-mode)
+  (eval-after-load 'company
+  '(add-to-list 'company-backends 'company-inf-ruby))
+
+
   ;; (eval-after-load 'rspec-mode
   ;;   '(rspec-install-snippets))
-  )
+)
 
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
-  :hook ((python-mode anaconda-mode) . anaconda-eldoc-mode)
+;;  :hook ((python-mode anaconda-mode) . anaconda-eldoc-mode)
   :init
-  (setq python-shell-interpreter "/usr/local/bin/ipython"
-        python-shell-interpreter-args "--simple-prompt -i"
-        python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-        python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-        python-shell-completion-setup-code
-        "from IPython.core.completerlib import module_completion"
-        python-shell-completion-module-string-code "';'.join(module_completion('''%s'''))\n"
-        python-shell-completion-string-code "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
-        python-shell-output-filter 'ansi-color-for-comint-mode-filter))
-
+  ;; (setq python-shell-interpreter "/usr/local/bin/ipython"
+  ;;       python-shell-interpreter-args "--simple-prompt -i"
+  ;;       python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+  ;;       python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+  ;;       python-shell-completion-setup-code
+  ;;       "from IPython.core.completerlib import module_completion"
+  ;;       python-shell-completion-module-string-code "';'.join(module_completion('''%s'''))\n"
+  ;;       python-shell-completion-string-code "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
+  ;;       python-shell-output-filter 'ansi-color-for-comint-mode-filter)
+  )
 (use-package pyenv-mode
   :ensure t
   :init

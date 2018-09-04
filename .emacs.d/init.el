@@ -12,11 +12,6 @@
   :config
   (setq magit-completing-read-function 'ivy-completing-read))
 
-(use-package magithub
-  :after magit
-  :config
-  (magithub-feature-autoinject t))
-
 (use-package ace-jump-mode
   :ensure t
   :bind ("C-x SPC" . ace-jump-mode))

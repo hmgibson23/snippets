@@ -10,7 +10,7 @@
               (tide-setup)
               (flycheck-mode +1)
               (set (make-local-variable 'compile-command)
-                   (format "yarn test"))
+                   (format "npm test"))
               (js2-imenu-extras-setup)
               (flow-minor-enable-automatically)
               (prettier-js-mode)

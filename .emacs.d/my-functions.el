@@ -455,6 +455,19 @@ If PATH is remote, return the remote diretory portion of the path."
   (setenv KUBECONFIG "~/.kube/config-dev")
   (setenv SIMBA_ENV  "dev"))
 
+(defun insert-line-below ()
+  "Insert an empty line below the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (open-line 1)))
+
+(defun insert-line-above ()
+  "Insert an empty line above the current line."
+  (interactive)
+  (save-excursion
+    (end-of-line 0)
+    (open-line 1)))
 (provide 'my-functions)
 
 ;;; my-functions.el ends here

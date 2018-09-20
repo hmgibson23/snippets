@@ -19,7 +19,6 @@
 
 (use-package projectile
   :ensure t
-  :diminish projectile-mode
   :init
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)

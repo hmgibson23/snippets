@@ -70,3 +70,5 @@ This moves them into the Spam folder."
           "https://feeds.feedburner.com/efluxjournal?format=xml/"
           "https://www.widewalls.ch/feed/"
           "https://commercialtype.com/news/rss")))
+
+(use-package gmail2bbdb)

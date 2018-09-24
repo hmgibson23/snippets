@@ -10,24 +10,75 @@
 (setq-default shr-inhibit-images t)
 (setq-default shr-use-fonts nil)
 
-(setq
-      user-mail-address "gibsonhugo@gmail.com"
-      user-full-name "Hugo Gibson"
-      gnus-select-method
-      '(nnimap "gmail"
-               (nnimap-address "imap.gmail.com")
-               (nnimap-server-port 993)
-               (nnimap-stream ssl))
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      message-send-mail-function 'smtpmail-send-it
-      nntp-authinfo-file "~/.authinfo.gpg"
-      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
-      gnus-agent nil
-      gnus-message-archive-group nil)
+(use-package gnus
+  :config
+  (defun switch-to-gnus (&optional arg)
+    "Switch to a Gnus related buffer.
+    Candidates are buffers starting with
+     *mail or *reply or *wide reply
+     *Summary or
+     *Group*
+    Use a prefix argument to start Gnus if no candidate exists."
+    (interactive "P")
+    (let (candidate
+          (alist '(("^\\*\\(mail\\|\\(wide \\)?reply\\)" t)
+                   ("^\\*Group")
+                   ("^\\*Summary")
+                   ("^\\*Article" nil (lambda ()
+                                        (buffer-live-p gnus-article-current-summary))))))
+      (catch 'none-found
+        (dolist (item alist)
+          (let (last
+                (regexp (nth 0 item))
+                (optional (nth 1 item))
+                (test (nth 2 item)))
+            (dolist (buf (buffer-list))
+              (when (and (string-match regexp (buffer-name buf))
+                         (> (buffer-size buf) 0))
+                (setq last buf)))
+            (cond ((and last (or (not test) (funcall test)))
+                   (setq candidate last))
+                  (optional
+                   nil)
+                  (t
+                   (throw 'none-found t))))))
+      (cond (candidate
+             (switch-to-buffer candidate))
+            (arg
+             (gnus))
+            (t
+             (error "No candidate found")))))
+  (setq
+   user-mail-address "gibsonhugo@gmail.com"
+   user-full-name "Hugo Gibson"
+   gnus-select-method
+   '(nnimap "gmail"
+            (nnimap-address "imap.gmail.com")
+            (nnimap-server-port 993)
+            (nnimap-stream ssl))
+   smtpmail-smtp-server "smtp.gmail.com"
+   smtpmail-smtp-service 587
+   message-send-mail-function 'smtpmail-send-it
+   nntp-authinfo-file "~/.authinfo.gpg"
+   gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"
+   gnus-agent nil
+   gnus-message-archive-group nil)
 
-(add-hook 'message-setup-hook 'mml-secure-message-encrypt)
-(add-hook 'gnus-summary-mode-hook 'my-gnus-summary-keys)
+  (add-hook 'gnus-startup-hook
+            '(lambda ()
+               (gnus-demon-init)
+               (setq gnus-demon-timestep 60)  ;; each timestep is 60 seconds
+               ;; Check for new mail every 1 timestep (1 minute)
+               (gnus-demon-add-handler 'gnus-demon-scan-news 1 t)
+
+               ;; Don't crash gnus if disconnected
+               (defadvice gnus-demon-scan-news (around gnus-demon-timeout activate)
+                 "Timeout for Gnus."
+                 (with-timeout
+                     (120 (message "Gnus timed out."))
+                   ad-do-it))))
+  (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
+  (add-hook 'gnus-summary-mode-hook 'my-gnus-summary-keys))
 
 (defun my-gnus-summary-keys ()
   (local-set-key "y" 'gmail-archive)

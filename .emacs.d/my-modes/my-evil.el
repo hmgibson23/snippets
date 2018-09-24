@@ -44,12 +44,12 @@
     "gCu" 'uncomment-region)
 
   (general-nmap
-    :states 'insert
-    (kbd "C-h") 'evil-backward-char
-    (kbd "C-l") 'evil-forward-char
-    (kbd "C-j") 'evil-next-line
-    (kbd "C-k") 'evil-previous-line
-    )
+    :states '(insert emacs)
+    "C-h" 'evil-backward-char
+    "C-l" 'evil-forward-char
+    "C-j" 'evil-next-line
+    "C-k" 'evil-previous-line)
+
 
   (general-nmap
     :keymaps 'dired-mode-map
@@ -72,7 +72,7 @@
 
   (general-nmap
     :prefix ","
-    :states 'motion
+    :states '(motion emacs)
     :prefix-map 'exec-leader-map
     "d" 'docker
     "k" 'kubernetes-overview
@@ -82,8 +82,6 @@
     "as" 'async-shell-command
     "e" 'eshell/here
 
-
-    ;; buffer operations
     "bk" 'kill-buffer
     "br" 'revert-buffer
     "bo" 'ivy-switch-buffer-other-window
@@ -93,31 +91,24 @@
     "bi" 'ibuffer
     "be" 'eval-buffer
     "ba" 'mark-whole-buffer
+    "bg" 'switch-to-gnus
 
-    ;; I do this a lot
-    "la" 'insert-line-above
-    "lb" 'insert-line-below
-
-    "zxx" 'er/expand-region
-    "ci" 'counsel-ibuffer
-    "cr" 'counsel-evil-registers
-    "cl" 'counsel-locate
-    )
-
-
-  (general-nmap
-    :prefix (kbd "SPC")
-    :states 'normal
-    :prefix-map 'space-leader-map
-
-    ;; counsel
-
-    ;; file operations
     "ff" 'counsel-find-file
     "fr" 'counsel-recentf
     "fF" 'find-file-other-window
     "fl" 'find-file-literally
-    "fa" 'find-alternate-file)
+    "fa" 'find-alternate-file
+    ;; I do this a lot
+    "la" 'insert-line-above
+    "lb" 'insert-line-below
+
+    "vv" 'hydra-zoom/body
+
+    "zxx" 'er/expand-region
+    "ci" 'counsel-ibuffer
+    "cr" 'counsel-evil-registers
+    "cl" 'counsel-locate)
+
 
   (general-nmap
     :states '(emacs motion )
@@ -161,3 +152,15 @@
   :config
   (evil-goggles-use-diff-faces)
   (evil-goggles-mode))
+
+(use-package evil-magit
+  :defer 1
+  :config
+  (setq evil-magit-use-y-for-yank nil))
+
+(use-package evil-expat
+  :ensure t
+  :defer 1)
+
+(use-package evil-ledger)
+(use-package evil-numbers)

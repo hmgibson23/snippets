@@ -24,10 +24,10 @@
 (global-set-key (kbd "C-t") 'backward-kill-word)
 (global-set-key (kbd "C-S-t") 'backward-kill-sentence)
 (global-set-key (kbd "C-x r") 'replace-string)
-(global-set-key (kbd "C-c c c") 'comment-or-uncomment-region)
 (global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "<f12>") 'counsel-M-x)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-(global-set-key (kbd "C-c M-x") 'execute-extended-command)
+(global-set-key (kbd "C-c <f12>") 'execute-extended-command)
 (global-set-key (kbd "C-M-i") 'replace-last-sexp)
 (global-set-key (kbd "C-M->")  'next-buffer)
 (global-set-key (kbd "C-M-<")  'previous-buffer)
@@ -52,9 +52,9 @@
       mac-command-key-is-meta t
       mac-command-modifier 'meta
       mac-option-modifier 'none)
-
-
-(global-set-key (kbd "<f5>") (lambda ()
+(global-set-key (kbd "<f8>") 'other-window)
+(global-set-key (kbd "<f9>") 'compile)
+(global-set-key (kbd "C-c <f9>") (lambda ()
                                (interactive)
                                (setq-local compilation-read-command nil)
                                (call-interactively 'compile)))

@@ -27,6 +27,11 @@
   (projectile-global-mode +1)
   (counsel-projectile-mode +1))
 
+(use-package xresources-theme
+  :config
+  (add-hook 'after-make-frame-functions
+            (lambda (frame) (load-theme 'xresources t))))
+
 (use-package org
   :ensure t
   :bind ("C-c o a" . org-agenda)

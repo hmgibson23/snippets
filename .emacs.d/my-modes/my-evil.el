@@ -24,6 +24,7 @@
     "gsg" 'find-grep
     "gsf" 'search-forward
 
+
     "gz"  'zap-to-char
     "g:" 'evil-goto-char
     "g." 'counsel-yank-pop
@@ -33,12 +34,6 @@
     "gCl" 'comment-line)
 
   (general-nmap
-    :states 'motion
-    "gl" 'goto-line
-
-    )
-
-  (general-nmap
     :states 'visual
     "gCr" 'comment-region
     "gCu" 'uncomment-region)
@@ -46,9 +41,9 @@
   (general-nmap
     :states '(insert emacs)
     "C-h" 'evil-backward-char
-    "C-l" 'evil-forward-char
-    "C-j" 'evil-next-line
-    "C-k" 'evil-previous-line)
+    "C-i" 'forward-char
+    "C-n" 'evil-next-line
+    "C-e" 'evil-previous-line)
 
 
   (general-nmap
@@ -72,7 +67,7 @@
 
   (general-nmap
     :prefix ","
-    :states '(motion emacs)
+    :states '(motion emacs normal)
     :prefix-map 'exec-leader-map
     "d" 'docker
     "k" 'kubernetes-overview
@@ -82,6 +77,7 @@
     "as" 'async-shell-command
     "e" 'eshell/here
 
+    "j"  'evil-avy-goto-char
     "bk" 'kill-buffer
     "br" 'revert-buffer
     "bo" 'ivy-switch-buffer-other-window
@@ -93,15 +89,6 @@
     "ba" 'mark-whole-buffer
     "bg" 'switch-to-gnus
 
-    "ff" 'counsel-find-file
-    "fr" 'counsel-recentf
-    "fF" 'find-file-other-window
-    "fl" 'find-file-literally
-    "fa" 'find-alternate-file
-    ;; I do this a lot
-    "la" 'insert-line-above
-    "lb" 'insert-line-below
-
     "vv" 'hydra-zoom/body
 
     "zxx" 'er/expand-region
@@ -111,30 +98,52 @@
 
 
   (general-nmap
+    :prefix "SPC"
+    :states '(motion normal)
+    :prefix-map 'spc-leader-map
+
+
+    "ff" 'counsel-find-file
+    "fr" 'counsel-recentf
+    "fF" 'find-file-other-window
+    "fl" 'find-file-literally
+    "fa" 'find-alternate-file
+    ;; I do this a lot
+    "la" 'insert-line-above
+    "lb" 'insert-line-below
+)
+
+  (general-nmap
     :states '(emacs motion )
     :prefix "£"
     :prefix-map 'window-leader-map
     "q" 'delete-other-windows
     "t" 'split-window-horizontally
     "v" 'split-window-vertically
-    "j" 'evil-window-down
-    "k" 'evil-window-up
-    "l" 'evil-window-right
+    "n" 'evil-window-down
+    "e" 'evil-window-up
+    "i" 'evil-window-right
     "h" 'evil-window-left
     "o" 'other-window
     ">" 'next-buffer
     "<" 'previous-buffer
-    "bk" 'buf-move-up
-    "bj" 'buf-move-down
-    "bl" 'buf-move-right
+    "bn" 'buf-move-up
+    "be" 'buf-move-down
+    "bi" 'buf-move-right
     "bh" 'buf-move-left)
 
   (evil-set-initial-state 'elfeed-search-mode 'emacs)
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
-  (evil-set-initial-state 'hackernews-mode 'emacs)
   (evil-set-initial-state 'comint-mode 'normal)
   )
+
+(use-package evil-avy
+  :after evil
+  :ensure t
+  :config
+  (evil-avy-mode))
+
 
 (use-package evil-collection
   :after evil
@@ -164,3 +173,19 @@
 
 (use-package evil-ledger)
 (use-package evil-numbers)
+(use-package evil-dvorak)
+
+(use-package evil-colemak-basics
+  :after evil
+  :config
+  (global-evil-colemak-basics-mode 1))
+(use-package key-chord
+
+  :after evil
+  :config
+  (setq key-chord-two-keys-delay 0.4)
+  (key-chord-define evil-motion-state-map "jj" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "[[" 'save-buffer)
+  (key-chord-define evil-motion-state-map "[[" 'save-buffer)
+  (key-chord-mode 1))

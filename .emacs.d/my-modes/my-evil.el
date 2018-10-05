@@ -2,7 +2,7 @@
   :ensure t
   :init
   (setq evil-want-integration nil)
-
+  (setq evil-want-keybinding nil)
   :config
   (setq evil-want-C-i-jump nil)
 
@@ -38,12 +38,6 @@
     "gCr" 'comment-region
     "gCu" 'uncomment-region)
 
-  (general-nmap
-    :states '(insert emacs)
-    "C-h" 'evil-backward-char
-    "C-i" 'forward-char
-    "C-n" 'evil-next-line
-    "C-e" 'evil-previous-line)
 
 
   (general-nmap
@@ -53,6 +47,11 @@
   (general-nmap
     :keymaps 'ibuffer-mode-map
     "¬" 'hydra-ibuffer-main/body)
+
+  (general-nmap
+    :keymaps 'magit-mode-map
+    "f" 'magit-fetch-popup
+    )
 
   (general-nmap
     :keymaps 'comint-mode-map
@@ -67,7 +66,7 @@
 
   (general-nmap
     :prefix ","
-    :states '(motion emacs normal)
+    :states 'motion
     :prefix-map 'exec-leader-map
     "d" 'docker
     "k" 'kubernetes-overview
@@ -89,6 +88,9 @@
     "ba" 'mark-whole-buffer
     "bg" 'switch-to-gnus
 
+    "re" 'exit-recursive-edit
+    "ra" 'abort-recursive-edit
+
     "vv" 'hydra-zoom/body
 
     "zxx" 'er/expand-region
@@ -99,7 +101,7 @@
 
   (general-nmap
     :prefix "SPC"
-    :states '(motion normal)
+    :states 'motion
     :prefix-map 'spc-leader-map
 
 
@@ -111,10 +113,10 @@
     ;; I do this a lot
     "la" 'insert-line-above
     "lb" 'insert-line-below
-)
+    )
 
   (general-nmap
-    :states '(emacs motion )
+    :states '(emacs motion)
     :prefix "£"
     :prefix-map 'window-leader-map
     "q" 'delete-other-windows
@@ -136,6 +138,7 @@
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
   (evil-set-initial-state 'comint-mode 'normal)
+  (evil-set-initial-state 'dired-mode 'emacs)
   )
 
 (use-package evil-avy
@@ -178,7 +181,16 @@
 (use-package evil-colemak-basics
   :after evil
   :config
-  (global-evil-colemak-basics-mode 1))
+  (global-evil-colemak-basics-mode 1)
+
+  (general-nmap
+    :states '(insert emacs motion)
+    "TAB" 'indent-for-tab-command
+    "C-h" 'evil-backward-char
+    "C-n" 'evil-next-line
+    "C-e" 'evil-previous-line)
+)
+
 (use-package key-chord
 
   :after evil

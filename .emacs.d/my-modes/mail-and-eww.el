@@ -110,7 +110,7 @@ This moves them into the Spam folder."
           "https://www.artistsnetwork.com/magazine/feed/"
           "http://www.thomasingmire.com/blog/feed"
           "http://www.brodyneuenschwander.com/feed/"
-          "http://www.theartwolf.com/rss.xml"         "https://weather-broker-cdn.api.bbci.co.uk/en/forecast/rss/3day/2643743"
+          "http://www.theartwolf.com/rss.xml"
           "https://www.bangkokpost.com/rss/data/topstories.xml"
           "https://wonky-words.com/feed/"
           "https://www.newcriterion.com/xml/lastissue.cfm"
@@ -119,7 +119,6 @@ This moves them into the Spam folder."
           "https://artandinfluence.com/feed"
           "https://www.art-agenda.com/category/reviews/feed/"
           "https://feeds.feedburner.com/efluxjournal?format=xml/"
-          "https://www.widewalls.ch/feed/"
           "https://commercialtype.com/news/rss")))
 
 (use-package gmail2bbdb)

@@ -1,1 +1,10 @@
-rofi.theme: /usr/share/rofi/themes/lb.rasi
+configuration {
+	modi: 			"drun,run";
+	width: 			750;
+	lines: 			13;
+	font: 			"Droid Sans";
+	show-match: 		false;
+	separator-style: 	"solid";
+	hide-scrollbar: 	true;
+	theme:			".local/share/rofi/nord";
+	}

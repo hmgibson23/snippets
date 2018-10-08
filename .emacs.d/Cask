@@ -256,6 +256,7 @@
 (depends-on "mustache-mode")
 (depends-on "nim-mode")
 (depends-on "nodejs-repl")
+(depends-on "nord-theme")
 (depends-on "npm-mode")
 (depends-on "nvm")
 (depends-on "omnisharp")

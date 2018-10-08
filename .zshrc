@@ -93,3 +93,5 @@ plugins=(
   pyenv
   docker
 )
+bindkey -v
+bindkey '^R' history-incremental-search-backward

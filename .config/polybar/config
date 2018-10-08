@@ -1,6 +1,6 @@
 [colors]
-background = #222
-background-alt = #444
+background = #3b4252
+background-alt = #434c5e
 foreground = #dfdfdf
 foreground-alt = #555
 primary = #ffb52a
@@ -10,7 +10,7 @@ alert = #bd2c40
 [bar/top]
 ;monitor = ${env:MONITOR:HDMI-1}
 width = 100%
-height = 27
+height = 28
 ;offset-x = 1%
 ;offset-y = 1%
 radius = 6.0
@@ -22,7 +22,7 @@ foreground = ${colors.foreground}
 line-size = 3
 line-color = #f00
 
-border-size = 4
+border-size =2
 border-color = #00000000
 
 padding-left = 0
@@ -38,8 +38,8 @@ font-3 = Material Design Icons:pixelsize=11;3
 font-4 = Weather Icons:size=8;1
 
 modules-left = i3 filesystem memory cpu temperature alsa
-modules-center =
-modules-right = weather updates-arch network xbacklight battery date  gmail powermenu
+modules-center = xwindow
+modules-right = weather updates-arch xbacklight battery date  gmail powermenu
 
 tray-position = right
 tray-padding = 2
@@ -329,7 +329,35 @@ exec = ~/.config/polybar/polybar-scripts/openweathermap-forecast.sh
 interval = 600
 label-font=5
 padding-top=5
+[module/menu-apps]
+type = custom/menu
 
+; If true, <label-toggle> will be to the left of the menu items (default).
+; If false, it will be on the right of all the items.
+expand-right = true
+
+; "menu-LEVEL-N" has the same properties as "label-NAME" with
+; the additional "exec" property
+;
+; Available exec commands:
+;   menu-open-LEVEL
+;   menu-close
+; Other commands will be executed using "/usr/bin/env sh -c $COMMAND"
+
+menu-0-0 = Browsers
+menu-0-0-exec = menu-open-1
+menu-0-1 = Multimedia
+menu-0-1-exec = menu-open-2
+
+menu-1-0 = Firefox
+menu-1-0-exec = firefox &
+menu-1-1 = Chromium
+menu-1-1-exec = chromium &
+
+menu-2-0 = Gimp
+menu-2-0-exec = gimp &
+menu-2-1 = Scrot
+menu-2-1-exec = scrot &
 [settings]
 screenchange-reload = true
 ;compositing-background = xor

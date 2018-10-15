@@ -95,3 +95,5 @@ plugins=(
 )
 bindkey -v
 bindkey '^R' history-incremental-search-backward
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"

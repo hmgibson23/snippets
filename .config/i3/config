@@ -40,6 +40,8 @@ bindsym $mod+d exec dmenu_run
 bindsym $mod+BackSpace exec "rofi -show drun"
 bindsym $mod+Shift+w exec "rofi -show window"
 
+# passwords
+bindsym $mod+Shift+p exec "passmenu"
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
@@ -207,20 +209,4 @@ exec --no-startup-id dunst
 
 gaps outer 5
 gaps inner 5
-exec_always --no-startup-id ~/.config/i3/polybar.sh &
-# bar {
-# status_command exec_always --no-tartup-id ~/.config/i3/polybar.sh &
-# position top
-# font pango:monospace 8, FontAwesome5Free 10
-
-# colors {
-#  statusline $foreground
-# background $background
-
-# # Type                     border     background    text
-# focused_workspace         $background      $darkred   $foreground
-# active_workspace          $background      $darkred   $foreground
-# inactive_workspace        $background      $background   $foreground
-# urgent_workspace          $background      $background   $foreground
-# }
-#}
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh &

@@ -298,10 +298,10 @@ menu-0-1-exec = menu-open-2
 menu-1-0 = cancel
 menu-1-0-exec = menu-open-0
 menu-1-1 = reboot
-menu-1-1-exec = sudo reboot
+menu-1-1-exec = systemctl reboot
 
 menu-2-0 = power off
-menu-2-0-exec = sudo poweroff
+menu-2-0-exec = systemctl poweroff
 menu-2-1 = cancel
 menu-2-1-exec = menu-open-0
 
@@ -325,39 +325,21 @@ interval = 10
 
 [module/weather]
 type = custom/script
-exec = ~/.config/polybar/polybar-scripts/openweathermap-forecast.sh
+exec = ~/.config/polybar/polybar-scripts/openweathermap-simple.sh
 interval = 600
 label-font=5
 padding-top=5
-[module/menu-apps]
-type = custom/menu
-
-; If true, <label-toggle> will be to the left of the menu items (default).
-; If false, it will be on the right of all the items.
-expand-right = true
-
-; "menu-LEVEL-N" has the same properties as "label-NAME" with
-; the additional "exec" property
-;
+click-left=sh ~/.config/polybar/polybar-scripts/openweathermap-forecast.sh
+[module/system-usb-udev]
+type = custom/script
+exec = ~/polybar-scripts/system-usb-udev.sh
+tail = true
+click-left = ~/polybar-scripts/system-usb-udev.sh --mount
+click-right = ~/polybar-scripts/system-usb-udev.sh --unmount
 ; Available exec commands:
 ;   menu-open-LEVEL
 ;   menu-close
 ; Other commands will be executed using "/usr/bin/env sh -c $COMMAND"
-
-menu-0-0 = Browsers
-menu-0-0-exec = menu-open-1
-menu-0-1 = Multimedia
-menu-0-1-exec = menu-open-2
-
-menu-1-0 = Firefox
-menu-1-0-exec = firefox &
-menu-1-1 = Chromium
-menu-1-1-exec = chromium &
-
-menu-2-0 = Gimp
-menu-2-0-exec = gimp &
-menu-2-1 = Scrot
-menu-2-1-exec = scrot &
 [settings]
 screenchange-reload = true
 ;compositing-background = xor

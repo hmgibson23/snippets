@@ -4,7 +4,7 @@
 
 ;; load up the modes
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
-
+  (require 'llvm-mode)
 (use-package magit
   :ensure t
   :commands magit-status

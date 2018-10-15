@@ -196,37 +196,6 @@ create it and write the initial message into it."
     (funcall 'shell-mode))
   (set-process-filter (get-process "wr") 'filter-process-output))
 
-(defun wr-watch (file command)
-  "Run the wr command in the background and print its output"
-  (interactive (list (read-file-name "File to watch: ")
-                     (read-string "Command to execute: ")))
-  (start-process-shell-command "wr" "*wr output*" "wr" (concat "\"" command "\"") file)
-  (with-current-buffer
-      (process-buffer (get-process "wr"))
-    (funcall 'shell-mode))
-  (set-process-filter (get-process "wr") 'filter-process-output)
-  (lexical-let ((fi file) (co command))
-    ;; yeah the lexical let really sucks
-    (set-process-sentinel (get-process "wr")
-                          (lambda (process event)
-                            (if (= 8 (parse-num *test-string*))
-                                (wr-watch fi co))))))
-
-(defun grunt-watch (command)
-  "Run the grunt command in the background and print its output"
-  (interactive (list (read-string "Watch task: ")))
-  (start-process-shell-command "grunt" "*grunt output*" "grunt" "watch" command "--force")
-  (with-current-buffer
-      (process-buffer (get-process "grunt"))
-    (funcall 'shell-mode))
-  (set-process-filter (get-process "grunt") 'filter-process-output)
-  (lexical-let ((co command))
-    ;; yeah the lexical let really sucks
-    (set-process-sentinel (get-process "grunt")
-                          (lambda (process event)
-                            (if (= 8 (parse-num *test-string*))
-                                (grunt-watch co))))))
-
 (defun parse-num (string)
   "Get first number from a string - useful for exit codes"
   (string-match "[[:digit:]]" string)
@@ -246,28 +215,6 @@ create it and write the initial message into it."
   (ansi-color-apply-on-region (point-min) (point-max))
   (toggle-read-only))
 
-;;----------------------------------------------------------------------------
-;; ipdb
-;; from: pedrokroger.net/2010/07/configuring-emacs-as-a-python-ide-2/
-;; Highlight ipdb lines:
-(defun annotate-pdb ()
-  (interactive)
-  (highlight-lines-matching-regexp "import pdb")
-  (highlight-lines-matching-regexp "pdb.set_trace()"))
-
-
-;;----------
-;; Keybinding to add breakpoint:
-(defun python-add-breakpoint ()
-  (interactive)
-  (newline-and-indent)
-  (insert "import ipdb; ipdb.set_trace()")
-  (highlight-lines-matching-regexp "^[ ]*import ipdb; ipdb.set_trace()"))
-
-(defun delete-tern-process ()
-  "Delete the tern process if it won't go itself'"
-  (interactive)
-  (delete-process "Tern"))
 
 
 (defun absolute-dirname (path)
@@ -278,39 +225,6 @@ If PATH is remote, return the remote diretory portion of the path."
   (if (tramp-tramp-file-p path)
       (elt (tramp-dissect-file-name path) 3)
     path))
-
-(defun run-virtualenv-python (&optional env)
-  "Run Python in this virtualenv."
-  (interactive)
-  (let ((env-root (locate-dominating-file
-                   (or env default-directory) "bin/python")))
-    (apply 'run-python
-           (when env-root
-             (list (concat (absolute-dirname env-root) "bin/python"))))))
-
-(defun python-generate-repl-name (&optional buffer)
-  "Generate a better name for a Python buffer."
-  (let ((buffer (or buffer (window-buffer))))
-    (with-current-buffer buffer
-      (concat
-       "*Python-"
-       (file-name-nondirectory
-        (substring default-directory 0
-                   (when (equal (substring default-directory -1) "/") -1)))
-       "@"
-       (car (split-string (if (tramp-tramp-file-p default-directory)
-                              (with-parsed-tramp-file-name default-directory py
-                                py-host)
-                            (system-name)) "\\."))
-       "*"))))
-
-(add-hook 'inferior-python-mode-hook
-          (lambda () (rename-buffer (python-generate-repl-name))))
-
-(defun process-on-port (port)
-  "Find out what process is listening on a port"
-  (interactive (list (read-string "Which port: ")))
-  (shell-command (format "lsof -n -i4TCP:%s | grep LISTEN" port)))
 
 (defun get-string-from-file (filePath)
   "Return filePath's file content."
@@ -323,11 +237,6 @@ If PATH is remote, return the remote diretory portion of the path."
   (with-temp-buffer
     (insert-file-contents filePath)
     (split-string (buffer-string) "\n" t)))
-
-(defun locate-nginx ()
-  "Finds where nginx's root directory is installed on a sytem"
-  (interactive (shell-command "nginx -V 2>&1 | grep 'configure arguments:' | sed 's/[^*]*conf-path=\([^ ]*\)\/nginx\.conf.*/\1/g'")))
-
 
 (defun my-load-all-in-directory (dir)
   "`load' all elisp libraries in directory DIR which are not already loaded."
@@ -349,18 +258,6 @@ If PATH is remote, return the remote diretory portion of the path."
   "Add a path to the execpath"
   (interactive "D")
   (add-to-list 'exec-path path))
-
-(defun check-expansion ()
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-        (backward-char 1)
-        (if (looking-at "->") t nil)))))
-
-(defun do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
 
 (defun tab-indent-or-complete ()
   (interactive)
@@ -469,5 +366,8 @@ If PATH is remote, return the remote diretory portion of the path."
     (end-of-line 0)
     (open-line 1)))
 (provide 'my-functions)
+
+ (defun insert-current-date () (interactive)
+    (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
 
 ;;; my-functions.el ends here

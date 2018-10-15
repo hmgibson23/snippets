@@ -1,14 +1,14 @@
 (use-package hydra
-  :ensure t
-  :config
-  (defhydra hydra-flycheck
-    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
+:ensure t
+:config
+(defhydra hydra-flycheck
+(:pre (progn (setq hydra-lv t) (flycheck-list-errors))
 n          :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
-          :hint nil)
-    "Errors"
-    ("f"  flycheck-error-list-set-filter                            "Filter")
-    ("j"  flycheck-next-error                                       "Next")
-    ("k"  flycheck-previous-error                                   "Previous")
+        :hint nil)
+"Errors"
+("f"  flycheck-error-list-set-filter                            "Filter")
+("j"  flycheck-next-error                                       "Next")
+("k"  flycheck-previous-error                                   "Previous")
 n    ("gg" flycheck-first-error                                      "First")
     ("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
     ("q"  nil))

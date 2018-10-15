@@ -5,7 +5,7 @@
   (setq evil-want-keybinding nil)
   :config
   (setq evil-want-C-i-jump nil)
-
+  (fset 'evil-visual-update-x-selection 'ignore)
   (general-evil-setup)
   (evil-mode 1)
   (global-evil-mc-mode  1)
@@ -38,8 +38,6 @@
     "gCr" 'comment-region
     "gCu" 'uncomment-region)
 
-
-
   (general-nmap
     :keymaps 'dired-mode-map
     "¬" 'hydra-dired/body)
@@ -48,10 +46,10 @@
     :keymaps 'ibuffer-mode-map
     "¬" 'hydra-ibuffer-main/body)
 
-  (general-nmap
-    :keymaps 'magit-mode-map
-    "f" 'magit-fetch-popup
-    )
+  ;; (general-nmap
+  ;;   :keymaps 'magit-mode-map
+  ;;   "f" 'magit-fetch-popup
+  ;;   )
 
   (general-nmap
     :keymaps 'comint-mode-map
@@ -98,12 +96,12 @@
     "cr" 'counsel-evil-registers
     "cl" 'counsel-locate)
 
+  (general-create-definer spc-leader
+    :prefix "SPC")
 
-  (general-nmap
-    :prefix "SPC"
+  (spc-leader
     :states 'motion
     :prefix-map 'spc-leader-map
-
 
     "ff" 'counsel-find-file
     "fr" 'counsel-recentf
@@ -112,8 +110,13 @@
     "fa" 'find-alternate-file
     ;; I do this a lot
     "la" 'insert-line-above
-    "lb" 'insert-line-below
-    )
+    "lb" 'insert-line-below)
+
+  (spc-leader
+    :states 'emacs
+    :keymaps 'dired-mode-map)
+
+
 
   (general-nmap
     :states '(emacs motion)
@@ -134,12 +137,13 @@
     "bi" 'buf-move-right
     "bh" 'buf-move-left)
 
+
   (evil-set-initial-state 'elfeed-search-mode 'emacs)
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
   (evil-set-initial-state 'comint-mode 'normal)
   (evil-set-initial-state 'dired-mode 'emacs)
-  )
+  (evil-set-initial-state 'sql 'emacs))
 
 (use-package evil-avy
   :after evil
@@ -147,13 +151,12 @@
   :config
   (evil-avy-mode))
 
-
 (use-package evil-collection
   :after evil
   :ensure t
   :config
-  (evil-collection-init)
-  )
+  (evil-collection-init))
+
 (use-package evil-surround
   :ensure t
   :config
@@ -165,12 +168,13 @@
   (evil-goggles-use-diff-faces)
   (evil-goggles-mode))
 
-(use-package evil-magit
-  :defer 1
-  :config
-  (setq evil-magit-use-y-for-yank nil))
+;; (use-package evil-magit
+;;   :defer 1
+;;   :config
+;;   (setq evil-magit-use-y-for-yank nil))
 
 (use-package evil-expat
+  :defer 1
   :ensure t
   :defer 1)
 
@@ -188,8 +192,19 @@
     "TAB" 'indent-for-tab-command
     "C-h" 'evil-backward-char
     "C-n" 'evil-next-line
+    "C-o" 'forward-char
     "C-e" 'evil-previous-line)
-)
+
+  (general-nmap
+    :states 'normal
+    :keymaps '(comint-mode-map)
+    "]" 'comint-next-input
+    "[" 'comint-previous-input)
+
+  (general-nmap
+    :keymaps 'ivy-minibuffer-map
+    "C-n" 'ivy-next-line
+    "C-e" 'ivy-previous-line))
 
 (use-package key-chord
 

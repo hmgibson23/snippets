@@ -122,3 +122,18 @@ This moves them into the Spam folder."
           "https://commercialtype.com/news/rss")))
 
 (use-package gmail2bbdb)
+(use-package erc
+  :ensure nil
+  :defer t
+  :config
+  (add-hook 'window-configuration-change-hook
+            (lambda ()
+              (setq erc-fill-column (- (window-width) 2))))
+  (add-hook 'erc-mode-hook
+            (lambda ()
+              (setq-local scroll-margin 1)))
+
+  (setq erc-rename-buffers t
+        erc-interpret-mirc-color t
+        erc-lurker-hide-list '("JOIN" "PART" "QUIT")
+        erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))

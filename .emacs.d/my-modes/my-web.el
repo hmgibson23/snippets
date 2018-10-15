@@ -4,6 +4,11 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   :config
+(defun delete-tern-process ()
+  "Delete the tern process if it won't go itself'"
+  (interactive)
+  (delete-process "Tern"))
+
   (add-hook 'rjsx-mode-hook
             (lambda ()
               (interactive)

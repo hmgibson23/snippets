@@ -30,6 +30,7 @@
 (depends-on "calfw")
 (depends-on "calfw-gcal")
 (depends-on "caml")
+(depends-on "cargo")
 (depends-on "cask")
 (depends-on "cask-mode")
 (depends-on "caskxy")

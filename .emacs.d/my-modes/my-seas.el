@@ -4,6 +4,13 @@
   (setq c-default-style "linux")
   (setq gdb-show-main t)
   :config
+  (defun set-window-undedicated-p (window flag)
+    "Never set window dedicated."
+    flag)
+
+  (advice-add 'set-window-dedicated-p :override #'set-window-undedicated-p)
+  (setq auto-mode-alist (cons '("\\.cxx$" . c++-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.hpp$" . c++-mode) auto-mode-alist))
   (add-hook 'c++-mode-hook 'irony-mode)
   (add-hook 'c++-mode-hook 'smartparens-mode)
   (add-hook 'c-mode-hook 'irony-mode)
@@ -64,26 +71,20 @@
 (add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
 ;;(setq-local eldoc-documentation-function #'ggtags-eldoc-function)
 
+(use-package rust-mode
+  :defer 1
+  :config
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c <tab>") #'rust-format-buffer))))
 
-;; sorry rust
-;; rust mode stuff
-;; (add-hook 'rust-mode-hook 'flymake-rust-load)
-;; (add-hook 'rust-mode-hook (lambda () flycheck-mode t))
-;; (eval-after-load 'flycheck
-;;   '(add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-;; (setq racer-rust-src-path "~/git/rust/src/")
-;; (setq racer-cmd "~/git/racer/target/release/racer")
-;; (add-to-list 'load-path "~/git/racer/editors/emacs")
-;; (eval-after-load "rust-mode" '(require 'racer))
+(use-package flycheck-rust
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
-;; (add-hook 'rust-mode-hook 'company-mode)
-;; (add-hook 'rust-mode-hook
-;;   '(lambda ()
-;;      (racer-activate)
-;;      (local-set-key (kbd "M-.") #'racer-find-definition)
-;;      (local-set-key (kbd "TAB") #'racer-complete-or-indent)))
+(use-package cargo
+  :after rust-mode
+  :config
+  (add-hook 'rust-mode-hook 'cargo-minor-mode))
 
-
-(setq auto-mode-alist (cons '("\\.cxx$" . c++-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.hpp$" . c++-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.tex$" . latex-mode) auto-mode-alist))

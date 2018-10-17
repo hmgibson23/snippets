@@ -62,8 +62,17 @@
     :states 'motion
     ";" 'mail-send-and-exit)
 
-  (general-nmap
-    :prefix ","
+  (general-create-definer exec-leader
+    :prefix ",")
+
+  (exec-leader
+    :states 'motion
+    :keymaps 'flycheck-mode-map
+    :prefix-map 'exec-leader-map
+    "!n" 'flycheck-next-error
+    "!l" 'flycheck-list-errors)
+
+  (exec-leader
     :states 'motion
     :prefix-map 'exec-leader-map
     "d" 'docker
@@ -95,6 +104,12 @@
     "ci" 'counsel-ibuffer
     "cr" 'counsel-evil-registers
     "cl" 'counsel-locate)
+
+  (exec-leader
+    :states 'emacs
+    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook)
+    :prefix-map 'exec-leader-map
+    :major-modes t)
 
   (general-create-definer spc-leader
     :prefix "SPC")

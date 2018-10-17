@@ -4,7 +4,9 @@
 
 ;; load up the modes
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
-  (require 'llvm-mode)
+(require 'llvm-mode)
+(require 'gud-lldb)
+
 (use-package magit
   :ensure t
   :commands magit-status
@@ -248,23 +250,23 @@
 [_p_]   Previous     [_n_]   Next         [_l_] Edit lines
 [_P_]   Skip-Prev    [_N_]   Skip-Next    [_a_] Mark all
 [_M-p_] Unmark  [_M-n_] Unmark  [_q_] Quit"
-  ("l" mc/edit-lines :exit t)
-  ("a" mc/mark-all-like-this :exit t)
-  ("n" mc/mark-next-like-this)
-  ("N" mc/skip-to-next-like-this)
-  ("M-n" mc/unmark-next-like-this)
-  ("p" mc/mark-previous-like-this)
-  ("P" mc/skip-to-previous-like-this)
-  ("M-p" mc/unmark-previous-like-this)
-  ("q" nil))
-(global-set-key (kbd "C->")  'mc/mark-next-like-this))
+    ("l" mc/edit-lines :exit t)
+    ("a" mc/mark-all-like-this :exit t)
+    ("n" mc/mark-next-like-this)
+    ("N" mc/skip-to-next-like-this)
+    ("M-n" mc/unmark-next-like-this)
+    ("p" mc/mark-previous-like-this)
+    ("P" mc/skip-to-previous-like-this)
+    ("M-p" mc/unmark-previous-like-this)
+    ("q" nil))
+  (global-set-key (kbd "C->")  'mc/mark-next-like-this))
 
 (use-package imenu
   :bind ("C-c x i" . imenu)
   :config
   (add-to-list 'imenu-generic-expression
-             '("Used Packages"
-               "\\(^\\s-*(use-package +\\)\\(\\_<.+\\_>\\)" 2))
+               '("Used Packages"
+                 "\\(^\\s-*(use-package +\\)\\(\\_<.+\\_>\\)" 2))
   (setq imenu-auto-rescan t))
 
 ;; These are outside of the use-package system

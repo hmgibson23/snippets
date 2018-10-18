@@ -128,9 +128,8 @@
 
   (spc-leader
     :states 'emacs
+    :prefix-map 'spc-leader-map
     :keymaps 'dired-mode-map)
-
-
 
   (general-nmap
     :states '(emacs motion)

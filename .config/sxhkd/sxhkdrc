@@ -123,3 +123,12 @@ super + alt + shift + {h,n,e,i}
 # move a floating window
 super + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+#
+# exit mode
+#
+super + shift + q; {s,h,r,p}
+    systemctl {suspend, hibernate, reboot, shutdown}
+
+super + shift + e
+      i3lock-fancy -gp

@@ -69,8 +69,8 @@
     :states 'motion
     :keymaps 'flycheck-mode-map
     :prefix-map 'exec-leader-map
-    "!n" 'flycheck-next-error
-    "!l" 'flycheck-list-errors)
+    "fn" 'flycheck-next-error
+    "fl" 'flycheck-list-errors)
 
   (exec-leader
     :states 'motion
@@ -108,8 +108,7 @@
   (exec-leader
     :states 'emacs
     :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook)
-    :prefix-map 'exec-leader-map
-    :major-modes t)
+    :prefix-map 'exec-leader-map)
 
   (general-create-definer spc-leader
     :prefix "SPC")

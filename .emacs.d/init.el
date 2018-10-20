@@ -6,6 +6,7 @@
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
 (require 'llvm-mode)
 (require 'gud-lldb)
+(require 'rusti)
 
 (use-package magit
   :ensure t

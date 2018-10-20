@@ -12,7 +12,6 @@
 
   ;; projectile leader
   (general-nmap
-    "gp" 'projectile-command-map
 
     "gc" 'compile
     ;; search commands
@@ -30,7 +29,6 @@
     "g." 'counsel-yank-pop
     "v" 'evil-visual-char
     "T" 'browse-kill-ring
-    "gM" 'magit-status
     "gCl" 'comment-line)
 
   (general-nmap
@@ -77,8 +75,10 @@
     :prefix-map 'exec-leader-map
     "d" 'docker
     "k" 'kubernetes-overview
-    "|" 'shell-command-on-region
-    "!" 'shell-command
+    "p" 'projectile-command-map
+    "mm" 'magit-status
+    "sr" 'shell-command-on-region
+    "sc" 'shell-command
     "ap" 'async-process
     "as" 'async-shell-command
     "e" 'eshell/here

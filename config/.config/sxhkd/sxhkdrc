@@ -130,5 +130,8 @@ super + {Left,Down,Up,Right}
 super + shift + q; {s,h,r,p}
     systemctl {suspend, hibernate, reboot, shutdown}
 
-super + shift + e
+super + shift + l
       i3lock-fancy -gp
+
+super + shift + z
+      setxkbmap -variant colemak

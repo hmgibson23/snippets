@@ -34,23 +34,21 @@
     "gCu" 'uncomment-region)
 
   (general-nmap
-    :keymaps 'dired-mode-map
+    :keymaps '(dired-mode-map ibuffer-mode-map)
     "¬" 'hydra-dired/body)
-
-  (general-nmap
-    :keymaps 'ibuffer-mode-map
-    "¬" 'hydra-ibuffer-main/body)
-
-  ;; (general-nmap
-  ;;   :keymaps 'magit-mode-map
-  ;;   "f" 'magit-fetch-popup
-  ;;   )
 
   (general-nmap
     :keymaps 'comint-mode-map
     :states 'motion
     "gd" 'comint-interrupt-subjob
     )
+
+  (general-nmap
+    :keymaps 'dired-mode-map
+    :states 'motion
+    "gww" 'wgrep-change-to-wgrep-mode
+    "gwr" 'wgrep-finish-edit
+    "gws" 'wgrep-save-all-buffers)
 
   (general-nmap
     :keymaps 'message-mode-map
@@ -108,8 +106,8 @@
     "cl" 'counsel-locate)
 
   (exec-leader
-    :states 'emacs
-    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook)
+    :states '(emacs motion)
+    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode)
     :prefix-map 'exec-leader-map)
 
   (general-create-definer spc-leader

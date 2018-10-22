@@ -40,7 +40,7 @@ super + y
 
 # swap the current node and the biggest node
 super + g
-	bspc node -s biggest
+	bspc node -s biggest.local
 
 #
 # state/flags
@@ -59,6 +59,7 @@ super + ctrl + {m,x,y,z}
 #
 
 # focus the node in the given direction
+# also swaps nodes around
 super + {_,shift + }{h,n,e,i}
 	bspc node -{f,s} {west,south,north,east}
 
@@ -127,7 +128,7 @@ super + {Left,Down,Up,Right}
 #
 # exit mode
 #
-super + shift + q; {s,h,r,p}
+super + shift + x : {s,h,r,p}
     systemctl {suspend, hibernate, reboot, shutdown}
 
 super + shift + l
@@ -135,3 +136,6 @@ super + shift + l
 
 super + shift + z
       setxkbmap -variant colemak
+
+super + alt + n
+      $HOME./config/rofi/nmcli-rofi

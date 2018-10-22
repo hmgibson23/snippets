@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-;
 ;; More annoying Mac specific configs
 ;; because macs are shit unless you
 ;; love usaeability

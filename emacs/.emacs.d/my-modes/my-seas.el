@@ -1,4 +1,6 @@
+;; -*- lexical-binding: t; -*-;
 (use-package cc-mode
+  :defer 2
   :init
   (setq c-basic-offset 2)
   (setq c-default-style "linux")
@@ -17,6 +19,7 @@
   (add-hook 'c-mode-hook 'flycheck-mode))
 
 (use-package company-irony-c-headers
+  :defer 2
   :config
   (eval-after-load 'company
     '(add-to-list

@@ -1,3 +1,7 @@
+(setq gc-cons-threshold 402653184
+      gc-cons-percentage 0.6)
+(defvar doom--file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -43,7 +47,7 @@
 
 ;; Electric indent drives me nuts
 (electric-indent-mode -1)
-
+(global-linum-mode 0)
 ;;;;;;;;;;;;;;;;;;;;
 ;; UTF-8
 ;;;;;;;;;;;;;;;;;;;;
@@ -67,10 +71,10 @@
 (setq confirm-nonexistent-file-or-buffer nil)
 
 (setq tramp-default-method "scp")
-;; get rid of `find-file-read-only' and replace it with something
-;; more useful.
-(global-set-key (kbd "C-x C-r") 'ido-recentf-open)
 ;; enable recent files mode.
+(setq gc-cons-threshold 16777216
+      gc-cons-percentage 0.1)
+(setq file-name-handler-alist doom--file-name-handler-alist)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

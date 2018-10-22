@@ -1,4 +1,5 @@
-;;; my-functions.el --- List of functions I use
+;; -*- lexical-binding: t; -*-;
+;; my-functions.el --- List of functions I use
 ;; These are all my functions that I mostly stole
 ;; from other people but they don't mind because
 ;; they treat everyone with love like me

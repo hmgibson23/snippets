@@ -6,10 +6,10 @@
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
 (require 'llvm-mode)
 (require 'gud-lldb)
-(require 'rusti)
 
 (use-package magit
   :ensure t
+  :defer 2
   :commands magit-status
   :bind ("C-c C-g" . magit-status)
   :config
@@ -17,11 +17,13 @@
 
 (use-package ace-jump-mode
   :ensure t
+  :defer 2
   :bind ("C-x SPC" . ace-jump-mode))
 (use-package page-break-lines :ensure t)
 
 (use-package projectile
   :ensure t
+  :defer 2
   :init
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
@@ -37,6 +39,7 @@
 
 (use-package org
   :ensure t
+  :defer 2
   :bind ("C-c o a" . org-agenda)
   :init
   (add-hook 'org-mode-hook 'pandoc-mode)
@@ -46,6 +49,7 @@
 
 (use-package yasnippet
   :diminish yas-minor-mode
+  :defer 2
   :ensure t
   :bind ("C-c C-y" . yas-insert-snippet)
   :config
@@ -53,11 +57,13 @@
 
 (use-package sml-mode
   :ensure t
+  :defer 2
   :config
   (setq sml/no-confirm-load-theme t)
   (sml/setup))
 
 (use-package dired
+  :defer 2
   :ensure nil
   :commands dired-mode
   :config
@@ -67,6 +73,7 @@
     :commands (dired-subtree-insert)))
 
 (use-package anzu
+  :defer 2
   :ensure t
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regexp))
@@ -84,14 +91,17 @@
                            'enh-ruby-mode'web-mode))
 
 (use-package flycheck
+  :defer 2
   :ensure t
   :hook (#'global-flycheck-mode))
 
 (use-package flymake
+  :defer 2
   :init
   (setq flymake-run-in-place nil))
 
 (use-package company
+  :defer 2
   :ensure t
   :commands company-mode
   :init
@@ -118,6 +128,7 @@
   (add-to-list 'company-backends 'company-web-html))
 
 (use-package auto-complete
+  :defer 2
   :ensure t
   :init
   (setq tab-always-indent 'complete)
@@ -134,6 +145,7 @@
 
 (use-package markdown-mode
   :ensure t
+  :defer 2
   :init
   (progn
     (add-hook 'markdown-mode-hook 'pandoc-mode)
@@ -141,15 +153,18 @@
 
 (use-package pandoc-mode
   :ensure t
+  :defer 2
   :init
   (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package swiper
   :ensure t
+  :defer 2
   :bind ("C-s" . counsel-grep-or-swiper))
 
 (use-package ido
   :ensure t
+  :defer 2
   :init
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   (setq ido-enable-flex-matching t)
@@ -221,15 +236,9 @@
 
 (use-package expand-region
   :ensure t
+  :defer 2
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
-
-(use-package shell-pop
-  :bind (("C-x t" . shell-pop))
-  :config
-  (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
-  (setq shell-pop-term-shell "/bin/bash")
-  (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
 
 
 (use-package multi-term
@@ -244,6 +253,7 @@
 
 (use-package multiple-cursors
   :config
+  :defer t
   (defhydra mc/hydra (:hint nil)
     "
      ^Up^            ^Down^        ^Miscellaneous^
@@ -264,6 +274,7 @@
 
 (use-package imenu
   :bind ("C-c x i" . imenu)
+  :defer t
   :config
   (add-to-list 'imenu-generic-expression
                '("Used Packages"

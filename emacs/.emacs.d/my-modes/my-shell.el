@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-;
 ;; Shell organisation stuff
 (require 'eshell)
 ;; Eshell

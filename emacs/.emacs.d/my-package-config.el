@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-;
 ;; My package configuration
 
  ;; package management

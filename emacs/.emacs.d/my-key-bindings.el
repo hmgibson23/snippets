@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-;
 ;;; my-key-bindings.el - various of my keybindings
 
 ;;; Commentary:

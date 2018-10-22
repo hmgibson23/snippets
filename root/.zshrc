@@ -35,9 +35,6 @@ COMPLETION_WAITING_DOTS="true"
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -55,33 +52,11 @@ source $ZSH/oh-my-zsh.sh
 # fi
 
 # Compilation flags
-# export ARCHFLAGS="-arch x86_64"
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias l='ls -l --color=auto'
 alias config='/usr/bin/git --git-dir=$HOME/.myconf/ --work-tree=$HOME'
 
-# exports
-export PATH=$PATH:$HOME/.local/share/bin
-export PATH="~/.pyenv/bin:$PATH"
-export PATH="/home/hugo/.cask/bin:$PATH"
-export GOPATH="/home/hugo/git/simba/go"
-export PATH="$GOPATH/bin:$PATH"
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-source $HOME/.cargo/env
-export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
-export PATH="$HOME/.cargo/bin:$PATH"
 plugins=(
   git
   archlinux
@@ -95,5 +70,6 @@ plugins=(
 )
 bindkey -v
 bindkey '^R' history-incremental-search-backward
-export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
+
+alias ec="emacsclient -t"

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-;
 (use-package evil
   :ensure t
   :init
@@ -16,11 +17,7 @@
     "gc" 'compile
     ;; search commands
     "gs%" 'anzu-query-replace
-    "gsr" 'rgrep
     "gse" 'replace-string
-    "gsl" 'lgrep
-    "gsz" 'zgrep
-    "gsg" 'find-grep
     "gsf" 'search-forward
 
 
@@ -83,6 +80,11 @@
     "as" 'async-shell-command
     "e" 'eshell/here
 
+    "fr" 'rgrep
+    "fl" 'lgrep
+    "fz" 'zgrep
+    "fg" 'find-grep
+
     "j"  'evil-avy-goto-char
     "bk" 'kill-buffer
     "br" 'revert-buffer
@@ -129,7 +131,7 @@
   (spc-leader
     :states 'emacs
     :prefix-map 'spc-leader-map
-    :keymaps 'dired-mode-map)
+    :keymaps '(magit-mode-map dired-mode-map))
 
   (general-nmap
     :states '(emacs motion)
@@ -161,22 +163,20 @@
 (use-package evil-avy
   :after evil
   :ensure t
+  :defer 1
   :config
   (evil-avy-mode))
 
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
 
 (use-package evil-surround
   :ensure t
+  :defer 1
   :config
   (global-evil-surround-mode 1))
 
 (use-package evil-goggles
   :ensure t
+  :defer 1
   :config
   (evil-goggles-use-diff-faces)
   (evil-goggles-mode))
@@ -191,12 +191,14 @@
   :ensure t
   :defer 1)
 
-(use-package evil-ledger)
-(use-package evil-numbers)
-(use-package evil-dvorak)
+(use-package evil-ledger
+  :defer 1)
+(use-package evil-numbers
+  :defer 1)
 
 (use-package evil-colemak-basics
   :after evil
+  :defer 1
   :config
   (global-evil-colemak-basics-mode 1)
 
@@ -220,7 +222,7 @@
     "C-e" 'ivy-previous-line))
 
 (use-package key-chord
-
+  :defer 2
   :after evil
   :config
   (setq key-chord-two-keys-delay 0.4)

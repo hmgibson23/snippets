@@ -79,6 +79,7 @@
   :config
   (add-hook 'rust-mode-hook
             (lambda ()
+              (setq gdb-command-name "rust-gdb --i=mi --args")
               (local-set-key (kbd "C-c <tab>") #'rust-format-buffer))))
 
 (use-package flycheck-rust

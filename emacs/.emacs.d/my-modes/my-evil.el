@@ -100,6 +100,9 @@
 
     "vv" 'hydra-zoom/body
 
+    "mu" 'evil-mc-undo-all-cursors
+    "m." 'evil-mc-make-cursor-move-next-line
+
     "zxx" 'er/expand-region
     "ci" 'counsel-ibuffer
     "cr" 'counsel-evil-registers

@@ -32,7 +32,7 @@
   (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
   :config
-  (projectile-global-mode +1)
+  (projectile-mode +1)
   (counsel-projectile-mode +1))
 
 (use-package xresources-theme

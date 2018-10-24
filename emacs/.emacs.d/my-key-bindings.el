@@ -47,12 +47,6 @@
                    try-expand-dabbrev
                    try-expand-dabbrev-all-buffers) t))
 
-;; Mac only
-;; cmd key for meta
-(setq mac-option-key-is-meta nil
-      mac-command-key-is-meta t
-      mac-command-modifier 'meta
-      mac-option-modifier 'none)
 (global-set-key (kbd "<f8>") 'other-window)
 (global-set-key (kbd "<f9>") 'compile)
 (global-set-key (kbd "C-c <f9>") (lambda ()
@@ -66,8 +60,6 @@
     "zoom"
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")))
-
-
 
 (provide 'my-key-bindings)
 

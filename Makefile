@@ -8,7 +8,7 @@ endef
 
 PAC := sudo pacman -Syy
 XBPS := xbps-install -S
-pkg := stow bspwm rxvt-unicode pass polybar rofi nitrogen compton zsh emacs vim xautolock ranger arc-gtk-theme herbsluftwm connman
+pkg := stow bspwm rxvt-unicode pass polybar rofi nitrogen compton zsh emacs vim xautolock ranger arc-gtk-theme herbsluftwm connman awesomewm
 suckless := slock st dwm
 suckless_dir := ${HOME}/suckless
 
@@ -26,6 +26,10 @@ suckless_make:
 	$(foreach i,$(suckless), $(call suck_make,$(i)))
 
 suckless_install: suckless_clone suckless_make
+
+emacs_compile:
+	emacs -batch -f batch-byte-compile emacs/.emacs.d/my-modes/*.el
+	emacs -batch -f batch-byte-compile emacs/.emacs.d/*.el
 
 stow:
 	stow config -vvv

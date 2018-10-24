@@ -68,8 +68,22 @@ plugins=(
   pyenv
   docker
 )
-bindkey -v
-bindkey '^R' history-incremental-search-backward
 eval "$(rbenv init -)"
 
 alias ec="emacsclient -t"
+
+bindkey -e
+bindkey '^R' history-incremental-search-backward
+bindkey '^I' emacs-forward-word
+bindkey '^H' emacs-backward-word
+bindkey '^N' down-line-or-history
+bindkey '^E' up-history
+#
+bindkey -s '^X^Z' '%-^M'
+bindkey '^[^I' reverse-menu-complete
+bindkey '^X^N' accept-and-infer-next-history
+bindkey '^W' kill-region
+bindkey '^I' complete-word
+## Fix weird sequence that rxvt produces
+bindkey -s '^[[Z' '\t'
+#

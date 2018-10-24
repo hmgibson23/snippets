@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package rjsx-mode
   :commands rjsx-mode
-  :defer 2
+  :defer t
   :ensure t
   :init
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
@@ -34,7 +34,7 @@
 (use-package vue-mode
   :commands vue-mode
   :ensure t
-  :defer 2
+  :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
   :config
@@ -53,25 +53,25 @@
 
 (use-package inferior-js
   :hook ('comint-output-filter-functions 'js-comint-process-output)
-  :defer 2
+  :defer t
   :config
   (setq inferior-js-program-command "node")
   (setq inferior-js-program-arguments '("--interactive")))
 
 (use-package js-mode
-  :defer 2
+  :defer t
   :hook (js2-minor js2-minor-mode))
 
 (use-package css-mode
-  :defer 2
+  :defer t
   :hook (css-mode skewer-css-mode))
 
 (use-package html-mode
-  :defer 2
+  :defer t
   :hook skewer-html-mode)
 
 (use-package web-mode
-  :defer 2
+  :defer t
   :mode ("\\.html\\'"
          "\\.app\\'"
          "\\.cmp\\'"

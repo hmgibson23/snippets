@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 ;; everything needed for srcipting languages
 (use-package ruby-mode
-  :defer 2
+  :defer t
   :mode "\\.rb\\'"
   :interpreter "ruby"
   ;;  :hook ((ruby-mode inf-ruby-minor-mode ruby-end-mode inf-ruby-minor-mode inf-ruby-switch-setup yard-mode) . rspec-mode)
@@ -31,7 +31,7 @@
 
 
 (use-package python
-  :defer 2
+  :defer t
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   ;;  :hook ((python-mode anaconda-mode) . anaconda-eldoc-mode)
@@ -90,7 +90,7 @@
   )
 (use-package pyenv-mode
   :ensure t
-  :defer 2
+  :defer t
   :init
   (setq elpy-rpc-python-command "python3")
   :config
@@ -104,11 +104,11 @@
   (add-hook 'python-mode-hook 'pyenv-mode))
 
 (use-package pyenv-mode-auto
-  :defer 2
+  :defer t
   :ensure t)
 
 (use-package jedi
-  :defer 2
+  :defer t
   :after 'company
   :ensure t
   :init
@@ -117,7 +117,7 @@
 
 (use-package anaconda-mode
   :ensure t
-  :defer 2
+  :defer t
   :config
   (use-package company-anaconda
     :ensure t

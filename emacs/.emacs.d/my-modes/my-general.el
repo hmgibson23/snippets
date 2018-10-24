@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package elxiir-mode
   :commands elixir-mode
-  :defer 2
+  :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.ex\\'" . elixir-mode))
   (add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-mode))
@@ -18,12 +18,12 @@
 
 (use-package alchemist-mode
   :commands alchemist-mode
-  :defer 2
+  :defer t
   :bind (:map alchemist-mode-map
               ([tab] . company-complete)))
 
 (use-package gotest
-  :defer 2
+  :defer t
   :ensure t)
 (use-package go-stacktracer)
 (use-package go-add-tags)
@@ -31,7 +31,7 @@
 (use-package go-direx)
 (use-package go-mode
   :ensure t
-  :defer 2
+  :defer t
   :bind (:map go-mode-map (("M-." . godef-jump)
                            ("M-*" . pop-tag-mark)
                            ("C-c g a" . go-test-current-project)
@@ -59,12 +59,12 @@
               "go generate && go build -v && go vet")))))
 
 (use-package gorepl-mode
-  :defer 2
+  :defer t
   :bind (:map gorepl-mode-map (("C-c g g" . gorepl-run)
                                ("C-c C-g" . magit-status))))
 
 (use-package company-go
-  :defer 2
+  :defer t
   :config
   (add-hook 'go-mode-hook 'company-mode))
 
@@ -76,7 +76,7 @@
   (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
 
 (use-package slime
-  :defer 2
+  :defer t
   :ensure t
   :config
   (progn
@@ -89,7 +89,7 @@
     (add-hook 'slime-repl-mode-hook 'rainbow-delimiters-mode)))
 
 (use-package ielm
-  :defer 2
+  :defer t
   :config
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
@@ -110,7 +110,7 @@
 
 (use-package clojure-mode
   :mode "\\.clj\\'"
-  :defer 2
+  :defer t
   :ensure t
   :config
   (add-hook 'clojure-mode-hook #'lisp-setup)
@@ -124,7 +124,7 @@
 
 (use-package cider
   :ensure t
-  :defer 2
+  :defer t
   :custom
   (font-lock-add-keywords 'clojure-mode
                           '(("(\\|)" . 'esk-paren-face)))
@@ -142,7 +142,7 @@
   :hook (sibiliant-mode turn-on-paredit))
 
 (use-package haskell-mode
-  :defer 2
+  :defer t
   :ensure t
   :commands haskell-mode
   :mode "\\.hs\\'"
@@ -186,7 +186,7 @@
 
 (use-package ensime
   :ensure t
-  :defer 2
+  :defer t
   :mode "\\.scala$"
   :config
   (setq ensime-default-java-flags '("-Xmx6000m"))
@@ -195,13 +195,13 @@
 
 (use-package scala-mode
   :mode "\\.scala$"
-  :defer 2
+  :defer t
   :interpreter ("scala" . scala-mode)
   :pin melpa)
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
-  :defer 2
+  :defer t
   :hook (terraform-mode . company-mode)
   :config
   (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
@@ -217,7 +217,7 @@
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 
 (use-package corral
-  :defer 2
+  :defer t
   :config
   (defhydra hydra-corral (:columns 4)
     "Corral"
@@ -234,7 +234,7 @@
 (use-package tuareg)
 
 (use-package merlin
-  :defer 2
+  :defer t
   :config
   (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
     (when (and opam-share (file-directory-p opam-share))
@@ -292,5 +292,5 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (set-frame-font "Hack 12" nil t)
 
 (use-package browse-kill-ring
-  :defer 2
+  :defer t
   :config (browse-kill-ring-default-keybindings))

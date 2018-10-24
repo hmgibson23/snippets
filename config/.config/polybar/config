@@ -39,22 +39,18 @@ font-4 = Weather Icons:size=8;1
 
 modules-left = bspwm filesystem memory alsa
 modules-center = xwindow
-modules-right = weather updates-arch xbacklight battery date  gmail powermenu
+modules-right = updates-arch xbacklight battery date gmail network powermenu
 
 tray-position = right
 tray-padding = 2
 tray-background = ${colors.background}
 
 wm-restack = bspwm
-;wm-restack = i3
 
 ;override-redirect = true
 
 scroll-up = bspwm-desknext
 scroll-down = bspwm-deskprev
-
-;scroll-up = i3wm-wsnext
-;scroll-down = i3wm-wsprev
 
 [module/xwindow]
 type = internal/xwindow
@@ -150,7 +146,7 @@ label-song-ellipsis = true
 [module/xbacklight]
 type = internal/xbacklight
 
-format = <ramp> <label>
+format = <ramp>
 label = %percentage%%
 ramp-foreground=#e0d733
 ramp-0 =
@@ -168,7 +164,7 @@ label = %percentage%%
 
 [module/memory]
 type = internal/memory
-format = <ramp-used> <label>
+format = <ramp-used>
 interval = 2
 label = %gb_used%
 
@@ -193,13 +189,18 @@ interval = 3.0
 
 accumulate-stats = true
 
-; Consider an `UNKNOWN` interface state as up.
-; Some devices have an unknown state, even when they're running
-; Default: false
-unknown-as-up = true
-format-connected = <label-connected>
-label-connected = %local_ip%
-format-connected-foreground=#0c6b0c
+
+format-connected = %{A1:$HOME/.config/rofi/nmcli-rofi:}<ramp-signal>%{A}
+label-disconnected =
+
+
+format-disconnected = %{A1:$HOME/.config/rofi/nmcli-rofi:}<label-disconnected>{A}
+
+ramp-signal-0 =
+ramp-signal-1 =
+ramp-signal-2 =
+ramp-signal-3 =
+
 [module/date]
 type = internal/date
 interval = 5
@@ -327,6 +328,7 @@ interval = 600
 label-font=5
 padding-top=5
 click-left=sh ~/.config/polybar/polybar-scripts/openweathermap-forecast.sh
+
 [module/system-usb-udev]
 type = custom/script
 exec = ~/polybar-scripts/system-usb-udev.sh
@@ -337,6 +339,7 @@ click-right = ~/polybar-scripts/system-usb-udev.sh --unmount
 ;   menu-open-LEVEL
 ;   menu-close
 ; Other commands will be executed using "/usr/bin/env sh -c $COMMAND"
+
 [settings]
 screenchange-reload = true
 ;compositing-background = xor

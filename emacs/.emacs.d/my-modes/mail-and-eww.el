@@ -136,4 +136,4 @@ This moves them into the Spam folder."
   (setq erc-rename-buffers t
         erc-interpret-mirc-color t
         erc-lurker-hide-list '("JOIN" "PART" "QUIT")
-        erc-autojoin-channels-alist '(("freenode.net" "#emacs"))))
+        erc-autojoin-channels-alist '(("freenode.net" "#emacs")("freenode.net" "#voidlinux"))))

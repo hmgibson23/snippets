@@ -6,10 +6,13 @@
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
 (require 'llvm-mode)
 (require 'gud-lldb)
+(use-package spaceline
+  :config
+  (spaceline-spacemacs-theme))
 
 (use-package magit
   :ensure t
-  :defer 2
+  :defer t
   :commands magit-status
   :bind ("C-c C-g" . magit-status)
   :config
@@ -17,13 +20,13 @@
 
 (use-package ace-jump-mode
   :ensure t
-  :defer 2
+  :defer t
   :bind ("C-x SPC" . ace-jump-mode))
 (use-package page-break-lines :ensure t)
 
 (use-package projectile
   :ensure t
-  :defer 2
+  :defer t
   :init
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
@@ -39,7 +42,7 @@
 
 (use-package org
   :ensure t
-  :defer 2
+  :defer t
   :bind ("C-c o a" . org-agenda)
   :init
   (add-hook 'org-mode-hook 'pandoc-mode)
@@ -49,7 +52,7 @@
 
 (use-package yasnippet
   :diminish yas-minor-mode
-  :defer 2
+  :defer t
   :ensure t
   :bind ("C-c C-y" . yas-insert-snippet)
   :config
@@ -57,13 +60,13 @@
 
 (use-package sml-mode
   :ensure t
-  :defer 2
+  :defer t
   :config
   (setq sml/no-confirm-load-theme t)
   (sml/setup))
 
 (use-package dired
-  :defer 2
+  :defer t
   :ensure nil
   :commands dired-mode
   :config
@@ -73,7 +76,7 @@
     :commands (dired-subtree-insert)))
 
 (use-package anzu
-  :defer 2
+  :defer t
   :ensure t
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regexp))
@@ -91,17 +94,17 @@
                            'enh-ruby-mode'web-mode))
 
 (use-package flycheck
-  :defer 2
+  :defer t
   :ensure t
   :hook (#'global-flycheck-mode))
 
 (use-package flymake
-  :defer 2
+  :defer t
   :init
   (setq flymake-run-in-place nil))
 
 (use-package company
-  :defer 2
+  :defer t
   :ensure t
   :commands company-mode
   :init
@@ -128,7 +131,7 @@
   (add-to-list 'company-backends 'company-web-html))
 
 (use-package auto-complete
-  :defer 2
+  :defer t
   :ensure t
   :init
   (setq tab-always-indent 'complete)
@@ -145,7 +148,7 @@
 
 (use-package markdown-mode
   :ensure t
-  :defer 2
+  :defer t
   :init
   (progn
     (add-hook 'markdown-mode-hook 'pandoc-mode)
@@ -153,18 +156,18 @@
 
 (use-package pandoc-mode
   :ensure t
-  :defer 2
+  :defer t
   :init
   (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package swiper
   :ensure t
-  :defer 2
+  :defer t
   :bind ("C-s" . counsel-grep-or-swiper))
 
 (use-package ido
   :ensure t
-  :defer 2
+  :defer t
   :init
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
   (setq ido-enable-flex-matching t)
@@ -236,7 +239,7 @@
 
 (use-package expand-region
   :ensure t
-  :defer 2
+  :defer t
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
 
@@ -251,27 +254,6 @@
     (progn
       (setq term-prompt-regexp ".*:.*>.*? "))))
 
-(use-package multiple-cursors
-  :config
-  :defer t
-  (defhydra mc/hydra (:hint nil)
-    "
-     ^Up^            ^Down^        ^Miscellaneous^
-----------------------------------------------
-[_p_]   Previous     [_n_]   Next         [_l_] Edit lines
-[_P_]   Skip-Prev    [_N_]   Skip-Next    [_a_] Mark all
-[_M-p_] Unmark  [_M-n_] Unmark  [_q_] Quit"
-    ("l" mc/edit-lines :exit t)
-    ("a" mc/mark-all-like-this :exit t)
-    ("n" mc/mark-next-like-this)
-    ("N" mc/skip-to-next-like-this)
-    ("M-n" mc/unmark-next-like-this)
-    ("p" mc/mark-previous-like-this)
-    ("P" mc/skip-to-previous-like-this)
-    ("M-p" mc/unmark-previous-like-this)
-    ("q" nil))
-  (global-set-key (kbd "C->")  'mc/mark-next-like-this))
-
 (use-package imenu
   :bind ("C-c x i" . imenu)
   :defer t
@@ -281,9 +263,19 @@
                  "\\(^\\s-*(use-package +\\)\\(\\_<.+\\_>\\)" 2))
   (setq imenu-auto-rescan t))
 
-;; These are outside of the use-package system
+(use-package undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode 1))
+(use-package diff-hl
+  :defer t
+  :config
+  (global-diff-hl-mode))
+(use-package autopair
+  :defer t
+  :config
+  (autopair-global-mode +1))
 
-(autopair-global-mode +1)
 (setq recentf-max-saved-items 200
       recentf-max-menu-items 15)
 (recentf-mode t)
@@ -305,3 +297,67 @@
       `((".*" ,temporary-file-directory t)))
 (setq default-major-mode 'text-mode)
 (setq text-mode-hook 'turn-on-auto-fill)
+
+(use-package menu-bar
+  :config
+  (menu-bar-mode 0))
+(use-package tool-bar
+  :config
+  (tool-bar-mode -1))
+
+(use-package ispell
+  :defer t
+  :config
+  (setq flyspell-issue-welcome-flag nil)
+  (setq-default ispell-program-name "/usr/bin/aspell")
+  (setq-default ispell-list-command "list"))
+
+(use-package editorconfig
+  :defer t
+  :config
+  (editorconfig-mode 1))
+(use-package exec-path-from-shell
+  :defer t
+  :config
+  (exec-path-from-shell-initialize))
+
+;; These are outside of the use-package system
+(fset 'yes-or-no-p 'y-or-n-p)
+(line-number-mode t)
+(size-indication-mode t)
+(column-number-mode t)
+(setq confirm-nonexistent-file-or-buffer nil)
+(display-time-mode)
+(setq tab-always-indent 'complete)
+(add-to-list 'completion-styles 'initials t)
+(setq-default indent-tabs-mode nil
+              indicate-buffer-boundaries 'left
+              indicate-empty-lines t)
+(setq-default tab-width 4)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(show-paren-mode 1)
+(global-auto-revert-mode 1)
+(electric-indent-mode -1)
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq temporary-file-directory "~/.emacs.d/tmp/")
+(setq confirm-nonexistent-file-or-buffer nil)
+(setq tramp-default-method "scp")
+(setq-default default-directory "~/")
+(setq ring-bell-function 'ignore)
+(setq compilation-ask-about-save nil)
+(add-hook 'prog-mode-hook 'subword-mode)
+(persistent-scratch-setup-default)
+(persistent-scratch-autosave-mode 1)
+(setq dired-listing-switches "-lash")
+(setq ad-redefinition-action 'accept)
+(setq browse-url-browser-function 'eww-browse-url)
+(toggle-scroll-bar -1)
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq scroll-step 1) ;; keyboard scroll one line at a time

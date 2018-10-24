@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package cc-mode
-  :defer 2
+  :defer t
   :init
   (setq c-basic-offset 2)
   (setq c-default-style "linux")
@@ -19,16 +19,16 @@
   (add-hook 'c-mode-hook 'flycheck-mode))
 
 (use-package company-irony-c-headers
-  :defer 2
+  :defer t
   :config
   (eval-after-load 'company
     '(add-to-list
       'company-backends '(company-irony-c-headers company-irony))))
 
 (use-package irony
-  :defer 1
+  :defer t
+  :after company
   :config
-
   (add-hook 'irony-mode-hook 'irony-eldoc)
   (add-hook 'irony-mode-hook 'company-mode)
   (eval-after-load 'flycheck

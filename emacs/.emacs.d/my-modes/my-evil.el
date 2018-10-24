@@ -107,7 +107,7 @@
 
   (exec-leader
     :states '(emacs motion)
-    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode)
+    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode compilation-mode)
     :prefix-map 'exec-leader-map)
 
   (general-create-definer spc-leader
@@ -129,7 +129,7 @@
   (spc-leader
     :states 'emacs
     :prefix-map 'spc-leader-map
-    :keymaps '(magit-mode-map dired-mode-map))
+    :keymaps '(magit-mode-map dired-mode-map compilation-mode))
 
   (general-nmap
     :states '(emacs motion)
@@ -220,7 +220,6 @@
     "C-e" 'ivy-previous-line))
 
 (use-package key-chord
-  :defer 2
   :after evil
   :config
   (setq key-chord-two-keys-delay 0.4)

@@ -32,7 +32,7 @@
   (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
   :config
-  (projectile-mode +1)
+  (projectile-global-mode +1)
   (counsel-projectile-mode +1))
 
 (use-package xresources-theme
@@ -118,11 +118,9 @@
   (setq company-echo-delay 0)
   (setq company-begin-commands '(self-insert-command))
   (setq company-transformers '(company-sort-by-occurrence))
-  ;;(add-hook 'after-init-hook 'global-company-mode)
   :config
-  ;; (global-company-mode t)
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)
@@ -317,7 +315,6 @@
   :config
   (editorconfig-mode 1))
 (use-package exec-path-from-shell
-  :defer t
   :config
   (exec-path-from-shell-initialize))
 

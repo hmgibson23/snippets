@@ -25,6 +25,17 @@
     '(add-to-list
       'company-backends '(company-irony-c-headers company-irony))))
 
+(use-package d-mode
+  :defer t
+  :config
+  (add-hook 'd-mode-hook 'company-dcd-mode)
+  (defun dmd-phobos-docs (f)
+    (defconst root "/usr/share/d/html/d/phobos/")
+    (interactive
+     (list (completing-read "File: " (directory-files root))))
+    (message (concat root f))
+    (eww-open-file (concat root f))))
+
 (use-package irony
   :defer t
   :after company

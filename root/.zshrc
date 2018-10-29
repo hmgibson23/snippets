@@ -68,7 +68,7 @@ plugins=(
   pyenv
   docker
 )
-eval "$(rbenv init -)"
+# eval "$(rbenv init -)"
 
 alias ec="emacsclient -t"
 

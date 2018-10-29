@@ -1,6 +1,8 @@
 #! /bin/sh
 export SXHKD_SHELL=/bin/sh
-setxkbmap -variant colemak
+xrdb .Xresources
+dropbox start -i
+setxkbmap gb -variant colemak
 sxhkd -m -1 -t -c $HOME/.config/sxhkd/sxhkdrc $HOME/.config/sxhkd/sxhkdrc_bspwm &
 
 bspc monitor -d I II III IV V VI VII VIII

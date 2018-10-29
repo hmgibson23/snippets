@@ -12,17 +12,17 @@ super + @space
 
 # password menu
 super + shift + p
-      passmenu
+     passmenu
 
 # make sxhkd reload its configuration files:
 super + grave
 	pkill -USR1 -x sxhkd
 
 super + shift + x : {s,h,r,p}
-    systemctl {suspend, hibernate, reboot, shutdown}
+    sudo {zzz, hibernate, reboot, shutdown}
 
 super + shift + l
-      i3lock-fancy -gp
+      slock
 
 super + shift + z
       setxkbmap -variant colemak

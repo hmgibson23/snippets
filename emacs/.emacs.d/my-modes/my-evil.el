@@ -108,9 +108,11 @@
     "cr" 'counsel-evil-registers
     "cl" 'counsel-locate)
 
+  (defvar extra-key-modes '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode compilation-mode info-mode))
+
   (exec-leader
     :states '(emacs motion)
-    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode compilation-mode)
+    :keymaps '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode compilation-mode info-mode)
     :prefix-map 'exec-leader-map)
 
   (general-create-definer spc-leader

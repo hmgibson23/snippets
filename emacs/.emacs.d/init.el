@@ -6,10 +6,14 @@
 (my-load-all-in-directory "~/.emacs.d/my-modes/")
 (require 'llvm-mode)
 (require 'gud-lldb)
-(use-package spaceline
-  :config
-  (spaceline-spacemacs-theme))
+(require 'go-dlv)
 
+(use-package spaceline :ensure t
+  :config
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+(use-package spaceline-config :ensure spaceline
+  :config
+  (spaceline-emacs-theme))
 (use-package magit
   :ensure t
   :defer t
@@ -26,7 +30,6 @@
 
 (use-package projectile
   :ensure t
-  :defer t
   :init
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
@@ -121,6 +124,7 @@
   :config
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
+ (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)

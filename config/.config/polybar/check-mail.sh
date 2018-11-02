@@ -1,8 +1,12 @@
 #!/usr/bin/perl
 
-my $output = system("mail-check imaps://imap.gmail.com gibsonhugo@gmail.com yzwqncqeopqgedra");
+do "credentials";
+my $cmd = "mail-check imaps://imap.gmail.com $USER $PASS";
 
-if ( $output =~ /UNSEEN (\d+)/) {
-   my $used = $1;
-   print $used;
+my $output = exec($cmd);
+print $output;
+
+if ($output =~ /UNSEEN (\d+)/) {
+    my $used = $1;
+    print $used;
 }

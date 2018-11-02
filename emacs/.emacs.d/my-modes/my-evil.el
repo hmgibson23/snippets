@@ -60,10 +60,16 @@
 
   (exec-leader
     :states 'motion
-    :keymaps 'flycheck-mode-map
+    :keymap 'flycheck-mode-map
     :prefix-map 'exec-leader-map
     "fn" 'flycheck-next-error
     "fl" 'flycheck-list-errors)
+
+  (exec-leader
+    :states 'motion
+    :keymap 'markdown-mode-map
+    :prefix-map 'exec-leader-map
+    "." 'hydra-markdown/body)
 
   (exec-leader
     :states 'motion

@@ -326,7 +326,7 @@ menu-2-1-exec = menu-open-0
 
 [module/gmail]
 type = custom/script
-exec = python3 ~/.config/polybar/gmail/launch.py -ns
+exec = ~/.config/polybar/check-mail.sh
 tail = true
 click-left = xdgopen https://mail.google.com
 

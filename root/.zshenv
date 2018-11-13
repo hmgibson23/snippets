@@ -10,5 +10,6 @@ export NVM_DIR="$HOME/.nvm"
 source $HOME/.cargo/env
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 export PATH="$HOME/.cargo/bin:$PATH"
-# export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"
 export ARCHFLAGS="-arch x86_64"

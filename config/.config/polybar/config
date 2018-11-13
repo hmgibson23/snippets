@@ -39,7 +39,7 @@ font-4 = Weather Icons:size=8;1
 
 modules-left = bspwm memory alsa
 modules-center = xwindow
-modules-right = xbacklight battery date network powermenu
+modules-right = gmail xbacklight battery date network powermenu
 
 tray-position = right
 tray-padding = 2
@@ -327,7 +327,7 @@ menu-2-1-exec = menu-open-0
 [module/gmail]
 type = custom/script
 exec = ~/.config/polybar/check-mail.sh
-tail = true
+tail = false
 click-left = xdgopen https://mail.google.com
 
 [module/updates-arch]

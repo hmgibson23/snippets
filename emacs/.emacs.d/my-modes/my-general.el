@@ -29,6 +29,11 @@
 (use-package go-add-tags)
 ;; (use-package go-gopath)
 (use-package go-direx)
+(use-package flycheck-gometalinter
+  :ensure t
+  :config
+  (progn
+    (flycheck-gometalinter-setup)))
 (use-package go-mode
   :ensure t
   :defer t
@@ -72,7 +77,7 @@
   (auto-complete-mode)
   (rainbow-delimiters-mode)
   (turn-on-eldoc-mode)
-  (paredit-mode 1)
+  (paredit-mode +1)
   (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
 
 (use-package slime
@@ -97,7 +102,7 @@
   (add-hook 'ielm-mode-hook #'auto-complete-mode))
 
 (use-package lisp-mode
-  :ensure nil
+  :ensure t
   :config
   (setq tab-always-indent 'complete)
   (add-hook 'lisp-mode-hook #'lisp-setup)
@@ -113,14 +118,13 @@
   :defer t
   :ensure t
   :config
-  (add-hook 'clojure-mode-hook #'lisp-setup)
-  (add-hook 'clojure-mode-hook #'run-coding-hook))
-
-                                        ; (use-package ledger-mode
-                                        ;   :mode "\\.dat\\")
-
-                                        ; (use-package restclient-mode
-                                        ;   :mode "\\.req\\")
+  (add-hook 'clojure-mode-hook #'paredit-mode)
+  (add-hook 'clojure-mode-hook #'cider-mode)
+  (add-hook 'clojure-mode-hook #'auto-complete-mode)
+  (add-hook 'clojure-mode-hook #'evil-paredit-mode)
+  (add-hook 'clojure-mode-hook #'subword-mode)
+  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+  )
 
 (use-package cider
   :ensure t
@@ -136,6 +140,7 @@
   (add-hook 'nrepl-interaction-mode 'paredit-mode)
   (add-hook 'cider-repl-mode-hook 'paredit-mode)
   (add-hook 'cider-mode-hook 'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook 'eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode))
 
 (use-package sibiliant-mode

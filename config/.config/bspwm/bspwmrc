@@ -3,7 +3,12 @@ export SXHKD_SHELL=/bin/sh
 #xrdb .Xresources
 #dropbox start -i
 setxkbmap gb -variant colemak
+xmodmap $HOME/.Xmodmap
 sxhkd -m -1 -t -c $HOME/.config/sxhkd/sxhkdrc $HOME/.config/sxhkd/sxhkdrc_bspwm &
+
+# xautolock -detectsleep \
+#           -locker   "slock" \
+#           -killtime 10 -killer "systemctl suspend" &
 
 bspc monitor -d I II III IV V VI VII VIII
 bspc monitor HDMI1 -d IX X
@@ -16,6 +21,8 @@ bspc config gapless_monocle      true
 
 bspc rule -a Emacs state=tiled
 bspc rule -a libreoffice state=tiled
+bspc rule -a libreoffice-writer state=tiled
+bspc rule -a libreoffice-calc state=tiled
 bspc rule -a mplayer2 state=floating
 bspc rule -a Screenkey manage=off
 
@@ -25,4 +32,5 @@ compton &
 dunst &
 nitrogen --restore &
 $HOME/.config/polybar/launch.sh
-emacs --daemon &
+fluxgui &
+# emacs --daemon &

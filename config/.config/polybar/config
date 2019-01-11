@@ -39,7 +39,7 @@ font-4 = Weather Icons:size=8;1
 
 modules-left = bspwm memory pulseaudio
 modules-center = xwindow
-modules-right = gupdates-arch mail xbacklight battery date network powermenu
+modules-right = updates-arch gmail xbacklight battery date network powermenu
 
 tray-position = right
 tray-padding = 2

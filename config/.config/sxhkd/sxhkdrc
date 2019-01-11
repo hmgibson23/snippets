@@ -38,7 +38,7 @@ XF86Audio{Mute,LowerVolume,RaiseVolume}
     vol.sh {m,d,i}
 
 XF86MonBrightnessUp
-    xbacklight -inc 10
+    light -A 10
 
 XF86MonBrightnessDown
-    xbacklight -dec 10
+    light -U 10

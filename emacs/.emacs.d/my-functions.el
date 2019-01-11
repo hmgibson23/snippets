@@ -371,4 +371,21 @@ If PATH is remote, return the remote diretory portion of the path."
  (defun insert-current-date () (interactive)
     (insert (shell-command-to-string "echo -n $(date +%Y-%m-%d)")))
 
+;; functions for No Starch Press styles
+(defun nsp-code-a ()
+  (interactive)
+  (insert "\n::: {custom-style=\"CodeA\"}\n"))
+(defun nsp-code-b ()
+  (interactive)
+  (insert "\n::: {custom-style=\"CodeB\"}\n"))
+(defun nsp-code-c ()
+  (interactive)
+  (insert "\n::: {custom-style=\"CodeC\"}\n"))
+(defun nsp-code-single ()
+  (interactive)
+  (insert "\n::: {custom-style=\"CodeSingle\"}\n"))
+(defun nsp-code-end()
+  (interactive)
+  (insert "\n:::"))
+
 ;;; my-functions.el ends here

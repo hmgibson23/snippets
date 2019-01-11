@@ -8,12 +8,20 @@
 (require 'gud-lldb)
 (require 'go-dlv)
 
-(use-package spaceline :ensure t
+(use-package spaceline
+  :ensure t
   :config
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
-(use-package spaceline-config :ensure spaceline
+
+(use-package spaceline-config
+  :ensure spaceline
   :config
-  (spaceline-emacs-theme))
+  (spaceline-spacemacs-theme))
+
+;; (use-package spaceline-all-the-icons
+;;   :after spaceline
+;;   :config (spaceline-all-the-icons-theme))
+
 (use-package magit
   :ensure t
   :defer t
@@ -35,7 +43,7 @@
   (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
   :config
-  (projectile-global-mode +1)
+  (projectile-mode +1)
   (counsel-projectile-mode +1))
 
 (use-package xresources-theme
@@ -124,7 +132,7 @@
   :config
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
- (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)
@@ -278,6 +286,38 @@
   :config
   (autopair-global-mode +1))
 
+
+(use-package menu-bar
+  :config
+  (menu-bar-mode 0))
+
+(use-package tool-bar
+  :config
+  (tool-bar-mode -1))
+
+(use-package ispell
+  :defer t
+  :config
+  (setq flyspell-issue-welcome-flag nil)
+  (setq-default ispell-program-name "/usr/bin/aspell")
+  (setq-default ispell-list-command "list"))
+
+(use-package editorconfig
+  :defer t
+  :config
+  (editorconfig-mode 1))
+
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
+
+(use-package nlinum-relative
+  :config
+  ;; something else you want
+  (global-nlinum-mode 1)
+  (nlinum-relative-setup-evil)
+  (add-hook 'prog-mode-hook 'nlinum-relative-mode))
+;; These are outside of the use-package system
 (setq recentf-max-saved-items 200
       recentf-max-menu-items 15)
 (recentf-mode t)
@@ -299,32 +339,8 @@
       `((".*" ,temporary-file-directory t)))
 (setq default-major-mode 'text-mode)
 (setq text-mode-hook 'turn-on-auto-fill)
-
-(use-package menu-bar
-  :config
-  (menu-bar-mode 0))
-(use-package tool-bar
-  :config
-  (tool-bar-mode -1))
-
-(use-package ispell
-  :defer t
-  :config
-  (setq flyspell-issue-welcome-flag nil)
-  (setq-default ispell-program-name "/usr/bin/aspell")
-  (setq-default ispell-list-command "list"))
-
-(use-package editorconfig
-  :defer t
-  :config
-  (editorconfig-mode 1))
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
-
-;; These are outside of the use-package system
 (fset 'yes-or-no-p 'y-or-n-p)
-(line-number-mode t)
+(nlinum-mode t)
 (size-indication-mode t)
 (column-number-mode t)
 (setq confirm-nonexistent-file-or-buffer nil)

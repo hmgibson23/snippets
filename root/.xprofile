@@ -1,0 +1,4 @@
+xautolock -detectsleep \
+          -notify  900 -notifier "xset dpms force off" \
+          -time     5 -locker   "slock" \
+          -killtime 10 -killer   "systemctl suspend" &

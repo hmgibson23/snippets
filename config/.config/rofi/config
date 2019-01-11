@@ -17,3 +17,6 @@ FIELDS=SSID,SECURITY,BARS
 
 #font
 FONT="DejaVu Sans Mono Bold 12"
+rofi.blur-background = true
+rofi.fullscreen:true
+rofi.theme: .config/rofi/carbo.rasi

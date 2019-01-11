@@ -71,6 +71,8 @@ plugins=(
 # eval "$(rbenv init -)"
 
 alias ec="emacsclient -t"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
 bindkey -e
 bindkey '^R' history-incremental-search-backward

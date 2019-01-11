@@ -12,7 +12,7 @@
   (global-evil-mc-mode  1)
 
   ;; projectile leader
-  (general-nmap
+  (general-mmap
 
     "gc" 'compile
     ;; search commands
@@ -28,8 +28,7 @@
     "T" 'browse-kill-ring
     "gCl" 'comment-line)
 
-  (general-nmap
-    :states 'visual
+  (general-vmap
     "gCr" 'comment-region
     "gCu" 'uncomment-region)
 
@@ -37,22 +36,19 @@
     :keymaps '(dired-mode-map ibuffer-mode-map)
     "¬" 'hydra-dired/body)
 
-  (general-nmap
+  (general-mmap
     :keymaps 'comint-mode-map
-    :states 'motion
     "gd" 'comint-interrupt-subjob
     )
 
-  (general-nmap
+  (general-mmap
     :keymaps 'dired-mode-map
-    :states 'motion
     "gww" 'wgrep-change-to-wgrep-mode
     "gwr" 'wgrep-finish-edit
     "gws" 'wgrep-save-all-buffers)
 
-  (general-nmap
+  (general-mmap
     :keymaps 'message-mode-map
-    :states 'motion
     ";" 'mail-send-and-exit)
 
   (general-create-definer exec-leader
@@ -65,11 +61,18 @@
     "fn" 'flycheck-next-error
     "fl" 'flycheck-list-errors)
 
+
   (exec-leader
     :states 'motion
     :keymap 'markdown-mode-map
     :prefix-map 'exec-leader-map
-    "." 'hydra-markdown/body)
+    "." 'hydra-markdown/body
+    "na" 'nsp-code-a
+    "nb" 'nsp-code-b
+    "nc" 'nsp-code-c
+    "ns" 'nsp-code-single
+    "nl" 'nsp-code-end
+    )
 
   (exec-leader
     :states 'motion
@@ -142,7 +145,19 @@
     :prefix-map 'spc-leader-map
     :keymaps '(magit-mode-map dired-mode-map compilation-mode))
 
-  (general-nmap
+  (general-def
+    :keymaps '(cider-repl-mode-map)
+    :states '(emacs motion insert)
+    "M-e" 'cider-repl-previous-input
+    "M-n" 'cider-repl-next-input)
+
+  (exec-leader
+    :states 'motion
+    :keymaps '(cider-mode-map)
+    :prefix-map 'exec-leader-map
+    "be" 'cider-eval-buffer)
+
+  (general-def
     :states '(emacs motion)
     :prefix "£"
     :prefix-map 'window-leader-map
@@ -175,7 +190,6 @@
   :defer 1
   :config
   (evil-avy-mode))
-
 
 (use-package evil-surround
   :ensure t
@@ -211,7 +225,7 @@
   :config
   (global-evil-colemak-basics-mode 1)
 
-  (general-nmap
+  (general-def
     :states '(insert emacs motion)
     "TAB" 'indent-for-tab-command
     "C-h" 'evil-backward-char
@@ -220,12 +234,14 @@
     "C-e" 'evil-previous-line)
 
   (general-nmap
-    :states 'normal
     :keymaps '(comint-mode-map)
     "]" 'comint-next-input
     "[" 'comint-previous-input)
 
-  (general-nmap
+  (general-mmap
+    "j" 'evil-forward-WORD-end)
+
+  (general-def
     :keymaps 'ivy-minibuffer-map
     "C-n" 'ivy-next-line
     "C-e" 'ivy-previous-line))
@@ -234,8 +250,9 @@
   :after evil
   :config
   (setq key-chord-two-keys-delay 0.4)
-  (key-chord-define evil-motion-state-map "jj" 'evil-normal-state)
-  (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
+  ;; (key-chord-define evil-motion-state-map "kd" 'counsel-M-x)
+  (key-chord-define evil-motion-state-map "99" 'evil-normal-state)
+  (key-chord-define evil-insert-state-map "99" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "[[" 'save-buffer)
   (key-chord-define evil-motion-state-map "[[" 'save-buffer)
   (key-chord-mode 1))

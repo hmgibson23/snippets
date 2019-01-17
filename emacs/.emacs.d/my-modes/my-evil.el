@@ -48,6 +48,11 @@
     "gws" 'wgrep-save-all-buffers)
 
   (general-mmap
+    :keymaps 'go-mode-map
+    "gdd" 'dlv
+    )
+
+  (general-mmap
     :keymaps 'message-mode-map
     ";" 'mail-send-and-exit)
 
@@ -61,6 +66,13 @@
     "fn" 'flycheck-next-error
     "fl" 'flycheck-list-errors)
 
+  (exec-leader
+    :states 'motion
+    :keymap 'go-mode-map
+    :prefix-map 'exec-leader-map
+    "gr" 'go-rename
+    "gd" 'godoc-at-point
+    )
 
   (exec-leader
     :states 'motion

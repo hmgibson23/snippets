@@ -27,13 +27,14 @@
   :ensure t)
 (use-package go-stacktracer)
 (use-package go-add-tags)
-;; (use-package go-gopath)
 (use-package go-direx)
-(use-package flycheck-gometalinter
-  :ensure t
-  :config
-  (progn
-    (flycheck-gometalinter-setup)))
+
+;; (use-package flycheck-gometalinter
+;;   :ensure t
+;;   :config
+;;   (progn
+;;     (flycheck-gometalinter-setup)))
+
 (use-package go-mode
   :ensure t
   :defer t
@@ -57,7 +58,6 @@
      (set (make-local-variable 'company-backends) '(company-go))
      (company-mode +1)
      (flycheck-mode +1)
-     (message "I enabled company mode")
      (go-eldoc-setup)
      (if (not (string-match "go" compile-command))
          (set (make-local-variable 'compile-command)

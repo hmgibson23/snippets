@@ -4,8 +4,11 @@ export SXHKD_SHELL=/bin/sh
 #dropbox start -i
 setxkbmap gb -variant colemak
 xmodmap $HOME/.Xmodmap
+
+# launch sxhkd
 sxhkd -m -1 -t -c $HOME/.config/sxhkd/sxhkdrc $HOME/.config/sxhkd/sxhkdrc_bspwm &
 
+xautolock -disable
 # xautolock -detectsleep \
 #           -locker   "slock" \
 #           -killtime 10 -killer "systemctl suspend" &
@@ -32,5 +35,6 @@ compton &
 dunst &
 nitrogen --restore &
 $HOME/.config/polybar/launch.sh
+$HOME/.config/mopidy/launch.sh
 fluxgui &
 # emacs --daemon &

@@ -60,3 +60,5 @@
   (define-key eshell-mode-map (kbd "<tab>") 'completion-at-point))
 
 (add-hook 'eshell-mode-hook 'setup-eshell)
+
+(provide 'my-shell)

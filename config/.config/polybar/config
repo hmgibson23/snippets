@@ -39,7 +39,7 @@ font-4 = Weather Icons:size=8;1
 
 modules-left = bspwm memory pulseaudio
 modules-center = xwindow
-modules-right = updates-arch gmail xbacklight battery date network powermenu
+modules-right = updates-arch gmail xbacklight battery date powermenu
 
 tray-position = right
 tray-padding = 2
@@ -273,7 +273,7 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 type = internal/battery
 battery = BAT0
 adapter = AC
-full-at = 98
+full-at = 89
 poll-interval = 5
 format-charging = <animation-charging>
 label-charging = %percentage%%

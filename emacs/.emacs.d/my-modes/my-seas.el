@@ -21,6 +21,11 @@
 (use-package company-irony-c-headers
   :defer t
   :config
+
+(eval-after-load 'cc-mode
+  '(progn
+     (define-key c-mode-map  [(tab)] 'company-complete)
+     (define-key c++-mode-map [(tab)] 'company-complete)))
   (eval-after-load 'company
     '(add-to-list
       'company-backends '(company-irony-c-headers company-irony))))
@@ -103,3 +108,5 @@
   (add-hook 'rust-mode-hook 'cargo-minor-mode))
 
 (setq auto-mode-alist (cons '("\\.tex$" . latex-mode) auto-mode-alist))
+
+(provide 'my-seas)

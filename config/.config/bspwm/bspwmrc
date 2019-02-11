@@ -31,10 +31,10 @@ bspc rule -a Screenkey manage=off
 
 
 compton &
-# killall nm-applet ; nm-applet &
+killall nm-applet ; nm-applet &
+fluxgui &
 dunst &
 nitrogen --restore &
 $HOME/.config/polybar/launch.sh
-$HOME/.config/mopidy/launch.sh
-fluxgui &
+# $HOME/.config/mopidy/launch.sh
 # emacs --daemon &

@@ -1,17 +1,74 @@
-;;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-;; Replace "sbcl" with the path to your implementation
-;;(setq inferior-lisp-program "/usr/local/bin/sbcl")
-
 ;; load up the modes
-(my-load-all-in-directory "~/.emacs.d/my-modes/")
-(require 'llvm-mode)
-(require 'gud-lldb)
-(require 'go-dlv)
+;; (my-load-all-in-directory "~/.emacs.d/my-modes/")
+
+(require 'my-general "~/.emacs.d/my-modes/my-general")
+(require 'my-evil "~/.emacs.d/my-modes/my-evil")
+
+(require 'auto-compile)
+(auto-compile-on-load-mode)
+(auto-compile-on-save-mode)
 
 (use-package spaceline
-  :ensure t
+  :demand t
+  :init
+  (setq powerline-default-separator 'wave)
+  (setq spaceline-window-numbers-unicode 't)
   :config
-  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+  (require 'spaceline-segments)
+  (require 'spaceline-config)
+
+  (spaceline-compile
+    ;; left side
+    '(((persp-name
+        workspace-number
+        window-number)
+       :fallback evil-state
+       :face highlight-face
+       :priority 100)
+      (evil-state
+       :priority 91)
+      (anzu :priority 95)
+      auto-compile
+      ((buffer-modified buffer-size buffer-id remote-host)
+       :face highlight-face
+       :priority 98)
+      (major-mode :priority 79)
+      (process :when active)
+      ((flycheck-error flycheck-warning flycheck-info)
+       :when active
+       :priority 89)
+      (minor-modes :when active
+                   :priority 9)
+      (mu4e-alert-segment :when active)
+      (erc-track :when active)
+      (version-control :when active
+                       :priority 78)
+      nyan-cat)
+    ;; right side
+    '(which-function
+      (python-pyvenv :fallback python-pyenv)
+      (purpose :priority 94)
+      (battery :when active)
+      (selection-info :priority 95)
+      input-method
+      ((buffer-encoding-abbrev
+        point-position
+        line-column)
+       :separator " | "
+       :priority 96)
+      (global :when active)
+      (buffer-position
+       :face highlight-face
+       :priority 99)
+      (hud :priority 99)))
+
+  (setq-default mode-line-format
+                '("%e" (:eval (spaceline-ml-main)))))
+
+(use-package ledger
+  :defer t
+  :config
+  (setq ledger-reconcile-default-commodity "£"))
 
 (use-package spaceline-config
   :ensure spaceline
@@ -23,7 +80,6 @@
 ;;   :config (spaceline-all-the-icons-theme))
 
 (use-package magit
-  :ensure t
   :defer t
   :commands magit-status
   :bind ("C-c C-g" . magit-status)
@@ -31,13 +87,12 @@
   (setq magit-completing-read-function 'ivy-completing-read))
 
 (use-package ace-jump-mode
-  :ensure t
   :defer t
   :bind ("C-x SPC" . ace-jump-mode))
 (use-package page-break-lines :ensure t)
 
 (use-package projectile
-  :ensure t
+  :after (evil my-evil)
   :init
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
@@ -52,25 +107,41 @@
             (lambda (frame) (load-theme 'xresources t))))
 
 (use-package org
-  :ensure t
   :defer t
-  :bind ("C-c o a" . org-agenda)
+  :bind (
+         ("C-c o c" . org-capture)
+         ("C-c o a" . org-agenda) )
   :init
-  (add-hook 'org-mode-hook 'pandoc-mode)
   (add-hook 'org-mode-hook (lambda () (flyspell-mode t)))
   :config
-  (setq org-log-done t))
+
+  (setq org-default-notes-file "~/gorg/notes.org")
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/gorg/todo.org" "Tasks")
+           "* TODO %?\n %T \n %i\n" :empty-lines 1)
+          ("s" "Scheduled TODO" entry (file+headline "~/gorg/todo.org"  "Scheduled Tasks")
+           "* TODO %?\nSCHEDULED: %^t\n  %U" :empty-lines 1)
+          ("n" "Note" entry (file+headline "~/gorg/notes.org" "Notes")
+           "* NOTE %U\n  %i\n  %a" :empty-lines 1)
+          ("w" "Writing Idea" entry (file+headline "~/gorg/writing-ideas.org" "Ideas")
+           "* Idea %i\n %t " :empty-lines 1)
+          ("j" "Journal Idea" entry (file+headline "~/gorg/notes.org" "Journal Entry")
+           "* Journal \n%U\n" :empty-lines 1)
+          ("p" "Pitch Note" entry (file+headline "~/gorg/writing.org" "Pitches")
+           "* Pitch to %i \n%t\n" :empty-lines 1)))
+  (setq org-log-done t)
+  (setq org-agenda-files '("~/gorg/todo.org"
+                           "~/gorg/writing.org"
+                           "~/gorg/notes.org")))
 
 (use-package yasnippet
   :diminish yas-minor-mode
   :defer t
-  :ensure t
   :bind ("C-c C-y" . yas-insert-snippet)
   :config
   (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt)))
 
 (use-package sml-mode
-  :ensure t
   :defer t
   :config
   (setq sml/no-confirm-load-theme t)
@@ -78,7 +149,6 @@
 
 (use-package dired
   :defer t
-  :ensure nil
   :commands dired-mode
   :config
   (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . ""))
@@ -88,7 +158,6 @@
 
 (use-package anzu
   :defer t
-  :ensure t
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regexp))
   :config
@@ -106,7 +175,6 @@
 
 (use-package flycheck
   :defer t
-  :ensure t
   :hook (#'global-flycheck-mode))
 
 (use-package flymake
@@ -116,7 +184,6 @@
 
 (use-package company
   :defer t
-  :ensure t
   :commands company-mode
   :init
   (setq tab-always-indent 'complete)
@@ -142,10 +209,11 @@
 
 (use-package auto-complete
   :defer t
-  :ensure t
   :init
   (setq tab-always-indent 'complete)
   :config
+  (define-key ac-completing-map (kbd "C-n") 'ac-next)
+  (define-key ac-completing-map (kbd "C-e") 'ac-previous)
   (progn (ac-config-default)
          (ac-set-trigger-key "TAB")
          (ac-set-trigger-key "<tab>")
@@ -156,8 +224,13 @@
          (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
          (add-to-list 'ac-sources 'ac-source-yasnippet)))
 
+(use-package ggtags
+  :defer t
+  :config
+  (ggtags-mode +1)
+  (counsel-gtags-mode +1))
+
 (use-package markdown-mode
-  :ensure t
   :defer t
   :init
   (progn
@@ -165,18 +238,15 @@
     (add-hook 'markdown-mode-hook (lambda () (flyspell-mode t)))))
 
 (use-package pandoc-mode
-  :ensure t
   :defer t
   :init
   (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package swiper
-  :ensure t
   :defer t
   :bind ("C-s" . counsel-grep-or-swiper))
 
 (use-package ido
-  :ensure t
   :defer t
   :init
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
@@ -190,14 +260,18 @@
   (setq ivy-use-virtual-buffers t))
 
 (use-package ivy
-  :ensure t
   :bind (("C-c C-r" . ivy-resume)
          ("C-x C-f" . counsel-find-file)
          ("C-x b" . ivy-switch-buffer)
          ("C-," . ivy-avy)
+         ("M-x" . counsel-M-x)
+         ("<f12>" . counsel-M-x)
          (:map ivy-minibuffer-map
                ("C-r" . ivy-reverse-i-search))
-         ("M-w" . ivy-kill-ring-save)))
+         ("M-w" . ivy-kill-ring-save))
+  :config
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-plus))))
 
 
 (use-package ibuffer
@@ -243,12 +317,10 @@
                        (name . "\*info\*")))))))
 
 (use-package window-numbering
-  :ensure t
   :config
   (window-numbering-mode))
 
 (use-package expand-region
-  :ensure t
   :defer t
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
@@ -274,7 +346,6 @@
   (setq imenu-auto-rescan t))
 
 (use-package undo-tree
-  :ensure t
   :config
   (global-undo-tree-mode 1))
 (use-package diff-hl
@@ -308,15 +379,25 @@
   (editorconfig-mode 1))
 
 (use-package exec-path-from-shell
+  :ensure t
   :config
   (exec-path-from-shell-initialize))
 
+(use-package hydra
+  :config
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("g" text-scale-increase "in")
+    ("l" text-scale-decrease "out")))
+
 (use-package nlinum-relative
+  :defer t
   :config
   ;; something else you want
   (global-nlinum-mode 1)
   (nlinum-relative-setup-evil)
   (add-hook 'prog-mode-hook 'nlinum-relative-mode))
+
 ;; These are outside of the use-package system
 (setq recentf-max-saved-items 200
       recentf-max-menu-items 15)
@@ -378,3 +459,12 @@
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+(require 'llvm-mode "~/.emacs.d/my-modes/llvm-mode")
+(require 'gud-lldb "~/.emacs.d/my-modes/gud-lldb")
+(require 'my-shell "~/.emacs.d/my-modes/my-shell")
+(require 'my-seas "~/.emacs.d/my-modes/my-seas")
+(require 'my-web "~/.emacs.d/my-modes/my-web")
+(require 'my-scripting "~/.emacs.d/my-modes/my-scripting")
+(require 'my-hydras "~/.emacs.d/my-modes/my-hydras")
+(require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww")

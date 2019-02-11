@@ -1,20 +1,8 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package hydra
-  :ensure t
   :defer t
+  :after (ibuffer dired)
   :config
-  (defhydra hydra-flycheck
-    (:pre (progn (setq hydra-lv t) (flycheck-list-errors))
-          n          :post (progn (setq hydra-lv nil) (quit-windows-on "*Flycheck errors*"))
-          :hint nil)
-    "Errors"
-    ("f"  flycheck-error-list-set-filter                            "Filter")
-    ("j"  flycheck-next-error                                       "Next")
-    ("k"  flycheck-previous-error                                   "Previous")
-    n    ("gg" flycheck-first-error                                      "First")
-("G"  (progn (goto-char (point-max)) (flycheck-previous-error)) "Last")
-("q"  nil))
-
 (defhydra hydra-ibuffer-main (:color pink :hint nil)
 "
 ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
@@ -308,3 +296,5 @@ _e_ show max output   _p_ previous input
   (define-key dired-mode-map "." 'hydra-dired/body)
   (use-package proced
     :config (define-key proced-mode-map "." 'hydra-proced/body)))
+
+(provide 'my-hydras)

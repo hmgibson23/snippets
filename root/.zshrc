@@ -35,6 +35,10 @@ COMPLETION_WAITING_DOTS="true"
 # see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
 
+HISTSIZE=5000               #How many lines of history to keep in memory
+HISTFILE=~/.zsh_history     #Where to save history to disk
+SAVEHIST=15000               #Number of history entries to save to disk
+HISTDUP=erase               #Erase duplicates in the history file
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -60,12 +64,8 @@ alias config='/usr/bin/git --git-dir=$HOME/.myconf/ --work-tree=$HOME'
 plugins=(
   git
   archlinux
-  aws
-  cabal
   cask
-  node
   npm
-  pyenv
   docker
 )
 # eval "$(rbenv init -)"

@@ -10,7 +10,8 @@
   (general-evil-setup)
   (evil-mode 1)
   (global-evil-mc-mode  1)
-
+  (with-eval-after-load 'evil
+    (require 'evil-anzu))
   ;; projectile leader
   (general-mmap
 
@@ -20,6 +21,7 @@
     "gse" 'replace-string
     "gsf" 'search-forward
 
+    "g/"  'dabbrev-expand
 
     "gz"  'zap-to-char
     "g:" 'evil-goto-char
@@ -36,10 +38,14 @@
     :keymaps '(dired-mode-map ibuffer-mode-map)
     "¬" 'hydra-dired/body)
 
+
   (general-mmap
     :keymaps 'comint-mode-map
-    "gd" 'comint-interrupt-subjob
-    )
+    "gd" 'comint-interrupt-subjob)
+
+  (general-nmap
+    :keymaps 'compilation-mode-map
+    "gg" 'recompile)
 
   (general-mmap
     :keymaps 'dired-mode-map
@@ -49,8 +55,7 @@
 
   (general-mmap
     :keymaps 'go-mode-map
-    "gdd" 'dlv
-    )
+    "gdd" 'dlv)
 
   (general-mmap
     :keymaps 'message-mode-map
@@ -66,13 +71,22 @@
     "fn" 'flycheck-next-error
     "fl" 'flycheck-list-errors)
 
+
   (exec-leader
     :states 'motion
     :keymap 'go-mode-map
     :prefix-map 'exec-leader-map
     "gr" 'go-rename
     "gd" 'godoc-at-point
+    "gj" 'godef-jump
     )
+
+  (exec-leader
+    :states 'motion
+    :keymap 'plantuml-mode-map
+    :prefix-map 'exec-leader-map
+    "cp" 'plantuml-preview
+    "cb" 'plantuml-preview-current-block)
 
   (exec-leader
     :states 'motion
@@ -83,15 +97,21 @@
     "nb" 'nsp-code-b
     "nc" 'nsp-code-c
     "ns" 'nsp-code-single
-    "nl" 'nsp-code-end
-    )
+    "nl" 'nsp-code-end)
 
   (exec-leader
     :states 'motion
     :prefix-map 'exec-leader-map
-    "d" 'docker
-    "k" 'kubernetes-overview
-    "p" 'projectile-command-map
+
+    "dd" 'docker
+    "dcc" 'docker-compose
+    "dcu" 'docker-compose-up
+    "dcd" 'docker-compose-down
+    "dcb" 'docker-compose-build
+    "dcr" 'docker-compose-restart
+    "dk" 'kubernetes-overview
+
+    ";" 'projectile-command-map
     "mm" 'magit-status
     "sr" 'shell-command-on-region
     "sc" 'shell-command
@@ -104,8 +124,7 @@
     "fz" 'zgrep
     "fg" 'find-grep
 
-    "j"  'evil-avy-goto-char
-    "bk" 'kill-buffer
+    "bk" 'ido-kill-buffer
     "br" 'revert-buffer
     "bo" 'ivy-switch-buffer-other-window
     "by" 'indent-buffer
@@ -121,12 +140,18 @@
 
     "vv" 'hydra-zoom/body
 
+
     "mu" 'evil-mc-undo-all-cursors
     "m." 'evil-mc-make-cursor-move-next-line
 
     "zxx" 'er/expand-region
     "ci" 'counsel-ibuffer
-    "cr" 'counsel-evil-registers
+    "ca" 'counsel-ag
+    "cr" 'counsel-rg
+    "coa" 'counsel-org-agenda-headlines
+    "coc" 'counsel-org-capture
+    "cm" 'counsel-semantic-or-imenu
+    "ce" 'counsel-evil-registers
     "cl" 'counsel-locate)
 
   (defvar extra-key-modes '(magit-mode-map dired-mode-map ibuffer-mode-hook grep-mode compilation-mode info-mode))
@@ -142,7 +167,12 @@
   (spc-leader
     :states 'motion
     :prefix-map 'spc-leader-map
+    "/" 'dabbrev-expand
+    "tt" 'xref-find-definitions
+    "ts" 'xref-find-apropos
 
+    "son" 'scroll-other-window
+    "sop" 'scroll-other-window-down
     "ff" 'counsel-find-file
     "fr" 'counsel-recentf
     "fF" 'find-file-other-window
@@ -157,11 +187,48 @@
     :prefix-map 'spc-leader-map
     :keymaps '(magit-mode-map dired-mode-map compilation-mode))
 
+  (spc-leader
+    :keymap 'docker-image-mode-map
+    :states 'motion
+    "m" 'tablist-mark-forward
+    "u" 'tablist-unmark-forward
+    "l" 'docker-image-ls-popup
+    "D" 'docker-image-rm-popup
+    "F" 'docker-image-pull-popup
+    "P" 'docker-image-push-popup
+    "R" 'docker-image-run-popup)
+
+  (spc-leader
+    :keymap 'docker-container-mode-map
+    :states 'motion
+
+    "m" 'tablist-mark-forward
+    "u" 'tablist-unmark-forward
+    "?" 'docker-container-help-popup
+    "C" 'docker-container-cp-popup
+    "D" 'docker-container-rm-popup
+    "I" 'docker-container-inspect-popup
+    "K" 'docker-container-kill-popup
+    "L" 'docker-container-logs-popup
+    "O" 'docker-container-stop-popup
+    "P" 'docker-container-pause-popup
+    "R" 'docker-container-restart-popup
+    "S" 'docker-container-start-popup
+    "a" 'docker-container-attach-popup
+    "b" 'docker-container-shell-popup
+    "d" 'docker-container-diff-popup)
+
   (general-def
     :keymaps '(cider-repl-mode-map)
     :states '(emacs motion insert)
     "M-e" 'cider-repl-previous-input
     "M-n" 'cider-repl-next-input)
+
+  (general-def
+    :keymaps '(comint-mode-map)
+    :states '(emacs motion insert)
+    "C-e" 'cider-repl-previous-input
+    "C-n" 'cider-repl-next-input)
 
   (exec-leader
     :states 'motion
@@ -192,7 +259,6 @@
   (evil-set-initial-state 'elfeed-search-mode 'emacs)
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
-  (evil-set-initial-state 'comint-mode 'normal)
   (evil-set-initial-state 'dired-mode 'emacs)
   (evil-set-initial-state 'sql 'emacs))
 
@@ -268,3 +334,5 @@
   (key-chord-define evil-insert-state-map "[[" 'save-buffer)
   (key-chord-define evil-motion-state-map "[[" 'save-buffer)
   (key-chord-mode 1))
+
+(provide 'my-evil)

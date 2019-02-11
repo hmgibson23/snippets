@@ -48,14 +48,17 @@
              (gnus))
             (t
              (error "No candidate found")))))
-  (setq
-   user-mail-address "gibsonhugo@gmail.com"
-   user-full-name "Hugo Gibson"
+(setq
    gnus-select-method
    '(nnimap "gmail"
             (nnimap-address "imap.gmail.com")
-            (nnimap-server-port 993)
-            (nnimap-stream ssl))
+            (nnimap-server-port "imaps")
+            (nnir-search-engine imap)
+            (nnimap-stream ssl)))
+
+  (setq
+   user-mail-address "gibsonhugo@gmail.com"
+   user-full-name "Hugo Gibson"
    smtpmail-smtp-server "smtp.gmail.com"
    smtpmail-smtp-service 587
    message-send-mail-function 'smtpmail-send-it
@@ -79,6 +82,19 @@
                    ad-do-it))))
   (add-hook 'message-setup-hook 'mml-secure-message-encrypt)
   (add-hook 'gnus-summary-mode-hook 'my-gnus-summary-keys))
+
+(use-package bbdb
+  :commands bbdb-initialize
+  :defer
+  :config
+  (bbdb-initialize 'gnus 'message)
+  (setq
+   bbdb-file "~/.bbdb"
+   bbdb-offer-save 1
+   bbdb-use-pop-up t
+   bbdb-electric-p t
+   bbdb-popup-target-lines  1
+   bbdb-check-auto-save-file t))
 
 (defun my-gnus-summary-keys ()
   (local-set-key "y" 'gmail-archive)
@@ -121,7 +137,7 @@ This moves them into the Spam folder."
           "https://feeds.feedburner.com/efluxjournal?format=xml/"
           "https://commercialtype.com/news/rss")))
 
-(use-package gmail2bbdb)
+;;(use-package gmail2bbdb)
 (use-package erc
   :ensure nil
   :defer t
@@ -137,3 +153,6 @@ This moves them into the Spam folder."
         erc-interpret-mirc-color t
         erc-lurker-hide-list '("JOIN" "PART" "QUIT")
         erc-autojoin-channels-alist '(("freenode.net" "#emacs")("freenode.net" "#voidlinux"))))
+
+
+(provide 'mail-and-eww)

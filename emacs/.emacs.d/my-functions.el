@@ -185,6 +185,9 @@ create it and write the initial message into it."
     (funcall 'shell-mode))
   (set-process-filter (get-process command) 'filter-process-output))
 
+(defun my-async-shell-command (command)
+ (interactive "sCommand: ")
+ (async-shell-command command (format "*async command: %s*" command)))
 
 
 (defun wr-watch (file command)

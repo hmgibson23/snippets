@@ -30,7 +30,6 @@
 (pallet-mode t)
 
 (load "~/.emacs.d/my-functions")
-(load "~/.emacs.d/my-key-bindings")
 (load "~/.emacs.d/init")
 
 (setq load-prefer-newer t

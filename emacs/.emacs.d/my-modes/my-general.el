@@ -1,4 +1,11 @@
 ;; -*- lexical-binding: t; -*-;
+(use-package plantuml-mode
+  :config
+  (with-eval-after-load 'flycheck
+    (require 'flycheck-plantuml)
+    (flycheck-plantuml-setup))
+  (add-to-list 'auto-mode-alist '("\\.puml\\'" . plantuml-mode)))
+
 (use-package elxiir-mode
   :commands elixir-mode
   :defer t
@@ -25,9 +32,10 @@
 (use-package gotest
   :defer t
   :ensure t)
-(use-package go-stacktracer)
-(use-package go-add-tags)
-(use-package go-direx)
+(use-package go-stacktracer :defer t )
+(use-package go-add-tags :defer t )
+(use-package go-direx :defer t )
+(use-package go-dlv :defer t )
 
 ;; (use-package flycheck-gometalinter
 ;;   :ensure t
@@ -102,7 +110,7 @@
   (add-hook 'ielm-mode-hook #'auto-complete-mode))
 
 (use-package lisp-mode
-  :ensure t
+  :ensure nil
   :config
   (setq tab-always-indent 'complete)
   (add-hook 'lisp-mode-hook #'lisp-setup)
@@ -116,15 +124,13 @@
 (use-package clojure-mode
   :mode "\\.clj\\'"
   :defer t
-  :ensure t
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
   (add-hook 'clojure-mode-hook #'auto-complete-mode)
   (add-hook 'clojure-mode-hook #'evil-paredit-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
-  )
+  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
 
 (use-package cider
   :ensure t
@@ -148,7 +154,6 @@
 
 (use-package haskell-mode
   :defer t
-  :ensure t
   :commands haskell-mode
   :mode "\\.hs\\'"
   :custom
@@ -190,7 +195,6 @@
   (add-hook 'haskell-mode-hook 'company-mode))
 
 (use-package ensime
-  :ensure t
   :defer t
   :mode "\\.scala$"
   :config
@@ -213,7 +217,6 @@
   (add-hook 'terraform-mode-hook #'company-terraform-init))
 
 (use-package flycheck-yamllint
-  :ensure t
   :defer t
   :hook (yaml-mode . flycheck-mode)
   :init
@@ -248,8 +251,7 @@
       (add-hook 'tuareg-mode-hook 'merlin-mode t)
       (add-hook 'caml-mode-hook 'merlin-mode t)))
   (with-eval-after-load 'company
-    (add-to-list 'company-backends 'merlin-company-backend))
-  )
+    (add-to-list 'company-backends 'merlin-company-backend)))
 
 (use-package markdown-mode
   :bind (:map markdown-mode-map (("C-." . hydra-markdown/body)))
@@ -299,3 +301,23 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (use-package browse-kill-ring
   :defer t
   :config (browse-kill-ring-default-keybindings))
+
+(use-package docker
+  :defer t
+  :bind ("C-c d" . docker))
+
+(use-package docker-compose-mode
+  :defer t)
+
+(use-package dockerfile-mode
+  :defer t
+  :mode "\\Dockerfile$")
+
+(use-package docker-tramp
+  :defer t)
+
+(use-package kubernetes
+  :defer t
+  :commands (kubernetes-overview))
+
+(provide 'my-general)

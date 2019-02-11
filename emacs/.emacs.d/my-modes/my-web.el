@@ -82,3 +82,5 @@
          "\\.ejs\\'")
   :hook ((web-mode flyspell-prog-mode) . company-mode)
   :init (setq web-mode-markup-indent-offset 4))
+
+(provide 'my-web)

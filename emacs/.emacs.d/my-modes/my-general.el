@@ -214,7 +214,11 @@
   :hook (terraform-mode . company-mode)
   :config
   (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
-  (add-hook 'terraform-mode-hook #'company-terraform-init))
+  (add-hook 'terraform-mode-hook #'company-terraform-init)
+;; (setq current-prefix-arg '(4))
+  (if (not (string-match "terraform" compile-command))
+      (set (make-local-variable 'compile-command)
+           "terraform plan")))
 
 (use-package flycheck-yamllint
   :defer t
@@ -254,8 +258,10 @@
     (add-to-list 'company-backends 'merlin-company-backend)))
 
 (use-package markdown-mode
+  :after (writegood)
   :bind (:map markdown-mode-map (("C-." . hydra-markdown/body)))
   :config
+  (add-hook 'markdown-mode-hook 'writegood-mode)
   (defhydra hydra-markdown (:hint nil)
     "
 Formatting        C-c C-s    _s_: bold          _e_: italic     _b_: blockquote   _p_: pre-formatted    _c_: code

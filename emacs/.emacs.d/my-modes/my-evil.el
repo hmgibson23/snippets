@@ -9,12 +9,14 @@
   (fset 'evil-visual-update-x-selection 'ignore)
   (general-evil-setup)
   (evil-mode 1)
-  (global-evil-mc-mode  1)
+  ;; (global-evil-mc-mode  1)
   (with-eval-after-load 'evil
     (require 'evil-anzu))
-  ;; projectile leader
-  (general-mmap
 
+  ;; global keybindings
+
+  ;; evil specific
+  (general-mmap
     "gc" 'compile
     ;; search commands
     "gs%" 'anzu-query-replace
@@ -45,6 +47,8 @@
 
   (general-nmap
     :keymaps 'compilation-mode-map
+    "gd" 'comint-interrupt-subjob
+    "gc" 'compile
     "gg" 'recompile)
 
   (general-mmap
@@ -113,6 +117,7 @@
 
     ";" 'projectile-command-map
     "mm" 'magit-status
+    "mf" 'make-frame
     "sr" 'shell-command-on-region
     "sc" 'shell-command
     "ap" 'async-process
@@ -224,12 +229,6 @@
     "M-e" 'cider-repl-previous-input
     "M-n" 'cider-repl-next-input)
 
-  (general-def
-    :keymaps '(comint-mode-map)
-    :states '(emacs motion insert)
-    "C-e" 'cider-repl-previous-input
-    "C-n" 'cider-repl-next-input)
-
   (exec-leader
     :states 'motion
     :keymaps '(cider-mode-map)
@@ -248,6 +247,7 @@
     "i" 'evil-window-right
     "h" 'evil-window-left
     "o" 'other-window
+    ";" 'other-frame
     ">" 'next-buffer
     "<" 'previous-buffer
     "bn" 'buf-move-up
@@ -316,6 +316,21 @@
     "]" 'comint-next-input
     "[" 'comint-previous-input)
 
+  (general-imap
+    :keymaps '(comint-mode-map)
+    "C-n" 'comint-next-input
+    "C-e" 'comint-previous-input)
+
+  (general-imap
+    :keymaps '(term-mode-map)
+    "C-n" 'term-send-up
+    "C-e" 'term-send-down)
+
+  (general-nmap
+    :keymaps '(term-mode-map)
+    "C-n" 'term-send-up
+    "C-e" 'term-send-down)
+
   (general-mmap
     "j" 'evil-forward-WORD-end)
 
@@ -329,8 +344,6 @@
   :config
   (setq key-chord-two-keys-delay 0.4)
   ;; (key-chord-define evil-motion-state-map "kd" 'counsel-M-x)
-  (key-chord-define evil-motion-state-map "99" 'evil-normal-state)
-  (key-chord-define evil-insert-state-map "99" 'evil-normal-state)
   (key-chord-define evil-insert-state-map "[[" 'save-buffer)
   (key-chord-define evil-motion-state-map "[[" 'save-buffer)
   (key-chord-mode 1))

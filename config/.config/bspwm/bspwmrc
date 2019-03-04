@@ -38,3 +38,4 @@ nitrogen --restore &
 $HOME/.config/polybar/launch.sh
 # $HOME/.config/mopidy/launch.sh
 # emacs --daemon &
+tmux start-server

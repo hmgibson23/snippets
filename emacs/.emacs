@@ -1,11 +1,9 @@
 (setq gc-cons-threshold most-positive-fixnum)
 ;; reset gc-cons-threshold
-;; idle timer suggested by vermiculus
 (run-with-idle-timer
  10 nil
  (lambda ()
    ;; recommended amount by flx
-   ;; (setq gc-cons-threshold (* 20 100 100))
    (setq gc-cons-threshold (car (get 'gc-cons-threshold 'standard-value)))
    (message "gc-cons-threshold restored to %S"
             gc-cons-threshold)))

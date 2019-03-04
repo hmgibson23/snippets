@@ -4,9 +4,14 @@
 (require 'my-general "~/.emacs.d/my-modes/my-general")
 (require 'my-evil "~/.emacs.d/my-modes/my-evil")
 
-(require 'auto-compile)
-(auto-compile-on-load-mode)
-(auto-compile-on-save-mode)
+(use-package auto-compile
+  :config
+  (auto-compile-on-load-mode)
+  (auto-compile-on-save-mode))
+
+(use-package uniquify
+  ;; Less important than recentf.
+  :defer 2)
 
 (use-package spaceline
   :demand t
@@ -127,6 +132,8 @@
            "* Idea %i\n %t " :empty-lines 1)
           ("j" "Journal Idea" entry (file+headline "~/gorg/notes.org" "Journal Entry")
            "* Journal \n%U\n" :empty-lines 1)
+          ("b" "Submission" entry (file+headline "~/gorg/notes.org" "Sumbit")
+           "* Submit to \n%U\n" :empty-lines 1)
           ("p" "Pitch Note" entry (file+headline "~/gorg/writing.org" "Pitches")
            "* Pitch to %i \n%t\n" :empty-lines 1)))
   (setq org-log-done t)

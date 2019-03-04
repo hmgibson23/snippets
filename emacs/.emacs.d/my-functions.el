@@ -113,17 +113,6 @@ Symbols matching the text at point are put first in the completion list."
     (insert (format "%S" value))))
 
 
-;; Again stolen from someone else I'm such a thief
-(defun set-exec-path-from-shell-PATH ()
-  "Set up Emacs' `exec-path' and PATH environment variable to match that used by the user's shell.
-
-This is particularly useful under Mac OSX, where GUI apps are not started from a shell."
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-
 (defun switch-buffer-scratch ()
   "Switch to the scratch buffer. If the buffer doesn't exist,
 create it and write the initial message into it."
@@ -307,6 +296,7 @@ If PATH is remote, return the remote diretory portion of the path."
 
 
 (defun set-env-from-kv-str (str)
+  (interactive)
   (let ((trimmed (string-trim str)))
     (string-match "\\([A-Z_]+\\)=\\\"\\([A-Z0-9/+=]+\\)" trimmed)
     (setenv (match-string 1 trimmed) (match-string 2 trimmed))))

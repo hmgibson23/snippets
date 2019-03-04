@@ -3,10 +3,10 @@ urxvt.termName: rxvt-unicode
 urxvt.scrollBar: false
 
 urxvt*depth: 32
-!! Font prefferenes
+!! Font
 
-URxvt.font:     xft:bitstream vera sans mono:size=12:antialias=true
-URxvt.boldFont: xft:bitstream vera sans mono:bold:size=12:antialias=trueURxvt.font
+URxvt*font: xft:Inconsolata Nerd Font Mono:size=15, xft:DejaVu Sans:size=12
+URxvt*boldFont:      URxvt*font: xft:Inconsolata Nerd Font Mono:size=15, xft:DejaVu Sans:size=12
 
 !! Larger history limit
 urxvt.saveLines: 1000000

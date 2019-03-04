@@ -108,4 +108,4 @@ syntax on
 
 source ~/.config/nvim/keybindings.vim
 source ~/.config/nvim/aliases.vim
-source  ~/.config/nvim/gorc
+source  ~/.config/nvim/general.vim

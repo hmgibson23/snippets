@@ -23,3 +23,11 @@ function! Z(...)
     exec 'cd' fnameescape(path)
   endif
 endfunction
+
+" To use ripgrep instead of ag:
+command! -bang -nargs=* Rg
+      \ call fzf#vim#grep(
+      \   'fd --type file --follow --color=always'.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0)

@@ -237,7 +237,7 @@
 
   (general-def
     :states '(emacs motion)
-    :prefix "£"
+    :prefix "C-w"
     :prefix-map 'window-leader-map
     "q" 'delete-other-windows
     "t" 'split-window-horizontally

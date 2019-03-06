@@ -239,14 +239,13 @@
     :states '(emacs motion)
     :prefix "C-w"
     :prefix-map 'window-leader-map
-    "q" 'delete-other-windows
+    "o" 'delete-other-windows
     "t" 'split-window-horizontally
     "v" 'split-window-vertically
     "n" 'evil-window-down
     "e" 'evil-window-up
     "i" 'evil-window-right
     "h" 'evil-window-left
-    "o" 'other-window
     ";" 'other-frame
     ">" 'next-buffer
     "<" 'previous-buffer
@@ -344,8 +343,8 @@
   :config
   (setq key-chord-two-keys-delay 0.4)
   ;; (key-chord-define evil-motion-state-map "kd" 'counsel-M-x)
-  (key-chord-define evil-insert-state-map "[[" 'save-buffer)
-  (key-chord-define evil-motion-state-map "[[" 'save-buffer)
+  (key-chord-define evil-insert-state-map "uu" 'save-buffer)
+  (key-chord-define evil-motion-state-map "uu" 'save-buffer)
   (key-chord-mode 1))
 
 (provide 'my-evil)

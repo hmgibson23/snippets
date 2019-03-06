@@ -11,6 +11,9 @@ endef
 pacman_install:
 	$(PAC) ${pkg}
 
+terminal_pkgs:
+	$(PAC) ${terminal_pkgs}
+
 xbps_install:
 	$(XBPS) ${pkg}
 

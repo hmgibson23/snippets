@@ -1,0 +1,9 @@
+application/msword; /Users/wcm1/Scripts/viewattach.sh %s "-" '/Applications/TextEdit.app' ; print=/Users/wcm1/Scripts/printattach.sh %s
+
+application/vnd.openxmlformats-officedocument.wordprocessingml.document; /Users/wcm1/Scripts/viewattach.sh %s "-" ; print=/Users/wcm1/Scripts/printattach.sh %s
+
+application/rtf; /Users/wcm1/Scripts/viewattach.sh %s "-" '/Applications/Bean.app' ; print=/Users/wcm1/Scripts/printattach.sh %s
+
+application/pdf; /Users/wcm1/Scripts/viewattach.sh %s "-" '/Applications/Preview.app' ; print=/Users/wcm1/Scripts/pdfattach.sh %s
+
+text/html; elinks -no-connect -dump -dump-charset UTF-8 -dump-width 140 -default-mime-type text/html %s; needsterminal; copiousoutput;

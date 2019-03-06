@@ -1,10 +1,12 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'airblade/vim-gitgutter'
+Plug 'scrooloose/vim-slumlord'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'markonm/traces.vim'
+Plug 'kevinhui/vim-docker-tools'
+Plug 'lambdalisue/suda.vim'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for' : 'go' }
@@ -109,3 +111,4 @@ syntax on
 source ~/.config/nvim/keybindings.vim
 source ~/.config/nvim/aliases.vim
 source  ~/.config/nvim/general.vim
+source ~/.config/nvim/functions.vim

@@ -1,0 +1,36 @@
+set realname = "Hugo Gibson"
+set from = "gibsonhugo@gmail.com"
+set use_from = yes
+set envelope_from = yes
+set header_cache = "~/.cache/mutt"
+# Can be the same folder as header_cache.
+# This will cost important disk usage according to your e-mail amount.
+set message_cachedir = "~/.cache/mutt"
+
+set mail_check = 120
+set sendmail = "msmtp -a Personal"
+set sendmail_wait = 0
+set imap_user = "gibsonhugo@gmail.com"
+set folder = "imaps://imap.gmail.com:993"
+set postponed = "+[Gmail]/Drafts"
+set spoolfile = "+INBOX"
+set ssl_force_tls = yes
+set imap_pass = `gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mutt/password.gpg`
+unset imap_passive
+set imap_keepalive = 300
+set editor = "nvim"
+set charset = "utf-8"
+set record = ''
+set send_charset = "us-ascii:utf-8"
+set text_flowed
+
+
+bind index G imap-fetch-mail
+bind pager n next-line
+bind pager e previous-line
+bind index n next-undeleted
+bind index e previous-undeleted
+macro index A "<save-message>=Archive<enter>" "Archive Message"
+
+auto_view text/html
+set mailcap_path = "~/.mutt/mailcap"

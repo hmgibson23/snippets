@@ -16,3 +16,9 @@ function! Z(...)
     exec 'cd ' . path
   endif
 endfunction
+
+" WIP this one - aim is to call fasd and choose a dir to run :Files on
+command! -nargs=* ZL lua require("hulua.init").ZLua()
+
+" Build the current Dockerfile
+command! -nargs=1 DockerBuild lua require("hulua.init").DockerBuildL("test")

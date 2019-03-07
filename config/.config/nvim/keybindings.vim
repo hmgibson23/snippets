@@ -41,15 +41,18 @@ inoremap <C-e> <C-o>A
 let mapleader = ","
 
 nnoremap <leader>cc :<C-u>Commentary<CR>
+xnoremap <leader>cc :<C-u>Commentary<CR>
 "Fzf
 nnoremap <leader>fb :<C-u>Buffers<CR>
 nnoremap <leader>fc :<C-u>Commands<CR>
 nnoremap <leader>fa :<C-u>Ag<CR>
 nnoremap <leader>fm :<C-u>Marks<CR>
 nnoremap <leader>fh :<C-u>History<CR>
+nnoremap <leader>ff :ZL<CR>
 inoremap uu <Esc>
 nnoremap <leader>tp :tabNext<CR>
 nnoremap <leader>tn :tabnew<CR>
+nnoremap <leader>tc :tabclose<CR>
 nnoremap <leader>bp :bp<CR>
 nnoremap <leader>bn :bn<CR>
 nnoremap <leader>mm :Gstatus<CR>

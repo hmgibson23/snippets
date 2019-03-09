@@ -1,0 +1,62 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  remote_user: hugo
+  vars:
+    home: /home/hugo
+    src_home: /home/hugo/git
+    applications:
+      - google-chrome
+      - mongodb
+      - minikube
+      - audacity
+      - calibre
+    cli:
+      - wget
+      - vim
+      - neovim
+      - ack
+      - git
+      - the_silver_searcher
+      - ripgrep
+      - tmux
+      - fzf
+      - fish
+      - fd
+      - emacs
+      - stow
+      - bspwm
+      - polybar
+      - rofi
+      - bat
+      - ledger
+      - pass
+      - nitrogen
+      - compton
+      - w3m
+      - neomutt
+      - msmtp
+      - arandr
+      - aspell
+      - ranger
+      - docker
+      - docker-compose
+      - mpd
+      - mopidy
+      - packer
+      - vagrant
+      - sxhkd
+
+  tasks:
+    - name: Install cli tools with Pacman
+      pacman: name={{ cli }} state=present
+      become: yes
+      become_method: sudo
+      name: cli
+
+    - name: Clone the suckless simple terminal
+      shell: |
+        cd /home/hugo/git && git clone https://git.suckless.org/st
+        rm -f ./st/config.def.h
+        ln -s /home/hugo/snippets/config.def.h /home/hugo/git/st/config.def.h
+        cd ./st && make

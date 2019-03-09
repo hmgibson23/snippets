@@ -34,7 +34,10 @@ nnoremap <C-W>h <C-W>h|xnoremap <C-W>h <C-W>h|
 nnoremap <C-W>n <C-W>j|xnoremap <C-W>n <C-W>j|
 nnoremap <C-W>e <C-W>k|xnoremap <C-W>e <C-W>k|
 nnoremap <C-W>i <C-W>l|xnoremap <C-W>i <C-W>l|
-" Operator
+"Command
+omap <C-p> <C-e>
+omap <C-n> <C-n>
+"Operator
 inoremap <C-e> <C-o>A
 "Colemak specific stuff ends here.
 

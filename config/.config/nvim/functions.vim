@@ -17,8 +17,8 @@ function! Z(...)
   endif
 endfunction
 
-" WIP this one - aim is to call fasd and choose a dir to run :Files on
+" my funs
 command! -nargs=* ZL lua require("hulua.init").ZLua()
-
+command! -nargs=* ZF lua require("hulua.init").ZFLua()
 " Build the current Dockerfile
-command! -nargs=1 DockerBuild lua require("hulua.init").DockerBuildL("test")
+command! -nargs=1 DockerBuild lua require("hulua.init").DockerBuildL(<q-args>)

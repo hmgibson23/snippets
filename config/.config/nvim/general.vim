@@ -1,8 +1,11 @@
 " Ale
 let g:ale_fix_on_save = 1
+let g:ale_open_list = 1
+let g:ale_sign_error = '✗\ '
+let g:ale_sign_warning = '⚠\ '
+let g:ale_lint_on_text_changed = 'never'
 
 " lint after 1000ms after changes are made both on insert mode and normal mode
-let g:ale_lint_on_text_changed = 'always'
 let g:ale_lint_delay = 1000
 
 let g:ale_linters = {
@@ -15,10 +18,6 @@ let g:ale_linters = {
       \  'yaml':       ['yamllint'],
       \   'go':        ['gometalinter', 'gofmt'],
       \}
-let g:ale_open_list = 1
-" use nice symbols for errors and warnings
-let g:ale_sign_error = '✗\ '
-let g:ale_sign_warning = '⚠\ '
 
 " fixer configurations
 let g:ale_fixers = {
@@ -31,12 +30,14 @@ let g:airline_powerline_fonts = 1
 " Deoplete
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#omni_patterns = {}
-let g:deoplete#omni_patterns.terraform = '[^ *\t"{=$]\w*'
-let g:terraform_align=1
 let g:deoplete#enable_at_startup = 1
 call deoplete#initialize()
 
+" python
 autocmd BufWritePre *.py :%s/\s\+$//e
+
+" go
+let g:go_fmt_options = ''
 
 function! Multiple_cursors_before()
     let b:deoplete_disable_auto_complete = 1

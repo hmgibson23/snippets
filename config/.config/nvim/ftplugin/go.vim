@@ -23,4 +23,4 @@ let g:go_metalinter_enabled = [
     \ 'vetshadow'
 \]
 
-set makeprg=go\ generate \&&\ go\ build\ -v\ &&\ go\ vet
+set makeprg=go\ build\ -v\ &&\ go\ vet

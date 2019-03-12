@@ -16,12 +16,13 @@ let g:ale_linters = {
       \  'ruby':       ['rubocop'],
       \  'scss':       ['sasslint'],
       \  'yaml':       ['yamllint'],
-      \   'go':        ['gometalinter', 'gofmt'],
+      \   'go':        ['govet', 'gofmt'],
       \}
 
 " fixer configurations
 let g:ale_fixers = {
       \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'go': ['goimports'],
       \}
 
 " Airline
@@ -31,6 +32,8 @@ let g:airline_powerline_fonts = 1
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#omni_patterns = {}
 let g:deoplete#enable_at_startup = 1
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+autocmd QuitPre * if empty(&bt) | lclose | endif
 call deoplete#initialize()
 
 " python

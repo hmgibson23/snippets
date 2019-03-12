@@ -46,13 +46,21 @@
       - packer
       - vagrant
       - sxhkd
+      - qemu
+      - ebtables
+      - dnsmasq
+      - bridge-utils
+      - virt-manager
+      - libvirt
 
   tasks:
     - name: Install cli tools with Pacman
-      pacman: name={{ cli }} state=present
+      pacman:
+        name: "{{ cli }}"
+        state: present
+        update_cache: yes
       become: yes
       become_method: sudo
-      name: cli
 
     - name: Clone the suckless simple terminal
       shell: |
@@ -60,3 +68,22 @@
         rm -f ./st/config.def.h
         ln -s /home/hugo/snippets/config.def.h /home/hugo/git/st/config.def.h
         cd ./st && make
+    - name: Simple Terminal Install
+      shell: |
+        cd  {{ src_home }}/st && sudo make install
+      become: yes
+      become_method: sudo
+
+    - name: enable libvirt
+      systemd:
+        name: libvirtd
+        state: started
+        enabled: yes
+        masked: no
+      become: yes
+      become_method: sudo
+
+    - name: Vagrant plugins
+      shell: |
+        vagrant plugin install vagrant-mutate
+        vagrant plugin install vagrant-libvirt

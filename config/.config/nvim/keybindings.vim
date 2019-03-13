@@ -52,7 +52,7 @@ nnoremap <leader>fa :<C-u>Ag<CR>
 nnoremap <leader>fm :<C-u>Marks<CR>
 nnoremap <leader>fh :<C-u>History<CR>
 nnoremap <leader>ff :ZL<CR>
-inoremap uu <Esc>
+inoremap uu <Esc>|tnoremap uu <C-\><C-n>
 nnoremap <leader>tp :tabNext<CR>
 nnoremap <leader>tn :tabnew<CR>
 nnoremap <leader>tc :tabclose<CR>

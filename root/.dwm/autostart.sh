@@ -7,3 +7,5 @@ killall nm-applet ; nm-applet &
 fluxgui &
 dunst &
 nitrogen --restore &
+
+$HOME/.dwm/status.sh &

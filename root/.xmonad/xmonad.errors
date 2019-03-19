@@ -1,0 +1,24 @@
+
+xmonad.hs:59:12: warning: [-Wdeprecations]
+    In the use of ‘defaultConfig’
+    (imported from XMonad, but defined in XMonad.Config):
+    Deprecated: "Use def (from Data.Default, and re-exported by XMonad and XMonad.Config) instead."
+   |
+59 |     $ ewmh defaultConfig
+   |            ^^^^^^^^^^^^^
+
+xmonad.hs:164:3: warning: [-Wdeprecations]
+    In the use of ‘smartSpacingWithEdge’
+    (imported from XMonad.Layout.Spacing):
+    Deprecated: "Use spacingRaw instead."
+    |
+164 |   smartSpacingWithEdge 8 $ layoutHook defaultConfig
+    |   ^^^^^^^^^^^^^^^^^^^^
+
+xmonad.hs:164:39: warning: [-Wdeprecations]
+    In the use of ‘defaultConfig’
+    (imported from XMonad, but defined in XMonad.Config):
+    Deprecated: "Use def (from Data.Default, and re-exported by XMonad and XMonad.Config) instead."
+    |
+164 |   smartSpacingWithEdge 8 $ layoutHook defaultConfig
+    |                                       ^^^^^^^^^^^^^

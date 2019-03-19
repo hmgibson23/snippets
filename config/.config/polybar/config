@@ -1,19 +1,21 @@
 [colors]
-background = #3b4252
+background = #37648A
 background-alt = #434c5e
 foreground = #dfdfdf
 foreground-alt = #555
 primary = #ffb52a
+red = #CC6666
+yellow = #F0C674
 secondary = #e60053
 alert = #bd2c40
 
 [bar/top]
-monitor = ${env:MONITOR:eDP-1}
-width = 100%
-height = 28
-;offset-x = 1%
-;offset-y = 1%
-;radius = 6.0
+monitor = ${env:MONITOR:eDP1}
+monitor-fallback = ${env:MONITOR:HDMI1}
+width = 50%
+height = 26
+radius = 0.0
+offset-x=50%
 fixed-center = false
 
 background = ${colors.background}
@@ -22,113 +24,90 @@ foreground = ${colors.foreground}
 line-size = 3
 line-color = #f00
 
-border-size =2
-border-color = #00000000
+border-size = 0
 
-padding-left = 0
+padding-left = 2
 padding-right = 2
 
-module-margin-left = 1
+module-margin-left = 2
 module-margin-right = 2
+enable-ipc = true
 
-font-0 = Droid Sans:pixelsize=11;3
-font-1 = Font Awesome 5 Free:pixelsize=11;3
-font-2 = Font Awesome 5 Free Solid:pixelsize=11;3
-font-3 = Material Design Icons:pixelsize=11;3
-font-4 = Weather Icons:size=8;1
+font-0 =  "SauceCodePro Nerd Font:size=10;3:antialias=true:autohint=true"
+font-1 =  "Wuncon Siji=10:antialias=true:autohint=true"
+font-2 =  "Hack:pixelsize=10:antialias=true:autohint=true"
 
-modules-left = bspwm memory pulseaudio
-modules-center = xwindow
-modules-right = updates-arch gmail xbacklight battery date powermenu
+modules-left = pulseaudio
+modules-center = date
+modules-right = gmail battery
 
 tray-position = right
-tray-padding = 2
+tray-padding = 1
 tray-background = ${colors.background}
 
-wm-restack = bspwm
+override-redirect = true
 
-;override-redirect = true
 
-scroll-up = bspwm-desknext
-scroll-down = bspwm-deskprev
+;; ewmh
+[module/ewmh]
+type = internal/xworkspaces
+
+pin-workspaces = false
+enable-click = true
+enable-scroll = true
+reverse-scroll = true
+
+icon-0 = net;
+icon-1 = chat;
+icon-2 = admin;
+icon-3 = srv;
+icon-4 = media;
+icon-5 = code;
+icon-6 = misc;
+icon-default = 
+icon-occupied = 
+
+format = <label-state>
+label-monitor = %icon%
+
+; active
+label-active = %icon%
+label-active-foreground = ${colors.foreground}
+label-active-background = ${colors.background}
+label-active-underline = #d79921
+label-active-padding = 2
+
+; occupied
+label-occupied = %icon%
+label-occupied-background = ${colors.background}
+label-occupied-padding = 2
+label-occupied-underline = #689d6a
+
+; urgent
+label-urgent = %icon%
+label-urgent-foreground = ${colors.foreground}
+label-urgent-background = ${colors.alert}
+label-urgent-underline = ${colors.alert}
+label-urgent-padding = 2
+
+; empty
+label-empty = %icon%
+label-empty-foreground = ${colors.foreground}
+label-empty-padding = 2
+
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+
+[module/workspaces-xmonad]
+type = custom/script
+exec = tail -F /tmp/.xmonad-workspace-log
+exec-if = [ -p /tmp/.xmonad-workspace-log ]
+tail = true
+enable-click = true
 
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:30:...%
-
-[module/xkeyboard]
-type = internal/xkeyboard
-blacklist-0 = num lock
-
-format-prefix = " "
-format-prefix-foreground = ${colors.foreground}
-
-label-layout = %name%
-
-label-indicator-padding = 2
-label-indicator-margin = 1
-label-indicator-background = ${colors.secondary}
-label-indicator-underline = ${colors.secondary}
-
-[module/filesystem]
-type = internal/fs
-interval = 25
-
-mount-0 = /
-format-mounted = <label-mounted>
-format-mounted-prefix =" "
-format-mounted-prefix-font = 4
-format-mounted-prefix-foreground = #1368f2
-label-mounted = [%fsname%] %{F#0a81f5}%mountpoint%%{F-}: %free%
-label-unmounted = %mountpoint% not mounted
-label-unmounted-foreground = ${colors.foreground-alt}
-
-[module/bspwm]
-type = internal/bspwm
-
-label-focused = %name%
-label-focused-background = ${colors.background-alt}
-label-focused-underline= ${colors.primary}
-label-focused-padding = 2
-label-occupied = %name%
-label-occupied-padding = 2
-
-label-urgent = %name%!
-label-urgent-background = ${colors.alert}
-label-urgent-padding = 2
-
-label-empty =
-
-[module/i3]
-type = internal/i3
-format = <label-state> <label-mode>
-index-sort = true
-wrapping-scroll = false
-
-label-mode-padding = 2
-label-mode-foreground = #000
-label-mode-background = ${colors.primary}
-
-; focused = Active workspace on focused monitor
-label-focused = %index%
-label-focused-background = ${module/bspwm.label-focused-background}
-label-focused-underline = ${module/bspwm.label-focused-underline}
-label-focused-padding = ${module/bspwm.label-focused-padding}
-
-; unfocused = Inactive workspace on any monitor
-label-unfocused = %index%
-label-unfocused-padding = ${module/bspwm.label-occupied-padding}
-
-; visible = Active workspace on unfocused monitor
-label-visible = %index%
-label-visible-background = ${self.label-focused-background}
-label-visible-underline = ${self.label-focused-underline}
-label-visible-padding = ${self.label-focused-padding}
-
-; urgent = Workspace with urgency hint set
-label-urgent = %index%
-label-urgent-background = ${module/bspwm.label-urgent-background}
-label-urgent-padding = ${module/bspwm.label-urgent-padding}
 
 [module/mpd]
 type = internal/mpd
@@ -146,56 +125,14 @@ label-song-ellipsis = true
 [module/xbacklight]
 type = internal/xbacklight
 
-format = <ramp>
-label = %percentage%%
-ramp-foreground=#e0d733
-ramp-0 =
-ramp-1 =
-ramp-2 =
-ramp-font=4
-[module/cpu]
-type = internal/cpu
-interval = 1
-format= <label>
-format-prefix=" "
-format-prefix-foreground = #7791b5
-format-padding = 1
-label = %percentage%%
-
-[module/memory]
-type = internal/memory
-format = <ramp-used>
-interval = 2
-label = %gb_used%
-
-ramp-used-0 =
-ramp-used-0-foreground=#2dcc22
-ramp-used-1 =
-ramp-used-1-foreground=#dbb362
-ramp-used-2 =
-ramp-used-2-foreground=#e2d518
-ramp-used-3 =
-ramp-used-3-foreground=#dbb362
-ramp-used-4 =
-ramp-used-4-foreground=#ff5f0a
-ramp-used-5 =
-ramp-used-5-foreground=#ff0000
-ramp-used-font=4
-
 [module/network]
 type = internal/network
 interface = wlp0s20f3
 interval = 3.0
-
 accumulate-stats = true
-
-
 format-connected = <ramp-signal>
 label-disconnected =
-
-
 format-disconnected = <label-disconnected>
-
 ramp-signal-0 =
 ramp-signal-1 =
 ramp-signal-2 =
@@ -203,22 +140,18 @@ ramp-signal-3 =
 
 [module/date]
 type = internal/date
-interval = 5
-
-date =%a %b %d%
-
+interval = 59
 time = %H:%M
 time-alt = %H:%M:%S
 
 format-time-prefix=
 format-time-prefix-foreground = ${colors.foreground-alt}
+label = %time%
 
-label = %date% %time%
 [module/pulseaudio]
 type = internal/pulseaudio
 use-ui-max = false
 interval = 5
-
 format-volume = <label-volume> <bar-volume>
 label-volume =
 label-volume-foreground = ${root.foreground}
@@ -276,18 +209,19 @@ adapter = AC
 full-at = 89
 poll-interval = 5
 format-charging = <animation-charging>
+
 label-charging = %percentage%%
 label-discharging = %percentage%%
-format-charging-underline = #ffb52a
+format-charging-underline = ${colors.yellow}
 
 format-discharging = <ramp-capacity> <label-discharging>
 
 format-full = <ramp-capacity>
-ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
-ramp-capacity-3 = 
-ramp-capacity-4 = 
+ramp-capacity-0 =
+ramp-capacity-1 =
+ramp-capacity-2 =
+ramp-capacity-3 =
+ramp-capacity-4 =
 ramp-capacity-font=4
 ramp-capacity-foreground=#279124
 
@@ -317,55 +251,16 @@ ramp-1 =
 ramp-2 =
 ramp-foreground = ${colors.secondary}
 
-[module/powermenu]
-type = custom/menu
-
-format-spacing = 1
-
-label-open =
-label-open-foreground = ${colors.secondary}
-label-close = cancel
-label-close-foreground = ${colors.secondary}
-label-separator = |
-label-separator-foreground = ${colors.foreground-alt}
-
-menu-0-0 = reboot
-menu-0-0-exec = menu-open-1
-menu-0-1 = sleep
-menu-0-1-exec = menu-open-3
-menu-0-2 = power off
-menu-0-2-exec = menu-open-2
-
-
-menu-3-0 = cancel
-menu-3-0-exec = menu-open-0
-menu-3-1 = suspend
-menu-3-1-exec = systemctl suspend
-menu-3-2 = hibernate
-menu-3-2-exec = systemctl hibernate
-
-menu-1-0 = cancel
-menu-1-0-exec = menu-open-0
-menu-1-1 = reboot
-menu-1-1-exec = systemctl reboot
-
-menu-2-0 = power off
-menu-2-0-exec = systemctl poweroff
-menu-2-1 = cancel
-menu-2-1-exec = menu-open-0
-
 [module/gmail]
 type = custom/script
-exec = ~/.config/polybar/check-mail.sh
-tail = false
-click-left = xdgopen https://mail.google.com
+exec = $HOME/.config/polybar/check-mail.sh
+tail = true
 
 [module/updates-arch]
 type = custom/script
 exec = ~/.config/polybar/updates-arch.sh
 interval = 600
 format = <label>
-format-prefix=" "
 
 [module/isactive-bluetooth]
 type = custom/script
@@ -399,7 +294,7 @@ screenchange-reload = true
 ;compositing-border = over
 
 [global/wm]
-margin-top = 5
-margin-bottom = 5
+margin-top = 2
+margin-bottom = 2
 
 ; vim:ft=dosini

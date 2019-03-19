@@ -1,28 +1,60 @@
 #!/bin/bash
 
-clock() {
-    echo $(date +"%H:%M %p ")
+init_daemons () {
+# mail daemon
+dash -c 'while true ; do
+    mail=$(checkmail)
+    echo -n "$mail" > /tmp/bar/mail
+    sleep 60
+    done' > /dev/null 2>&1 &
+
+# vol daemon
+dash -c 'while true; do
+    vol > /tmp/bar/vol
+    sleep 2
+done' &
+
+
+    # time_daemon
+    dash -c 'while date "+%a, %I:%M" > /tmp/bar/date
+        do sleep 59
+    done' &
 }
 
-volume() {
-    NOTMUTED=$(amixer -M | head -5 | grep "\[on\]")
-    AUDIO=$(amixer -M | head -5 | grep -o -m 1 -E "[[:digit:]]+%")
+get_mail() {
+    if [ -f /tmp/bar/mail ] ; then
+         mail="$(< /tmp/bar/mail)"
+         if [ "$mail" -gt "0" ] ; then
+             echo -e "\x04"
+         else
+             echo ""
+         fi
+    fi
+}
 
+
+clock() {
+    echo $(date +"%I:%M")
+}
+
+vol() {
+    NOTMUTED=$(amixer -M | head -5 | grep "\[on\]")
+    vol="$(< /tmp/bar/vol)"
     if [ -z "$NOTMUTED" ];
     then
-        echo " muted "
+        echo -e ""
     else
-        case "$AUDIO" in
-            0%|[0-9]%) echo " $AUDIO " ;;
-            1?%|2?%|3?%) echo " $AUDIO " ;;
-            4?%|5?%|6?%) echo " $AUDIO " ;;
-            *) echo " $AUDIO " ;;
+        case ${vol%??} in
+            10|[5-9]) echo -e "\x03\\uf028 $vol" ;;
+            [1-4]) echo -e "\x03\\uf027 $vol" ;;
+            *) echo -e "\x03\\uf026 $vol"
         esac
     fi
 }
 
+init_daemons
 while true
 do
-    xsetroot -name " $(clock)                                                                                                     $(volume)"
-    sleep 1
+    xsetroot -name "$(< /tmp/bar/date)                                     $(get_mail) | $(vol)"
+    sleep 3
 done

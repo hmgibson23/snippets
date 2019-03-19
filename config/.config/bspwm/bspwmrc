@@ -9,9 +9,6 @@ xmodmap $HOME/.Xmodmap
 sxhkd -m -1 -t -c $HOME/.config/sxhkd/sxhkdrc $HOME/.config/sxhkd/sxhkdrc_bspwm &
 
 xautolock -disable
-# xautolock -detectsleep \
-#           -locker   "slock" \
-#           -killtime 10 -killer "systemctl suspend" &
 
 bspc monitor -d I II III IV V VI VII VIII
 bspc monitor HDMI1 -d IX X
@@ -32,7 +29,7 @@ compton &
 killall nm-applet ; nm-applet &
 fluxgui &
 dunst &
-nitrogen --restore &
+$HOME/.fehbg &
 $HOME/.config/polybar/launch.sh
 # $HOME/.config/mopidy/launch.sh
 # emacs --daemon &

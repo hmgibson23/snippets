@@ -1,0 +1,10 @@
+set from = "hugo@stygos.com"
+set use_from = yes
+set envelope_from = yes
+set sendmail = "msmtp -a Stygos"
+set sendmail_wait = 0
+set imap_user = "hugo@stygos.com"
+set folder = "imaps://imap.zoho.com:993"
+set spoolfile = "+INBOX"
+set ssl_force_tls = yes
+set imap_pass = `gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mutt/password-zoho.gpg`

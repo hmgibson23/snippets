@@ -7,6 +7,7 @@ setlocal shiftwidth=4
 setlocal spell
 setlocal tabstop=4
 setlocal wrap
+setlocal tw=100
 
 let g:limelight_conceal_ctermfg = 'gray'
 let g:limelight_conceal_guifg = 'DarkGray'

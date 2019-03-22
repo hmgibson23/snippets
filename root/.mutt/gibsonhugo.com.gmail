@@ -1,0 +1,13 @@
+set from = "gibsonhugo@gmail.com"
+set use_from = yes
+set envelope_from = yes
+set sendmail = "msmtp -a Personal"
+set sendmail_wait = 0
+set imap_user = "gibsonhugo@gmail.com"
+set folder = "imaps://imap.gmail.com:993"
+set postponed = "+[Gmail]/Drafts"
+set spoolfile = "+INBOX"
+set ssl_force_tls = yes
+set imap_pass = `gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.mutt/password.gpg`
+set record="+[Gmail]/Sent Mail"
+mailboxes =INBOX =[Gmail]/Sent\ Mail =[Gmail]/Drafts =[Gmail]/Spam =[Gmail]/Trash =[Gmail]/HWMG\ Receipts

@@ -15,11 +15,10 @@ import Control.Monad (forM_, join)
 import XMonad.Util.Run (safeSpawn)
 import XMonad.Util.NamedWindows (getName)
 import qualified XMonad.StackSet as W
-
+import XMonad.Util.NamedScratchpad
 import XMonad.Util.EZConfig (additionalKeys)
 import XMonad.Util.Run (spawnPipe, safeSpawn)
 import XMonad.Util.SpawnOnce (spawnOnce)
-import XMonad.Util.Scratchpad
 
 import XMonad.Layout
 import XMonad.Layout.Gaps
@@ -44,6 +43,7 @@ import XMonad.Layout.MultiColumns
 import Graphics.X11.ExtraTypes.XF86
 import System.IO
 import XMonad.Actions.CycleWS
+import XMonad.Actions.SpawnOn
 import XMonad.Actions.UpdatePointer
 import qualified XMonad.StackSet as W
 -- }}}
@@ -102,7 +102,7 @@ barFgColor    = fgColor
 hintColor     = layoutColor
 
 ---- Panel
-leftBarSize   = monitor 0.5
+leftBarSize   = monitor 1
 leftBarPos    = "0"
 barHeight     = "26"
 
@@ -110,7 +110,8 @@ barHeight     = "26"
 eventHook     = fullscreenEventHook
 layoutHook'   = myLayoutHook
 logHook'      = myLogHook
-manageHook'   = myManageHook <+> manageScratchPad
+manageHook'   = myManageHook
+-- namedScratchpadManageHook scratchpads <+>
 startupHook'  = myStartupHook
 -- }}}
 
@@ -167,7 +168,7 @@ wideLayout = named "wide" $ avoidStruts $ Mirror standardLayout
 singleLayout = named "single" $ avoidStruts $ noBorders Full
 fullscreenLayout = named "fullscreen" $ noBorders Full
 termLayout = gaps [(L,50), (U,50), (R,50), (D,50)] $ standardLayout
-gridLayout = gaps [(L,50), (U,50), (R,50), (D,50)] $ Grid
+gridLayout = named "grid" $ gaps [(L,50), (U,50), (R,50), (D,50)] $ Grid
 extra = simpleTabbed ||| simpleFloat ||| Accordion
 
 myLayoutHook =
@@ -188,9 +189,9 @@ myManageHook =
     [
       [ className =? c --> doShift (w !! 8) | c <- inetApp ]
     , [ className =? c --> doShift (w !! 2) | c <- devApp ]
-    , [ className =? c --> doShift (w !! 3) | c <- entApp ]
-    , [ className =? c --> doShift (w !! 4) | c <- playApp ]
+    , [ className =? c --> doShift (w !! 4) | c <- entApp ]
     , [ className =? c --> doShift (w !! 5) | c <- prodApp ]
+    , [ className =? c --> doShift (w !! 6) | c <- mailApp ]
     , [ className =? c --> doShift (w !! 7) | c <- chatApp ]
     , [ className =? c --> doFloat          | c <- floatingApp ]
     , [ className =? c --> doIgnore         | c <- ignoreApp ]
@@ -202,52 +203,31 @@ myManageHook =
     where
       w = workspaces'
       isRole = stringProperty "WM_WINDOW_ROLE" =? "pop-up"
-      inetApp = ["Chromium", "Firefox"]
+      inetApp = ["Chromium", "Firefox", "Transmission"]
       chatApp = ["Slack", "Keybase"]
       devApp =
-        [ "VirtualBox Manager"
-        , "VirtualBox Machine", "Emacs"
-        ]
+        [ "VirtualBox Manager", "VirtualBox Machine", "Emacs"]
       entApp = ["MPlayer", "smplayer", "mpv", "Gimp", "VLC"]
-      playApp = ["player", "Genymotion Player"]
       prodApp = ["zathura"]
+      mailApp = ["mail"]
       floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
       ignoreApp = ["desktop", "desktop_window", "stalonetray", "trayer"]
   -- }}}
 
 -- Scratchpad {{{
-manageScratchPad :: ManageHook
-manageScratchPad = scratchpadManageHook (W.RationalRect l t w h)
-  where
-    h = 0.3
-    w = 1
-    t = 1 - h
-    l = 1 - w
+scratchpads = [
+    NS "bash" "st -e bash" (title =? "bash") defaultFloating ,
+    NS "mksh" "st -e mksh" (title =? "mksh") defaultFloating ,
+    NS "surf" "surf" (title =? "surf") defaultFloating ]
+      where role = stringProperty "WM_WINDOW_ROLE"
 -- }}}
 
 
 -- Startup Hook {{{
 myStartupHook = do
   spawnOnce "$HOME/.xmonad/autostart.sh"
-  spawnOnce "feh --bg-fill $HOME/.xmonad/background.jpg"
   spawnOnce "xsetroot -cursor_name left_ptr"
 -- }}}
---
---
-eventLogHook = do
-  winset <- gets windowset
-  title <- maybe (return "") (fmap show . getName) . W.peek $ winset
-  let currWs = W.currentTag winset
-  let wss = map W.tag $ W.workspaces winset
-  let wsStr = join $ map (fmt currWs) $ sort' wss
-
-  io $ appendFile "/tmp/.xmonad-title-log" (title ++ "\n")
-  io $ appendFile "/tmp/.xmonad-workspace-log" (wsStr ++ "\n")
-
-  where fmt currWs ws
-          | currWs == ws = "[" ++ ws ++ "]"
-          | otherwise    = " " ++ ws ++ " "
-        sort' = sortBy (compare `on` (!! 0))
 
 -- Keymapping {{{
 -- /usr/include/X11/keysymdef.h
@@ -266,8 +246,10 @@ myKeys =
   , ((m, xK_BackSpace), focusUrgent)
   , ((m, xK_equal), toggleWS)
   , ((m, xK_grave), toggleWS)
-  , ((m, xK_minus), scratchPad)
   , ((m, xK_f), sendMessage $ Toggle FULL)
+  , ((m .|. c , xK_m), namedScratchpadAction scratchpads "mksh")
+  , ((m .|. c , xK_b), namedScratchpadAction scratchpads "bash")
+  , ((m .|. c , xK_s), namedScratchpadAction scratchpads "surf")
   , ((0, xF86XK_AudioLowerVolume), spawn "amixer -D pulse sset Master 5%-")
   , ((0, xF86XK_AudioRaiseVolume), spawn "amixer -D pulse sset Master 5%+")
   , ((0, xF86XK_AudioMute          ), spawn "amixer -D pulse sset Master toggle")
@@ -289,5 +271,4 @@ myKeys =
       \ -sb '" ++ layoutColor ++ "'"
       where
         fn = "Misc Termsyn.Icons:size=18"
-    scratchPad = scratchpadSpawnActionTerminal term
 -- }}}

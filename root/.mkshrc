@@ -1,0 +1,55 @@
+export PATH="$HOME/.pyenv/bin:$HOME/.local/share/bin:$HOME/.cask/bin:$HOME/.rbenv/bin:$HOME/.rbenv/shims:$HOME/git/newsuk/go/bin:$PATH"
+
+HISTFILE="$HOME/.mksh_history"
+HISTSIZE=100000
+
+# functions
+zd() {
+    local dir
+    dir="$(fasd -Rdl "$1" | fzf -1 -0 --no-sort +m)" && cd "${dir}" || return 1
+}
+
+v() {
+    local file
+    file="$(fasd -Rfl "$1" | fzf -1 -0 --no-sort +m)" && $EDITOR "${file}" || return 1
+}
+
+# exports
+export EDITOR="nvim"
+export BLOCKSIZE=K
+export PAGER=less
+export LESS='--ignore-case --LONG-PROMPT --SILENT --no-init --no-lessopen'
+export MANWIDTH=80
+export LS_COLORS="no=00:fi=00:di=34:ln=01;31:pi=34;43:so=31;43:bd=30;43:cd=30;43:or=01;35:ex=31:"
+export GREP_COLOR=31
+export GREP_COLORS="ms=31:mc=31:sl=0:cx=0:fn=0:ln=0:bn=0:se=0"
+
+
+# aliases
+alias k='kubectl'
+alias ec='emacsclient'
+alias nv='nvim'
+alias nmail='neomutt'
+alias make='nice -n 20 make'
+alias ag='ag -S --color-match 31 --color-line-number 35 --color-path 1\;4'
+alias ff='fzf'
+
+# keybindings
+bind '^e'=up-history
+bind '^n'=down-history
+bind '^w'=forward-word
+bind '^b'=backward-word
+
+# inits
+eval "$(fasd --init auto)"
+
+# options
+set -o utf8-mode
+set -o notify
+set -o vi-tabcomplete
+
+# prompt
+source "$HOME/.polyglot.sh"
+
+# fzf is de best
+source "$HOME/.config/fzf/mksh/key-bindings.mksh"

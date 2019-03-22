@@ -76,7 +76,7 @@ main = do
 
 ---- Simple stuff
 modm          = mod4Mask
-term          = "st -e fish"
+term          = "st -e mksh"
 mouseFocus    = False
 workspaces'   = myWorkspaces
 keyboard      = myKeys

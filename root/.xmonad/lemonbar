@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # on exit, kill all children
+BIN_PATH="$BIN_PATH"
 trap 'pkill -P $$' EXIT
 LC_ALL=""
 
@@ -81,12 +82,12 @@ bvol() {
     esac
 }
 
-$HOME/.local/share/bin/vol > /tmp/bar/vol
+$BIN_PATH/vol > /tmp/bar/vol
 
 launch_daemons() {
     # vol daemon
     bash -c 'while true ; do
-    $HOME/.local/share/bin/vol > /tmp/bar/vol
+    $BIN_PATH/vol > /tmp/bar/vol
     sleep 10
     done' > /dev/null 2>&1 &
     # net_daemon
@@ -121,12 +122,12 @@ launch_daemons() {
 
     # mail daemon
     dash -c 'while true ; do
-      echo $($HOME/.local/share/bin/checkmail) > /tmp/bar/mail
+      echo $($BIN_PATH/checkmail) > /tmp/bar/mail
         sleep 45
     done' > /dev/null 2>&1 &
 
     # battery_daemon
-    dash -c '[ $($HOME/.local/share/bin/bperc) = NONE ] && exit ;
+    dash -c '[ $($BIN_PATH/bperc) = NONE ] && exit ;
         while true ; do
         if $(case $(uname) in
                 Linux)   test $(cat /sys/class/power_supply/AC/online) -eq 1 ;;
@@ -135,7 +136,7 @@ launch_daemons() {
         then
             bat="\\uf492"
         else
-            perc=$($HOME/.local/share/bin/bperc)
+            perc=$($BIN_PATH/bperc)
             case ${perc%?} in
                 [8-9]) bat="%{F$green}\\uf240" ;;
                 [6-7]) bat="%{F$green}\\uf241" ;;
@@ -153,6 +154,12 @@ launch_daemons() {
     dash -c 'while date "+%a, %R" > /tmp/bar/date
         do sleep 30
     done' &
+
+
+    # updates daemon
+    dash -c 'while $($BIN_PATH/void-updates) > /tmp/bar/updates
+      do sleep 420
+      done' > /dev/null 2>&1 &
 }
 
 get_bat() {

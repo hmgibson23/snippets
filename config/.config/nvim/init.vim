@@ -69,4 +69,5 @@ syntax on
 source ~/.config/nvim/functions.vim
 source ~/.config/nvim/keybindings.vim
 source ~/.config/nvim/aliases.vim
+
 source  ~/.config/nvim/general.vim

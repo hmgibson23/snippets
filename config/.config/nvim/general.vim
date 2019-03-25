@@ -71,7 +71,7 @@ augroup Shebang
 augroup END
 
 " Change directory
-autocmd BufEnter * silent! lcd %:p:h
+" autocmd BufEnter * silent! lcd %:p:h
 
 " deoplete
 let g:deoplete#omni#input_patterns = {}

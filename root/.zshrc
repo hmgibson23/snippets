@@ -26,11 +26,6 @@ v() {
     file="$(fasd -Rfl "$1" | fzf -1 -0 --no-sort +m)" && $EDITOR "${file}" || return 1
 }
 
-# fh - repeat history
-fh() {
-  eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
-}
-
 source $ZSH/oh-my-zsh.sh
 
 alias loadrbenv= "rbenv init -"
@@ -49,8 +44,6 @@ bindkey '^I' emacs-forward-word
 bindkey '^H' emacs-backward-word
 bindkey '^N' down-line-or-history
 bindkey '^E' up-history
-zle -N fh fh
-bindkey '^R' fh
 #
 bindkey -s '^X^Z' '%-^M'
 bindkey '^[^I' reverse-menu-complete

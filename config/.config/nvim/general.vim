@@ -1,8 +1,8 @@
 " Ale
 let g:ale_fix_on_save = 1
 let g:ale_open_list = 1
-let g:ale_sign_error = '✗\ '
-let g:ale_sign_warning = '⚠\ '
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '/'
 let g:ale_lint_on_text_changed = 'never'
 
 " lint after 1000ms after changes are made both on insert mode and normal mode

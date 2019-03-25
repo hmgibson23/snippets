@@ -3,6 +3,9 @@ export PATH="$HOME/.pyenv/bin:$HOME/.local/share/bin:$HOME/.cask/bin:$HOME/.rben
 HISTFILE="$HOME/.mksh_history"
 HISTSIZE=100000
 
+eval `gpg-agent --daemon`
+eval `keychain --eval gpg`
+
 # functions
 zd() {
     local dir

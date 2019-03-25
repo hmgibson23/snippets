@@ -51,11 +51,11 @@ init() {
 
 
 
-   ft1="SauceCodePro Nerd Font:size=10:antialias=true:autohint=true"
-   ft2="Wuncon Siji=10:antialias=true:autohint=true"
-   ft3="Wuncon Siji=10:antialias=true:autohint=true"
-   ft4="SauceCodePro Nerd Font:size=10:antialias=true:autohint=true"
-   ft5="SauceCodePro Nerd Font:size=10:antialias=true:autohint=true"
+   ft1="SauceCodePro Nerd Font:size=9:antialias=true:autohint=true"
+   ft2="Wuncon Siji=9:antialias=true:autohint=true"
+   ft3="Wuncon Siji=9:antialias=true:autohint=true"
+   ft4="SauceCodePro Nerd Font:size=9:antialias=true:autohint=true"
+   ft5="SauceCodePro Nerd Font:size=9:antialias=true:autohint=true"
 }
 
 layout() {
@@ -90,7 +90,7 @@ launch_daemons() {
     sleep 10
     done' > /dev/null 2>&1 &
     # net_daemon
-    bash -c 'while true ; do
+    dash -c 'while true ; do
         pgrep -x openvpn > /dev/null &&
             echo -n "\\uf023 $(cat /tmp/vpn)" > /tmp/bar/vpn ||
             echo -n "\\uf09c None" > /tmp/bar/vpn
@@ -109,7 +109,7 @@ launch_daemons() {
     done' > /dev/null 2>&1 &
 
     # music daemon
-    bash -c 'while true ; do
+    dash -c 'while true ; do
         if pgrep -x mpv > /dev/null ; then
             tmpsong=$(dash ~/bin/song 60 "")
             echo -n $tmpsong > /tmp/bar/song
@@ -120,13 +120,13 @@ launch_daemons() {
     done' > /dev/null 2>&1 &
 
     # mail daemon
-    bash -c 'while true ; do
+    dash -c 'while true ; do
       echo $($HOME/.local/share/bin/checkmail) > /tmp/bar/mail
         sleep 45
     done' > /dev/null 2>&1 &
 
     # battery_daemon
-    bash -c '[ $($HOME/.local/share/bin/bperc) = NONE ] && exit ;
+    dash -c '[ $($HOME/.local/share/bin/bperc) = NONE ] && exit ;
         while true ; do
         if $(case $(uname) in
                 Linux)   test $(cat /sys/class/power_supply/AC/online) -eq 1 ;;
@@ -150,7 +150,7 @@ launch_daemons() {
     done' > /dev/null 2>&1 &
 
     # time_daemon
-    bash -c 'while date "+%a, %R" > /tmp/bar/date
+    dash -c 'while date "+%a, %R" > /tmp/bar/date
         do sleep 30
     done' &
 }

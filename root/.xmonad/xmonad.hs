@@ -76,7 +76,7 @@ main = do
 
 ---- Simple stuff
 modm          = mod4Mask
-term          = "st -e mksh"
+term          = "st -e zsh"
 mouseFocus    = False
 workspaces'   = myWorkspaces
 keyboard      = myKeys
@@ -86,7 +86,7 @@ browser       = "surf"
 bdrSize       = 0
 bdrNormal     = fgColor
 bdrFocus      = bgColor
-font          = "SauceCodePro Nerd Font:size=12:antialias=true:autohint=true"
+font          = "SauceCodePro Nerd Font:size=9:antialias=true:autohint=true"
 monitorSize   = 1980
 monitor n     = show(round(monitorSize * n))
 monitor' n    = round(monitorSize * n)
@@ -250,9 +250,9 @@ myKeys =
   , ((m .|. c , xK_m), namedScratchpadAction scratchpads "mksh")
   , ((m .|. c , xK_b), namedScratchpadAction scratchpads "bash")
   , ((m .|. c , xK_s), namedScratchpadAction scratchpads "surf")
-  , ((0, xF86XK_AudioLowerVolume), spawn "amixer -D pulse sset Master 5%-")
-  , ((0, xF86XK_AudioRaiseVolume), spawn "amixer -D pulse sset Master 5%+")
-  , ((0, xF86XK_AudioMute          ), spawn "amixer -D pulse sset Master toggle")
+  , ((0, xF86XK_AudioLowerVolume), spawn "amixer sset Master 5%-")
+  , ((0, xF86XK_AudioRaiseVolume), spawn "amixer sset Master 5%+")
+  , ((0, xF86XK_AudioMute          ), spawn "amixer sset Master toggle")
   , ((0, xF86XK_MonBrightnessDown), spawn "light -U 10")
   , ((0, xF86XK_MonBrightnessUp), spawn "light -A 10")
   ]

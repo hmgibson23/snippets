@@ -34,6 +34,7 @@ alias k="kubectl"
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
 alias tmux="TERM=screen-256color-bce tmux"
 alias nv="nvim"
+alias k_compl="source <(kubectl completion zsh)"
 # eval "$(pyenv init -)"
 # eval "$(pyenv virtualenv-init -)"
 eval "$(fasd --init auto)"
@@ -53,6 +54,5 @@ bindkey '^I' complete-word
 ## Fix weird sequence that rxvt produces
 bindkey -s '^[[Z' '\t'
 
-source <(kubectl completion zsh)  # setup autocomplete in zsh into the current shell
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

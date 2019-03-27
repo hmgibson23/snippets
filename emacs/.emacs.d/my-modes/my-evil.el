@@ -1,23 +1,26 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package evil
   :ensure t
+  :after general
+
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
-  :config
-  (setq evil-want-C-i-jump nil)
-  (fset 'evil-visual-update-x-selection 'ignore)
   (general-evil-setup)
   (evil-mode 1)
-  ;; (global-evil-mc-mode  1)
-  (with-eval-after-load 'evil
-    (require 'evil-anzu))
+
+  :config
+  (setq evil-want-C-i-jump nil)
+(with-eval-after-load 'evil
+  (require 'evil-anzu))
 
   ;; global keybindings
+  (keyboard-translate ?\C-x ?\C-u)
+  (keyboard-translate ?\C-g ?\C-c)
+  (keyboard-translate ?\C-c ?\C-g)
 
   ;; evil specific
   (general-mmap
-    "gc" 'compile
     ;; search commands
     "gs%" 'anzu-query-replace
     "gse" 'replace-string
@@ -82,8 +85,7 @@
     :prefix-map 'exec-leader-map
     "gr" 'go-rename
     "gd" 'godoc-at-point
-    "gj" 'godef-jump
-    )
+    "gj" 'godef-jump)
 
   (exec-leader
     :states 'motion
@@ -132,7 +134,6 @@
     "bk" 'ido-kill-buffer
     "br" 'revert-buffer
     "bo" 'ivy-switch-buffer-other-window
-    "by" 'indent-buffer
     "bs" 'ivy-switch-buffer
     "bl" 'list-buffers
     "bi" 'ibuffer
@@ -148,6 +149,9 @@
 
     "mu" 'evil-mc-undo-all-cursors
     "m." 'evil-mc-make-cursor-move-next-line
+
+
+    "gc" 'compile
 
     "zxx" 'er/expand-region
     "ci" 'counsel-ibuffer
@@ -178,7 +182,7 @@
 
     "son" 'scroll-other-window
     "sop" 'scroll-other-window-down
-    "ff" 'counsel-find-file
+    "ff" 'find-file
     "fr" 'counsel-recentf
     "fF" 'find-file-other-window
     "fl" 'find-file-literally
@@ -240,8 +244,8 @@
     :prefix "C-w"
     :prefix-map 'window-leader-map
     "o" 'delete-other-windows
-    "t" 'split-window-horizontally
-    "v" 'split-window-vertically
+    "t" 'split-window-vertically
+    "v" 'split-window-horizontally
     "n" 'evil-window-down
     "e" 'evil-window-up
     "i" 'evil-window-right
@@ -254,50 +258,55 @@
     "bi" 'buf-move-right
     "bh" 'buf-move-left)
 
-
   (evil-set-initial-state 'elfeed-search-mode 'emacs)
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
-  (evil-set-initial-state 'dired-mode 'emacs)
-  (evil-set-initial-state 'sql 'emacs))
 
-(use-package evil-avy
-  :after evil
-  :ensure t
-  :defer 1
-  :config
-  (evil-avy-mode))
+  (use-package evil-goggles
+    :defer 1
+    :config
+    (evil-goggles-use-diff-faces)
+    (evil-goggles-mode))
 
-(use-package evil-surround
-  :ensure t
-  :defer 1
-  :config
-  (global-evil-surround-mode 1))
+  (use-package evil-magit
+    :defer 1
+    :config
+    (setq evil-magit-use-y-for-yank nil))
 
-(use-package evil-goggles
-  :ensure t
-  :defer 1
-  :config
-  (evil-goggles-use-diff-faces)
-  (evil-goggles-mode))
+  (use-package evil-expat
+    :defer 1
+    :defer 1)
 
-;; (use-package evil-magit
-;;   :defer 1
-;;   :config
-;;   (setq evil-magit-use-y-for-yank nil))
+  (use-package evil-collection
+    :after evil
+    :defer t
+    :config
+    (evil-collection-init))
 
-(use-package evil-expat
-  :defer 1
-  :ensure t
-  :defer 1)
+  (use-package evil-commentary
+    :after evil
+    :defer t
+    :config
+    (evil-commentary-mode))
 
-(use-package evil-ledger
-  :defer 1)
-(use-package evil-numbers
-  :defer 1)
+  (use-package evil-ledger
+    :defer 1)
+
+  (use-package evil-numbers
+    :defer 1)
+
+  (use-package evil-easymotion
+    :defer 1
+    :config
+    (evilem-default-keybindings ",,"))
+
+  (use-package evil-surround
+    :defer 1
+    :config
+    (global-evil-surround-mode 1))
 
 (use-package evil-colemak-basics
-  :after evil
+  :after (evil general)
   :defer 1
   :config
   (global-evil-colemak-basics-mode 1)
@@ -330,21 +339,22 @@
     "C-n" 'term-send-up
     "C-e" 'term-send-down)
 
-  (general-mmap
+  (general-nmap
     "j" 'evil-forward-WORD-end)
 
   (general-def
     :keymaps 'ivy-minibuffer-map
     "C-n" 'ivy-next-line
-    "C-e" 'ivy-previous-line))
+    "C-e" 'ivy-previous-line)))
+
 
 (use-package key-chord
   :after evil
   :config
   (setq key-chord-two-keys-delay 0.4)
-  ;; (key-chord-define evil-motion-state-map "kd" 'counsel-M-x)
-  (key-chord-define evil-insert-state-map "uu" 'save-buffer)
-  (key-chord-define evil-motion-state-map "uu" 'save-buffer)
+  (key-chord-define evil-insert-state-map "uu" 'evil-normal-state)
+  (key-chord-define evil-motion-state-map "uu" 'evil-normal-state)
   (key-chord-mode 1))
+
 
 (provide 'my-evil)

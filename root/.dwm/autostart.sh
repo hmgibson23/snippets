@@ -10,4 +10,3 @@ killall nm-applet ; nm-applet &
 fluxgui &
 dunst &
 $HOME/.fehbg &
-$HOME/.config/polybar/launch.sh &

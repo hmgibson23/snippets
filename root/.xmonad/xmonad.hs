@@ -92,7 +92,7 @@ monitor n     = show(round(monitorSize * n))
 monitor' n    = round(monitorSize * n)
 
 ----- WHAT COLOR?
-bgColor       = "#B79288"
+bgColor       = "#4f4847"
 fgColor       = "#F2EBEA"
 layoutColor   = "#AA3355"
 wsBgColor     = "#f1f3f4"
@@ -261,7 +261,7 @@ myKeys =
     s = shiftMask
     c = controlMask
     slock = "slock"
-    rofi = "rofi -show drun"
+    rofi = "$HOME/.xmonad/rofi.sh"
     dmenu =
       "dmenu_run -i \
       \ -fn '" ++ fn ++ "' \

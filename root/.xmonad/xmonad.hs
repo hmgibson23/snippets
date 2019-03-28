@@ -208,7 +208,7 @@ myManageHook =
       devApp =
         [ "VirtualBox Manager", "VirtualBox Machine", "Emacs"]
       entApp = ["MPlayer", "smplayer", "mpv", "Gimp", "VLC"]
-      prodApp = ["zathura"]
+      prodApp = ["zathura", "Audacity", "Calibre"]
       mailApp = ["mail"]
       floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
       ignoreApp = ["desktop", "desktop_window", "stalonetray", "trayer"]

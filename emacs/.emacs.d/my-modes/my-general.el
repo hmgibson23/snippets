@@ -57,27 +57,6 @@
   (add-to-list 'company-backends 'company-ghc)
   (add-to-list 'company-backends 'company-web-html))
 
-(use-package auto-complete
-  :defer t
-  :init
-  (setq tab-always-indent 'complete)
-  :config
-(setq ac-modes '(lisp-mode clojure-mode slime-mode python-mode
-                           repl-mode ruby-mode clojurescript-mode
-                           emacs-lisp-mode lisp-mode
-                           'enh-ruby-mode'web-mode))
-  (define-key ac-completing-map (kbd "C-n") 'ac-next)
-  (define-key ac-completing-map (kbd "C-e") 'ac-previous)
-  (progn (ac-config-default)
-         (ac-set-trigger-key "TAB")
-         (ac-set-trigger-key "<tab>")
-         (ac-flyspell-workaround)
-         (add-to-list 'ac-modes 'cider-mode)
-         (add-to-list 'ac-modes 'cider-repl-mode)
-         (add-hook 'cider-mode-hook 'ac-cider-setup)
-         (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-         (add-to-list 'ac-sources 'ac-source-yasnippet)))
-
 (use-package ggtags
   :defer t
   :config
@@ -191,7 +170,7 @@
 
 
 (defun lisp-setup ()
-  (auto-complete-mode)
+  (company-mode)
   (rainbow-delimiters-mode)
   (turn-on-eldoc-mode)
   (paredit-mode +1)
@@ -216,7 +195,7 @@
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'ielm-mode-hook #'auto-complete-mode))
+  (add-hook 'ielm-mode-hook #'company-mode))
 
 (use-package lisp-mode
   :ensure nil
@@ -236,7 +215,7 @@
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
-  (add-hook 'clojure-mode-hook #'auto-complete-mode)
+  (add-hook 'clojure-mode-hook #'company-mode)
   (add-hook 'clojure-mode-hook #'evil-paredit-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
   (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))

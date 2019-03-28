@@ -2,8 +2,6 @@ export ZSH="/home/hugo/.oh-my-zsh"
 
 ZSH_THEME="fishy"
 
-eval $(gpg-agent --daemon)
-
 da() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')

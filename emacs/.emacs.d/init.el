@@ -36,19 +36,6 @@
   (add-hook 'after-make-frame-functions
             (lambda (frame) (load-theme 'xresources t))))
 
-(use-package ido
-  :defer t
-  :init
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-  (setq ido-enable-flex-matching t)
-  (setq ido-show-dot-for-dired t)
-  :config
-  (ido-mode t)
-  (flx-ido-mode t)
-  (ido-vertical-mode +1)
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t))
-
 (use-package ivy
   :bind (("C-c C-r" . ivy-resume)
          ("C-x C-f" . counsel-find-file)
@@ -59,9 +46,13 @@
          (:map ivy-minibuffer-map
                ("C-r" . ivy-reverse-i-search))
          ("M-w" . ivy-kill-ring-save))
+  :init
+  (setq ivy-use-virtual-buffers t)
+(setq ivy-re-builders-alist
+        '((t . ivy--regex-plus)))
   :config
-  (setq ivy-re-builders-alist
-        '((t . ivy--regex-plus))))
+   (ivy-mode 1)
+ )
 
 (use-package window-numbering
   :config

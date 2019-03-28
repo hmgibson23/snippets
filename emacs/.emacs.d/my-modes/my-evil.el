@@ -14,8 +14,8 @@
     (require 'evil-anzu))
 
   ;; global keybindings
-  (keyboard-translate ?\C-g ?\C-c)
-  (keyboard-translate ?\C-c ?\C-g)
+ (define-key key-translation-map [?\C-g] [?\C-c])
+ (define-key key-translation-map [?\C-c] [?\C-g])
 
   ;; evil specific
   (general-mmap

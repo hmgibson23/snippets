@@ -3,9 +3,8 @@
 (use-package ruby-mode
   :defer t
   :mode "\\.rb\\'"
+  :defines (company-backends)
   :interpreter "ruby"
-  ;;  :hook ((ruby-mode inf-ruby-minor-mode ruby-end-mode inf-ruby-minor-mode inf-ruby-switch-setup yard-mode) . rspec-mode)
-
   :init
   (setq flyspell-issue-message-flg nil)
   ;; (setq rspec-use-rake-when-possible nil)
@@ -22,29 +21,14 @@
   (add-hook 'ruby-mode-hook 'robe-mode)
   (add-hook 'ruby-mode-hook 'inf-ruby-mode)
   (eval-after-load 'company
-    '(add-to-list 'company-backends 'company-inf-ruby))
-
-
-  ;; (eval-after-load 'rspec-mode
-  ;;   '(rspec-install-snippets))
-  )
+    '(add-to-list 'company-backends 'company-inf-ruby)))
 
 
 (use-package python
   :defer t
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
-  ;;  :hook ((python-mode anaconda-mode) . anaconda-eldoc-mode)
   :init
-  ;; (setq python-shell-interpreter "/usr/local/bin/ipython"
-  ;;       python-shell-interpreter-args "--simple-prompt -i"
-  ;;       python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-  ;;       python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-  ;;       python-shell-completion-setup-code
-  ;;       "from IPython.core.completerlib import module_completion"
-  ;;       python-shell-completion-module-string-code "';'.join(module_completion('''%s'''))\n"
-  ;;       python-shell-completion-string-code "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"
-  ;;       python-shell-output-filter 'ansi-color-for-comint-mode-filter)
   :config
   (defun python-add-breakpoint ()
     (interactive)

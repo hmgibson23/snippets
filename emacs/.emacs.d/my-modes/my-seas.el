@@ -6,11 +6,6 @@
   (setq c-default-style "linux")
   (setq gdb-show-main t)
   :config
-  (defun set-window-undedicated-p (window flag)
-    "Never set window dedicated."
-    flag)
-
-  (advice-add 'set-window-dedicated-p :override #'set-window-undedicated-p)
   (setq auto-mode-alist (cons '("\\.cxx$" . c++-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.hpp$" . c++-mode) auto-mode-alist))
   (add-hook 'c++-mode-hook 'irony-mode)
@@ -32,14 +27,15 @@
 
 (use-package d-mode
   :defer t
+  :defines (dmd/root)
   :config
   (add-hook 'd-mode-hook 'company-dcd-mode)
   (defun dmd-phobos-docs (f)
-    (defconst root "/usr/share/d/html/d/phobos/")
     (interactive
-     (list (completing-read "File: " (directory-files root))))
-    (message (concat root f))
-    (eww-open-file (concat root f))))
+     (list (completing-read "File: " (directory-files dmd/root))))
+    (defconst dmd/root "/usr/share/d/html/d/phobos/")
+    (message (concat dmd/root f))
+    (eww-open-file (concat dmd/root f))))
 
 (use-package irony
   :defer t
@@ -92,6 +88,7 @@
 
 (use-package rust-mode
   :defer 1
+  :defines (gbb-command-name)
   :config
   (add-hook 'rust-mode-hook
             (lambda ()

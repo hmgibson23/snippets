@@ -1,12 +1,130 @@
 ;; -*- lexical-binding: t; -*-;
+
+(use-package ispell
+  :defer t
+  :config
+  (setq flyspell-issue-welcome-flag nil)
+  (setq-default ispell-program-name "/usr/bin/aspell")
+  (setq-default ispell-list-command "list"))
+
+(use-package hydra
+  :config
+  (defhydra hydra-zoom (global-map "<f2>")
+    "zoom"
+    ("g" text-scale-increase "in")
+    ("l" text-scale-decrease "out")))
+
+(use-package dired
+  :defer t
+  :commands dired-mode
+  :config
+  (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . ""))
+  (use-package dired-subtree
+    :ensure t
+    :commands (dired-subtree-insert)))
+
+(use-package anzu
+  :defer t
+  :config
+  (global-anzu-mode))
+
+(use-package flycheck
+  :defer t
+  :hook (#'global-flycheck-mode))
+
+(use-package company
+  :defer t
+  :commands company-mode
+  :init
+  (setq tab-always-indent 'complete)
+  (setq company-global-modes '(not term-mode ac-modes))
+  (setq company-dabbrev-downcase 0)
+  (setq company-idle-delay .1)
+  (setq company-begin-commands '(self-insert-command))
+  (setq company-tooltip-limit 20)
+  (setq company-minimum-prefix-length 1)
+  (setq company-echo-delay 0)
+  (setq company-begin-commands '(self-insert-command))
+  (setq company-transformers '(company-sort-by-occurrence))
+  :config
+  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (add-to-list 'company-backends 'company-dabbrev-code)
+  (add-to-list 'company-backends 'company-yasnippet)
+  (add-to-list 'company-backends 'company-files)
+  (add-to-list 'company-backends 'company-anaconda)
+  (add-to-list 'company-backends 'company-ghc)
+  (add-to-list 'company-backends 'company-web-html))
+
+(use-package auto-complete
+  :defer t
+  :init
+  (setq tab-always-indent 'complete)
+  :config
+(setq ac-modes '(lisp-mode clojure-mode slime-mode python-mode
+                           repl-mode ruby-mode clojurescript-mode
+                           emacs-lisp-mode lisp-mode
+                           'enh-ruby-mode'web-mode))
+  (define-key ac-completing-map (kbd "C-n") 'ac-next)
+  (define-key ac-completing-map (kbd "C-e") 'ac-previous)
+  (progn (ac-config-default)
+         (ac-set-trigger-key "TAB")
+         (ac-set-trigger-key "<tab>")
+         (ac-flyspell-workaround)
+         (add-to-list 'ac-modes 'cider-mode)
+         (add-to-list 'ac-modes 'cider-repl-mode)
+         (add-hook 'cider-mode-hook 'ac-cider-setup)
+         (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+         (add-to-list 'ac-sources 'ac-source-yasnippet)))
+
+(use-package ggtags
+  :defer t
+  :config
+  (ggtags-mode +1)
+  (counsel-gtags-mode +1))
+
+(use-package ledger
+  :defer t
+  :config
+  (setq ledger-reconcile-default-commodity "£"))
+
+(use-package org
+  :defer t
+  :init
+  (add-hook 'org-mode-hook (lambda () (flyspell-mode t)))
+  :config
+
+  (setq org-default-notes-file "~/gorg/notes.org")
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/gorg/todo.org" "Tasks")
+           "* TODO %?\n %T \n %i\n" :empty-lines 1)
+          ("s" "Scheduled TODO" entry (file+headline "~/gorg/todo.org"  "Scheduled Tasks")
+           "* TODO %?\nSCHEDULED: %^t\n  %U" :empty-lines 1)
+          ("n" "Note" entry (file+headline "~/gorg/notes.org" "Notes")
+           "* NOTE %U\n  %i\n  %a" :empty-lines 1)
+          ("w" "Writing Idea" entry (file+headline "~/gorg/writing-ideas.org" "Ideas")
+           "* Idea %i\n %t " :empty-lines 1)
+          ("j" "Journal Idea" entry (file+headline "~/gorg/notes.org" "Journal Entry")
+           "* Journal \n%U\n" :empty-lines 1)
+          ("b" "Submission" entry (file+headline "~/gorg/notes.org" "Sumbit")
+           "* Submit to \n%U\n" :empty-lines 1)
+          ("p" "Pitch Note" entry (file+headline "~/gorg/writing.org" "Pitches")
+           "* Pitch to %i \n%t\n" :empty-lines 1)))
+  (setq org-log-done t)
+  (setq org-agenda-files '("~/gorg/todo.org"
+                           "~/gorg/writing.org"
+                           "~/gorg/notes.org")))
+
 (use-package plantuml-mode
   :config
   (with-eval-after-load 'flycheck
     (require 'flycheck-plantuml)
     (flycheck-plantuml-setup))
+
   (add-to-list 'auto-mode-alist '("\\.puml\\'" . plantuml-mode)))
 
-(use-package elxiir-mode
+(use-package elxir-mode
   :commands elixir-mode
   :defer t
   :init
@@ -14,38 +132,19 @@
   (add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-mode))
   (add-to-list 'auto-mode-alist '("\\.eex\\'" . elixir-mode))
   (add-hook 'elixir-mode-hook #'alchemist-mode)
-  (add-hook 'elixir-mode-hook
-            (lambda ()
-              (company-mode +1)
-              (set (make-variable-buffer-local
-                    'ruby-end-check-statement-modifiers) nil))
-            (set (make-variable-buffer-local
-                  'ruby-end-expand-keywords-before-re)
-                 "\\(?:^\\|\\s-+\\)\\(?:do\\)")))
-
+  :config
 (use-package alchemist-mode
   :commands alchemist-mode
+  :defines (alchemist-mode-map)
   :defer t
   :bind (:map alchemist-mode-map
-              ([tab] . company-complete)))
+              ([tab] . company-complete))))
 
-(use-package gotest
-  :defer t
-  :ensure t)
-(use-package go-stacktracer :defer t )
-(use-package go-add-tags :defer t )
-(use-package go-direx :defer t )
-(use-package go-dlv :defer t )
-
-;; (use-package flycheck-gometalinter
-;;   :ensure t
-;;   :config
-;;   (progn
-;;     (flycheck-gometalinter-setup)))
 
 (use-package go-mode
   :ensure t
   :defer t
+  :defines (company-backends)
   :bind (:map go-mode-map (("M-." . godef-jump)
                            ("M-*" . pop-tag-mark)
                            ("C-c g a" . go-test-current-project)
@@ -62,14 +161,22 @@
    'go-mode-hook
    (lambda ()
      (add-hook 'before-save-hook 'gofmt-before-save)
-     (add-to-list 'load-path "~/git/simba/go/goflymake")
      (set (make-local-variable 'company-backends) '(company-go))
      (company-mode +1)
      (flycheck-mode +1)
      (go-eldoc-setup)
      (if (not (string-match "go" compile-command))
          (set (make-local-variable 'compile-command)
-              "go generate && go build -v && go vet")))))
+              "go generate && go build -v && go vet"))))
+
+  (use-package gotest
+    :defer t
+    :ensure t)
+  (use-package go-stacktracer :defer t )
+  (use-package go-add-tags :defer t )
+  (use-package go-direx :defer t )
+  (use-package go-dlv :defer t )
+
 
 (use-package gorepl-mode
   :defer t
@@ -80,6 +187,8 @@
   :defer t
   :config
   (add-hook 'go-mode-hook 'company-mode))
+  )
+
 
 (defun lisp-setup ()
   (auto-complete-mode)
@@ -149,73 +258,15 @@
   (add-hook 'cider-repl-mode-hook 'eldoc-mode)
   (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode))
 
-(use-package sibiliant-mode
-  :hook (sibiliant-mode turn-on-paredit))
-
-(use-package haskell-mode
-  :defer t
-  :commands haskell-mode
-  :mode "\\.hs\\'"
-  :custom
-  (haskell-complete-module-preferred
-   '("Data.ByteString"
-     "Data.ByteString.Lazy"
-     "Data.Conduit"
-     "Data.Function"
-     "Data.List"
-     "Data.Map"
-     "Data.Maybe"
-     "Data.Monoid"
-     "Data.Ord"))
-  (haskell-tags-on-save t)
-  (company-ghc-show-info t)
-  :init
-  (setq haskell-font-lock-symbols 't)
-  (setq ghc-report-errors nil)
-  ;;(setq 'haskell-interactive-popup-error nil)
-  :config
-  (eval-after-load 'haskell-mode
-    '(define-key haskell-mode-map [f8] 'haskell-navigate-imports))
-  (eval-after-load 'haskell-mode
-    '(progn
-       (require 'flymake)
-       (push '("\\.l?hs\\'" flymake-haskell-init) flymake-allowed-file-name-masks)
-       (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)))
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-  (add-hook 'haskell-mode-hook #'hindent-mode)
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'flymake-hlint-load)
-  (add-hook 'haskell-mode-hook 'flymake-haskell-enable)
-  (add-hook 'haskell-mode-hook  #'rainbow-delimiters-mode)
-  (add-hook 'haskell-interactive-mode-hook 'company-mode)
-  (add-hook 'w3m-display-hook 'w3m-haddock-display)
-  (autoload 'ghc-init "ghc" nil t)
-  (autoload 'ghc-debug "ghc" nil t)
-  (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-  (add-hook 'haskell-mode-hook 'company-mode))
-
-(use-package ensime
-  :defer t
-  :mode "\\.scala$"
-  :config
-  (setq ensime-default-java-flags '("-Xmx6000m"))
-  (setq ensime-tooltip-type-hints t)
-  (setq ensime-startup-notification nil))
-
-(use-package scala-mode
-  :mode "\\.scala$"
-  :defer t
-  :interpreter ("scala" . scala-mode)
-  :pin melpa)
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
   :defer t
+  :defines (terraform-format-on-save-mode)
   :hook (terraform-mode . company-mode)
   :config
   (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
   (add-hook 'terraform-mode-hook #'company-terraform-init)
-;; (setq current-prefix-arg '(4))
   (if (not (string-match "terraform" compile-command))
       (set (make-local-variable 'compile-command)
            "terraform plan")))
@@ -228,40 +279,19 @@
     (eval-after-load 'flycheck
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 
-(use-package corral
+(use-package pandoc-mode
   :defer t
-  :config
-  (defhydra hydra-corral (:columns 4)
-    "Corral"
-    ("(" corral-parentheses-backward "Back")
-    (")" corral-parentheses-forward "Forward")
-    ("[" corral-brackets-backward "Back")
-    ("]" corral-brackets-forward "Forward")
-    ("{" corral-braces-backward "Back")
-    ("}" corral-braces-forward "Forward")
-    ("." hydra-repeat "Repeat"))
-  (global-set-key (kbd "C-c c") #'hydra-corral/body))
-
-
-(use-package tuareg)
-
-(use-package merlin
-  :defer t
-  :config
-  (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
-    (when (and opam-share (file-directory-p opam-share))
-      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
-      (autoload 'merlin-mode "merlin" nil t nil)
-      (add-hook 'tuareg-mode-hook 'merlin-mode t)
-      (add-hook 'caml-mode-hook 'merlin-mode t)))
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'merlin-company-backend)))
+  :init
+  (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package markdown-mode
   :after (writegood)
   :bind (:map markdown-mode-map (("C-." . hydra-markdown/body)))
   :config
-  (add-hook 'markdown-mode-hook 'writegood-mode)
+  (progn
+    (add-hook 'markdown-mode-hook 'writegood-mode)
+    (add-hook 'markdown-mode-hook 'pandoc-mode)
+    (add-hook 'markdown-mode-hook (lambda () (flyspell-mode t))))
   (defhydra hydra-markdown (:hint nil)
     "
 Formatting        C-c C-s    _s_: bold          _e_: italic     _b_: blockquote   _p_: pre-formatted    _c_: code
@@ -300,30 +330,26 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     ("U" markdown-insert-uri :color blue)
     ("F" markdown-insert-footnote :color blue)
     ("W" markdown-insert-wiki-link :color blue)
-    ("R" markdown-insert-reference-link-dwim :color blue)))
+    ("R" markdown-insert-reference-link :color blue)))
 
-(set-frame-font "Hack 12" nil t)
-
-(use-package browse-kill-ring
-  :defer t
-  :config (browse-kill-ring-default-keybindings))
+(use-package vagrant-tramp :defer t)
 
 (use-package docker
   :defer t
-  :bind ("C-c d" . docker))
+  :config
+  (use-package docker-compose-mode
+    :defer t)
 
-(use-package docker-compose-mode
-  :defer t)
+  (use-package dockerfile-mode
+    :defer t
+    :mode "\\Dockerfile$")
 
-(use-package dockerfile-mode
-  :defer t
-  :mode "\\Dockerfile$")
+  (use-package docker-tramp
+    :defer t)
 
-(use-package docker-tramp
-  :defer t)
+  (use-package kubernetes
+    :defer t
+    :commands (kubernetes-overview)))
 
-(use-package kubernetes
-  :defer t
-  :commands (kubernetes-overview))
 
 (provide 'my-general)

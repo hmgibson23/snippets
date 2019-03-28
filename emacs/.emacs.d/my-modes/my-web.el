@@ -31,33 +31,6 @@
               (company-mode +1)
               (setq flycheck-check-syntax-automatically '(save mode-enabled)))))
 
-(use-package vue-mode
-  :commands vue-mode
-  :ensure t
-  :defer t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.vue$" . vue-mode))
-  :config
-  (add-hook 'vue-mode-hook
-            (lambda ()
-              (interactive)
-              (message "Loading view mode")
-              (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tss.log"))
-              (tide-setup)
-
-              (flycheck-mode +1)
-              (eldoc-mode +1)
-              (company-mode +1)
-              (setq flycheck-check-syntax-automatically '(save mode-enabled)))))
-
-
-(use-package inferior-js
-  :hook ('comint-output-filter-functions 'js-comint-process-output)
-  :defer t
-  :config
-  (setq inferior-js-program-command "node")
-  (setq inferior-js-program-arguments '("--interactive")))
-
 (use-package js-mode
   :defer t
   :hook (js2-minor js2-minor-mode))

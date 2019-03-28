@@ -1,8 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package evil
   :ensure t
-  :after general
-
+  :after (general)
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
@@ -11,11 +10,10 @@
 
   :config
   (setq evil-want-C-i-jump nil)
-(with-eval-after-load 'evil
-  (require 'evil-anzu))
+  (with-eval-after-load 'evil
+    (require 'evil-anzu))
 
   ;; global keybindings
-  (keyboard-translate ?\C-x ?\C-u)
   (keyboard-translate ?\C-g ?\C-c)
   (keyboard-translate ?\C-c ?\C-g)
 
@@ -32,12 +30,8 @@
     "g:" 'evil-goto-char
     "g." 'counsel-yank-pop
     "v" 'evil-visual-char
-    "T" 'browse-kill-ring
-    "gCl" 'comment-line)
+    "T" 'browse-kill-ring)
 
-  (general-vmap
-    "gCr" 'comment-region
-    "gCu" 'uncomment-region)
 
   (general-nmap
     :keymaps '(dired-mode-map ibuffer-mode-map)
@@ -119,6 +113,7 @@
 
     ";" 'projectile-command-map
     "mm" 'magit-status
+
     "mf" 'make-frame
     "sr" 'shell-command-on-region
     "sc" 'shell-command
@@ -182,7 +177,7 @@
 
     "son" 'scroll-other-window
     "sop" 'scroll-other-window-down
-    "ff" 'find-file
+    "ff" 'counsel-find-file
     "fr" 'counsel-recentf
     "fF" 'find-file-other-window
     "fl" 'find-file-literally
@@ -263,19 +258,18 @@
   (evil-set-initial-state 'elfeed-mode 'emacs)
 
   (use-package evil-goggles
-    :defer 1
+    :defer t
     :config
     (evil-goggles-use-diff-faces)
     (evil-goggles-mode))
 
-  (use-package evil-magit
-    :defer 1
-    :config
-    (setq evil-magit-use-y-for-yank nil))
+  ;; (use-package evil-magit
+  ;;   :defer t
+  ;;   :config
+  ;;   (setq evil-magit-use-y-for-yank nil))
 
   (use-package evil-expat
-    :defer 1
-    :defer 1)
+    :defer t)
 
   (use-package evil-collection
     :after evil
@@ -305,47 +299,63 @@
     :config
     (global-evil-surround-mode 1))
 
-(use-package evil-colemak-basics
-  :after (evil general)
-  :defer 1
-  :config
-  (global-evil-colemak-basics-mode 1)
+  (use-package evil-colemak-basics
+    :after (evil general)
+    :config
+    (global-evil-colemak-basics-mode 1)
 
-  (general-def
-    :states '(insert emacs motion)
-    "TAB" 'indent-for-tab-command
-    "C-h" 'evil-backward-char
-    "C-n" 'evil-next-line
-    "C-o" 'forward-char
-    "C-e" 'evil-previous-line)
+    (general-def
+      :states '(insert emacs motion)
+      "TAB" 'indent-for-tab-command
+      "C-h" 'evil-backward-char
+      "C-n" 'evil-next-line
+      "C-o" 'forward-char
+      "C-e" 'evil-previous-line)
 
-  (general-nmap
-    :keymaps '(comint-mode-map)
-    "]" 'comint-next-input
-    "[" 'comint-previous-input)
+    (general-nmap
+      :keymaps '(comint-mode-map)
+      "]" 'comint-next-input
+      "[" 'comint-previous-input)
 
-  (general-imap
-    :keymaps '(comint-mode-map)
-    "C-n" 'comint-next-input
-    "C-e" 'comint-previous-input)
+    (general-imap
+      :keymaps '(comint-mode-map)
+      "C-n" 'comint-next-input
+      "C-e" 'comint-previous-input)
 
-  (general-imap
-    :keymaps '(term-mode-map)
-    "C-n" 'term-send-up
-    "C-e" 'term-send-down)
+    (general-imap
+      :keymaps '(term-mode-map)
+      "C-n" 'term-send-up
+      "C-e" 'term-send-down)
 
-  (general-nmap
-    :keymaps '(term-mode-map)
-    "C-n" 'term-send-up
-    "C-e" 'term-send-down)
+    (general-nmap
+      :keymaps '(term-mode-map)
+      "C-n" 'term-send-up
+      "C-e" 'term-send-down)
 
-  (general-nmap
-    "j" 'evil-forward-WORD-end)
+    (general-nmap
+      "j" 'evil-forward-WORD-end)
 
-  (general-def
-    :keymaps 'ivy-minibuffer-map
-    "C-n" 'ivy-next-line
-    "C-e" 'ivy-previous-line)))
+    (general-def
+      :keymaps 'ivy-minibuffer-map
+      "C-n" 'ivy-next-line
+      "C-e" 'ivy-previous-line))
+
+  ;; other modes that are used very much by evil
+  (use-package projectile
+    :defer t
+    :after (evil)
+    :config
+    (setq projectile-enable-caching t)
+    (setq projectile-completion-system 'ivy)
+    (setq projectile-enable-caching t)
+    (projectile-mode +1)
+    )
+  (use-package counsel-projectile :defer t
+    :config
+    (counsel-projectile-mode +1)
+    )
+
+  )
 
 
 (use-package key-chord

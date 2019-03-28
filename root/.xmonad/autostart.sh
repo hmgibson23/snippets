@@ -10,10 +10,10 @@ setxkbmap gb -variant colemak
 xmodmap $HOME/.Xmodmap
 xautolock -disable
 
-compton &
-killall nm-applet ; nm-applet &
-dunst &
 stalonetray &
+compton &
+
+dunst &
 
 feh --bg-fill $HOME/.xmonad/background.jpg
 # $HOME/.config/polybar/launch.sh

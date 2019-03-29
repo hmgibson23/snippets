@@ -19,10 +19,18 @@
   :defer t
   :commands dired-mode
   :config
-  (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . ""))
+  (require 'ech-dired "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-dired.el")
+  (ech-dired-setup)
+  (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . "")))
+
   (use-package dired-subtree
-    :ensure t
-    :commands (dired-subtree-insert)))
+    :after dired
+    :commands (dired-subtree-insert))
+
+(use-package comint
+  :config
+  (require 'ech-comint "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-comint.el")
+  (ech-comint-setup))
 
 (use-package anzu
   :defer t
@@ -51,6 +59,9 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
   (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
   (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (define-key company-search-map (kbd "C-n") 'company-select-next-or-abort)
+  (define-key company-search-map (kbd "C-e") 'company-select-previous-or-abort)
+  (define-key company-search-map (kbd "TAB") 'company-complete-common-or-cycle)
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)
@@ -72,7 +83,7 @@
   :config
   (counsel-gtags-mode +1))
 
-(use-package ledger
+(use-package ledger-mode
   :commands (ledger-mode)
   :defines (ledger-reconcile-default-commodity)
   :config
@@ -113,22 +124,6 @@
     (flycheck-plantuml-setup))
 
   (add-to-list 'auto-mode-alist '("\\.puml\\'" . plantuml-mode)))
-
-(use-package elxir-mode
-  :commands elixir-mode
-  :init
-  (add-to-list 'auto-mode-alist '("\\.ex\\'" . elixir-mode))
-  (add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-mode))
-  (add-to-list 'auto-mode-alist '("\\.eex\\'" . elixir-mode))
-  (add-hook 'elixir-mode-hook #'alchemist-mode)
-  :config
-  (use-package alchemist-mode
-    :commands alchemist-mode
-    :defines (alchemist-mode-map)
-    :defer t
-    :bind (:map alchemist-mode-map
-                ([tab] . company-complete))))
-
 
 (use-package go-mode
   :commands (go-mode)

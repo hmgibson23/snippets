@@ -164,4 +164,19 @@
   :hook ((web-mode flyspell-prog-mode) . company-mode)
   :init (setq web-mode-markup-indent-offset 4))
 
+(use-package elxir-mode
+  :commands elixir-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.ex\\'" . elixir-mode))
+  (add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-mode))
+  (add-to-list 'auto-mode-alist '("\\.eex\\'" . elixir-mode))
+  (add-hook 'elixir-mode-hook #'alchemist-mode)
+  :config
+  (use-package alchemist
+    :commands alchemist-mode
+    :defines (alchemist-mode-map)
+    :defer t
+    :bind (:map alchemist-mode-map
+                ([tab] . company-complete))))
+
 (provide 'my-scripting)

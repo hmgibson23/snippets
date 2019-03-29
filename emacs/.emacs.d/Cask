@@ -122,6 +122,7 @@
 (depends-on "evil-numbers")
 (depends-on "evil-paredit")
 (depends-on "evil-surround")
+(depends-on "evil-terminal-cursor-changer")
 (depends-on "exec-path-from-shell")
 (depends-on "expand-region")
 (depends-on "f")

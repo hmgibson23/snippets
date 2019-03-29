@@ -19,7 +19,8 @@
   (evil-ex-define-cmd "Rg" 'counsel-rg)
 
   (with-eval-after-load 'evil
-    (require 'evil-anzu))
+    (require 'evil-anzu)
+    (require 'ech-compile "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-compile.el"))
 
   (evil-mode 1)
   ;; global keybindings
@@ -45,17 +46,6 @@
   (general-nmap
     :keymaps '(dired-mode-map ibuffer-mode-map)
     "¬" 'hydra-dired/body)
-
-
-  (general-mmap
-    :keymaps 'comint-mode-map
-    "gd" 'comint-interrupt-subjob)
-
-  (general-nmap
-    :keymaps 'compilation-mode-map
-    "gd" 'comint-interrupt-subjob
-    "gc" 'compile
-    "gg" 'recompile)
 
   (general-mmap
     :keymaps 'wgrep-mode-map
@@ -269,6 +259,7 @@
   (use-package evil-colemak-basics
     :after (evil general)
     :config
+    (setq evil-colemak-basics-rotate-t-f-j nil)
     (global-evil-colemak-basics-mode 1)
 
     (general-def
@@ -300,12 +291,7 @@
       "C-e" 'term-send-down)
 
     (general-nmap
-      "j" 'evil-forward-WORD-end)
-
-    (general-def
-      :keymaps 'ivy-minibuffer-map
-      "C-n" 'ivy-next-line
-      "C-e" 'ivy-previous-line))
+      "j" 'evil-forward-WORD-end))
 
   ;; other modes that are used very much by evil
 
@@ -357,13 +343,6 @@
   :commands (evil-expat)
   :defer t)
 
-(use-package evil-collection
-  :commands (evil-collection-init)
-  :after evil
-  :defer t
-  :config
-  (evil-collection-init))
-
 (use-package evil-commentary
   :commands (evil-commentary-mode)
   :config
@@ -388,11 +367,5 @@
   :commands (global-evil-surround-mode)
   :config
   (global-evil-surround-mode 1))
-
-;; improve the cursor
-(unless (display-graphic-p)
-  (require 'evil-terminal-cursor-changer)
-  (evil-terminal-cursor-changer-activate))
-
 
 (provide 'my-evil)

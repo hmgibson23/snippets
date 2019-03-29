@@ -49,6 +49,8 @@
   (setq ivy-re-builders-alist
         '((t . ivy--regex-plus)))
   :config
+  (require 'ech-ivy "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-ivy.el")
+  (ech-ivy-setup)
   (ivy-mode 1))
 
 (use-package window-numbering

@@ -26,6 +26,11 @@ v() {
     file="$(fasd -Rfl "$1" | fzf -1 -0 --no-sort +m)" && $EDITOR "${file}" || return 1
 }
 
+ve () {
+    local file
+    file="$(fasd -Rfl "$1" | fzf -1 -0 --no-sort +m)" && emacsclient "${file}" || return 1
+}
+
 source $ZSH/oh-my-zsh.sh
 
 alias loadrbenv= "rbenv init -"

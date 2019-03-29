@@ -1,7 +1,6 @@
 ;; -*- lexical-binding: t; -*-;
 ;; everything needed for srcipting languages
 (use-package ruby-mode
-  :defer t
   :mode "\\.rb\\'"
   :defines (company-backends)
   :interpreter "ruby"
@@ -25,7 +24,6 @@
 
 
 (use-package python
-  :defer t
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   :init
@@ -68,13 +66,10 @@
   (defun annotate-pdb ()
     (interactive)
     (highlight-lines-matching-regexp "import pdb")
-    (highlight-lines-matching-regexp "pdb.set_trace()"))
+    (highlight-lines-matching-regexp "pdb.set_trace()")))
 
-
-  )
 (use-package pyenv-mode
-  :ensure t
-  :defer t
+  :commands (pyenv-mode)
   :init
   (setq elpy-rpc-python-command "python3")
   :config
@@ -85,11 +80,12 @@
           (pyenv-mode-set project)
         (pyenv-mode-unset))))
   (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
-  (add-hook 'python-mode-hook 'pyenv-mode))
+  (add-hook 'python-mode-hook 'pyenv-mode)
 
-(use-package pyenv-mode-auto
-  :defer t
-  :ensure t)
+  (use-package pyenv-mode-auto
+    :defer t
+    :ensure t))
+
 
 (use-package jedi
   :defer t
@@ -100,8 +96,7 @@
 
 
 (use-package anaconda-mode
-  :ensure t
-  :defer t
+  :commands (anaconda-mode)
   :config
   (use-package company-anaconda
     :ensure t
@@ -109,5 +104,64 @@
     (eval-after-load "company"
       '(add-to-list 'company-backends
                     '(company-anaconda :with company-capf)))))
+
+(use-package rjsx-mode
+  :commands rjsx-mode
+  :defines (flycheck-check-syntax-automatically)
+  :defer t
+  :ensure t
+  :init
+  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
+  :config
+(defun delete-tern-process ()
+  "Delete the tern process if it won't go itself'"
+  (interactive)
+  (delete-process "Tern"))
+
+  (add-hook 'rjsx-mode-hook
+            (lambda ()
+              (interactive)
+              (tide-setup)
+              (flycheck-mode +1)
+              (set (make-local-variable 'compile-command)
+                   (format "npm test"))
+              (js2-imenu-extras-setup)
+              (flow-minor-enable-automatically)
+              (prettier-js-mode)
+              (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+              (js2-imenu-extras-mode)
+              (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)
+              (skewer-mode)
+              (js2-refactor-mode)
+              (yas-minor-mode)
+              (eldoc-mode +1)
+              (company-mode +1)
+              (setq flycheck-check-syntax-automatically '(save mode-enabled)))))
+
+(use-package js-mode
+  :commands (js-mode)
+  :defer t
+  :hook (js2-minor js2-minor-mode))
+
+(use-package css-mode
+  :commands (css-mode)
+  :hook (css-mode skewer-css-mode))
+
+(use-package html-mode
+  :defer t
+  :hook skewer-html-mode)
+
+(use-package web-mode
+  :defer t
+  :mode ("\\.html\\'"
+         "\\.app\\'"
+         "\\.cmp\\'"
+         "\\.njk\\'"
+         "\\.php\\'"
+         "\\.phtml\\'"
+         "\\.ssp\\'"
+         "\\.ejs\\'")
+  :hook ((web-mode flyspell-prog-mode) . company-mode)
+  :init (setq web-mode-markup-indent-offset 4))
 
 (provide 'my-scripting)

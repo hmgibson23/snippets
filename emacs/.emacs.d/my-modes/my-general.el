@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 
 (use-package ispell
+  :after flyspell
   :defer t
   :config
   (setq flyspell-issue-welcome-flag nil)
@@ -29,11 +30,11 @@
   (global-anzu-mode))
 
 (use-package flycheck
-  :defer t
+  :commands (flycheck-mode)
+  :defines (flyspell-issue-welcome-flag)
   :hook (#'global-flycheck-mode))
 
 (use-package company
-  :defer t
   :commands company-mode
   :init
   (setq tab-always-indent 'complete)
@@ -53,18 +54,27 @@
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)
+  (add-to-list 'company-backends 'company-elisp)
   (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-ghc)
-  (add-to-list 'company-backends 'company-web-html))
+  (add-to-list 'company-backends 'company-web-html)
+
+  )
+
+(use-package company-quickhelp
+  :after company
+  :commands (company-quickhelp)
+  :config
+  (company-quickhelp-mode))
 
 (use-package ggtags
-  :defer t
+  :commands (ggtags-global-mode)
   :config
-  (ggtags-mode +1)
   (counsel-gtags-mode +1))
 
 (use-package ledger
-  :defer t
+  :commands (ledger-mode)
+  :defines (ledger-reconcile-default-commodity)
   :config
   (setq ledger-reconcile-default-commodity "£"))
 
@@ -96,6 +106,7 @@
                            "~/gorg/notes.org")))
 
 (use-package plantuml-mode
+  :commands (plantuml-mode)
   :config
   (with-eval-after-load 'flycheck
     (require 'flycheck-plantuml)
@@ -105,24 +116,22 @@
 
 (use-package elxir-mode
   :commands elixir-mode
-  :defer t
   :init
   (add-to-list 'auto-mode-alist '("\\.ex\\'" . elixir-mode))
   (add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-mode))
   (add-to-list 'auto-mode-alist '("\\.eex\\'" . elixir-mode))
   (add-hook 'elixir-mode-hook #'alchemist-mode)
   :config
-(use-package alchemist-mode
-  :commands alchemist-mode
-  :defines (alchemist-mode-map)
-  :defer t
-  :bind (:map alchemist-mode-map
-              ([tab] . company-complete))))
+  (use-package alchemist-mode
+    :commands alchemist-mode
+    :defines (alchemist-mode-map)
+    :defer t
+    :bind (:map alchemist-mode-map
+                ([tab] . company-complete))))
 
 
 (use-package go-mode
-  :ensure t
-  :defer t
+  :commands (go-mode)
   :defines (company-backends)
   :bind (:map go-mode-map (("M-." . godef-jump)
                            ("M-*" . pop-tag-mark)
@@ -148,26 +157,24 @@
          (set (make-local-variable 'compile-command)
               "go generate && go build -v && go vet"))))
 
-  (use-package gotest
-    :defer t
-    :ensure t)
-  (use-package go-stacktracer :defer t )
-  (use-package go-add-tags :defer t )
-  (use-package go-direx :defer t )
-  (use-package go-dlv :defer t )
+
+  (use-package company-go
+    :after go-mode
+    :commands (company-go)
+    :config
+    (add-hook 'go-mode-hook 'company-mode)))
+
+(use-package gotest :after go-mode )
+(use-package go-stacktracer :after go-mode)
+(use-package go-add-tags :after go-mode)
+(use-package go-direx :after go-mode)
+(use-package go-dlv :after go-mode)
 
 
 (use-package gorepl-mode
-  :defer t
+  :after go-mode
   :bind (:map gorepl-mode-map (("C-c g g" . gorepl-run)
                                ("C-c C-g" . magit-status))))
-
-(use-package company-go
-  :defer t
-  :config
-  (add-hook 'go-mode-hook 'company-mode))
-  )
-
 
 (defun lisp-setup ()
   (company-mode)
@@ -177,8 +184,7 @@
   (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
 
 (use-package slime
-  :defer t
-  :ensure t
+  :commands (slime)
   :config
   (progn
     (setq inferior-lisp-program "/usr/bin/clisp")
@@ -190,7 +196,7 @@
     (add-hook 'slime-repl-mode-hook 'rainbow-delimiters-mode)))
 
 (use-package ielm
-  :defer t
+  :commands (ielm)
   :config
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
@@ -210,8 +216,8 @@
   (add-hook 'lisp-interaction-mode-hook #'lisp-setup))
 
 (use-package clojure-mode
+  :commands (clojure-mode)
   :mode "\\.clj\\'"
-  :defer t
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
@@ -221,8 +227,7 @@
   (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
 
 (use-package cider
-  :ensure t
-  :defer t
+  :commands (cider-jack-in)
   :custom
   (font-lock-add-keywords 'clojure-mode
                           '(("(\\|)" . 'esk-paren-face)))
@@ -240,7 +245,6 @@
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
-  :defer t
   :defines (terraform-format-on-save-mode)
   :hook (terraform-mode . company-mode)
   :config
@@ -251,7 +255,8 @@
            "terraform plan")))
 
 (use-package flycheck-yamllint
-  :defer t
+  :after flycheck
+  :commands (flycheck-yamllint)
   :hook (yaml-mode . flycheck-mode)
   :init
   (progn
@@ -259,12 +264,13 @@
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 
 (use-package pandoc-mode
-  :defer t
+  :commands (pandoc-mode)
   :init
   (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package markdown-mode
-  :after (writegood)
+  :after hydra
+  :commands (markdown-mode)
   :bind (:map markdown-mode-map (("C-." . hydra-markdown/body)))
   :config
   (progn
@@ -311,24 +317,21 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     ("W" markdown-insert-wiki-link :color blue)
     ("R" markdown-insert-reference-link :color blue)))
 
-(use-package vagrant-tramp :defer t)
+(use-package vagrant-tramp
+  :commands (tramp)
+  :defer t)
 
 (use-package docker
-  :defer t
-  :config
-  (use-package docker-compose-mode
-    :defer t)
+  :commands (docker))
 
-  (use-package dockerfile-mode
-    :defer t
-    :mode "\\Dockerfile$")
+(use-package docker-tramp
+  :after docker
+  :defer t)
+(use-package docker-compose-mode
+  :after docker
+  :defer t)
 
-  (use-package docker-tramp
-    :defer t)
-
-  (use-package kubernetes
-    :defer t
-    :commands (kubernetes-overview)))
-
+(use-package dockerfile-mode
+  :mode "\\Dockerfile$")
 
 (provide 'my-general)

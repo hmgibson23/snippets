@@ -16,6 +16,6 @@ compton &
 dunst &
 
 feh --bg-fill $HOME/.xmonad/background.jpg
-# $HOME/.config/polybar/launch.sh
-$HOME/.xmonad/lemonbar &
-cat /tmp/.xmonad-title-log
+
+$HOME/git/tools/bin/lemonbar &
+emacs --daemon &

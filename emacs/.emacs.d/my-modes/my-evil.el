@@ -1,21 +1,30 @@
 ;; -*- lexical-binding: t; -*-;
+(use-package general)
+
 (use-package evil
-  :ensure t
+  :demand
   :after (general)
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
+  (setq evil-want-C-i-jump nil)
   (general-evil-setup)
-  (evil-mode 1)
 
   :config
-  (setq evil-want-C-i-jump nil)
+  ;; ex commands
+  (evil-ex-define-cmd "Q" 'save-buffers-kill-terminal)
+  (evil-ex-define-cmd "Ag" 'counsel-ag)
+  (evil-ex-define-cmd "Ack" 'counsel-ack)
+  (evil-ex-define-cmd "FZF" 'counsel-fzf)
+  (evil-ex-define-cmd "Rg" 'counsel-rg)
+
   (with-eval-after-load 'evil
     (require 'evil-anzu))
 
+  (evil-mode 1)
   ;; global keybindings
- (define-key key-translation-map [?\C-g] [?\C-c])
- (define-key key-translation-map [?\C-c] [?\C-g])
+  (define-key key-translation-map [?\C-g] [?\C-c])
+  (define-key key-translation-map [?\C-c] [?\C-g])
 
   ;; evil specific
   (general-mmap
@@ -27,9 +36,9 @@
     "g/"  'dabbrev-expand
 
     "gz"  'zap-to-char
-    "g:" 'evil-goto-char
     "g." 'counsel-yank-pop
     "v" 'evil-visual-char
+    "j"  'evil-forward-WORD-end
     "T" 'browse-kill-ring)
 
 
@@ -49,7 +58,7 @@
     "gg" 'recompile)
 
   (general-mmap
-    :keymaps 'dired-mode-map
+    :keymaps 'wgrep-mode-map
     "gww" 'wgrep-change-to-wgrep-mode
     "gwr" 'wgrep-finish-edit
     "gws" 'wgrep-save-all-buffers)
@@ -257,48 +266,6 @@
   (evil-set-initial-state 'elfeed-show-mode 'emacs)
   (evil-set-initial-state 'elfeed-mode 'emacs)
 
-  (use-package evil-goggles
-    :defer t
-    :config
-    (evil-goggles-use-diff-faces)
-    (evil-goggles-mode))
-
-  ;; (use-package evil-magit
-  ;;   :defer t
-  ;;   :config
-  ;;   (setq evil-magit-use-y-for-yank nil))
-
-  (use-package evil-expat
-    :defer t)
-
-  (use-package evil-collection
-    :after evil
-    :defer t
-    :config
-    (evil-collection-init))
-
-  (use-package evil-commentary
-    :after evil
-    :defer t
-    :config
-    (evil-commentary-mode))
-
-  (use-package evil-ledger
-    :defer 1)
-
-  (use-package evil-numbers
-    :defer 1)
-
-  (use-package evil-easymotion
-    :defer 1
-    :config
-    (evilem-default-keybindings ",,"))
-
-  (use-package evil-surround
-    :defer 1
-    :config
-    (global-evil-surround-mode 1))
-
   (use-package evil-colemak-basics
     :after (evil general)
     :config
@@ -341,21 +308,15 @@
       "C-e" 'ivy-previous-line))
 
   ;; other modes that are used very much by evil
-  (use-package projectile
-    :defer t
-    :after (evil)
-    :config
-    (setq projectile-enable-caching t)
-    (setq projectile-completion-system 'ivy)
-    (setq projectile-enable-caching t)
-    (projectile-mode +1)
-    )
+
   (use-package counsel-projectile :defer t
     :config
-    (counsel-projectile-mode +1)
-    )
+    (counsel-projectile-mode +1))
 
-  )
+  (use-package origami
+    :defer t
+    :config
+    (orgiami-mode +1)))
 
 
 (use-package key-chord
@@ -365,6 +326,73 @@
   (key-chord-define evil-insert-state-map "uu" 'evil-normal-state)
   (key-chord-define evil-motion-state-map "uu" 'evil-normal-state)
   (key-chord-mode 1))
+
+(use-package projectile
+  :commands (projectile-mode)
+  :config
+  (setq projectile-enable-caching t)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-enable-caching t)
+  (projectile-mode +1))
+(use-package evil-lion
+  :after evil
+  :commands (evil-lion-mode)
+  :config
+  (evil-lion-mode))
+
+(use-package evil-goggles
+  :after evil
+  :commands (evil-goggles-mode)
+  :config
+  (evil-goggles-use-diff-faces)
+  (evil-goggles-mode))
+
+(use-package evil-magit
+  :after evil
+  :config
+  (setq evil-magit-use-y-for-yank nil))
+
+(use-package evil-expat
+  :after evil
+  :commands (evil-expat)
+  :defer t)
+
+(use-package evil-collection
+  :commands (evil-collection-init)
+  :after evil
+  :defer t
+  :config
+  (evil-collection-init))
+
+(use-package evil-commentary
+  :commands (evil-commentary-mode)
+  :config
+  (evil-commentary-mode))
+
+(use-package evil-ledger
+  :after evil
+  :commands (evil-ledger-mode))
+
+(use-package evil-numbers
+  :after evil
+  :commands (evil-numbers/inc-at-point)
+  :defer 10)
+
+(use-package evil-easymotion
+  :after evil
+  :config
+  (evilem-default-keybindings ",,"))
+
+(use-package evil-surround
+  :after evil
+  :commands (global-evil-surround-mode)
+  :config
+  (global-evil-surround-mode 1))
+
+;; improve the cursor
+(unless (display-graphic-p)
+  (require 'evil-terminal-cursor-changer)
+  (evil-terminal-cursor-changer-activate))
 
 
 (provide 'my-evil)

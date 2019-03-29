@@ -1,5 +1,4 @@
 ;; load up the modes
-;; (my-load-all-in-directory "~/.emacs.d/my-modes/")
 
 (require 'my-evil "~/.emacs.d/my-modes/my-evil")
 (require 'my-general "~/.emacs.d/my-modes/my-general")
@@ -11,7 +10,7 @@
 
 (use-package uniquify
   ;; Less important than recentf.
-  :defer 2)
+  :defer t)
 
 (use-package spaceline
   :demand t
@@ -19,11 +18,10 @@
   (setq powerline-default-separator 'wave)
   (setq spaceline-window-numbers-unicode 't)
   :config
-(require 'spaceline-config)
-(spaceline-spacemacs-theme))
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
 
 (use-package magit
-  :defer t
   :commands magit-status
   :config
   (setq magit-completing-read-function 'ivy-completing-read))
@@ -48,24 +46,24 @@
          ("M-w" . ivy-kill-ring-save))
   :init
   (setq ivy-use-virtual-buffers t)
-(setq ivy-re-builders-alist
+  (setq ivy-re-builders-alist
         '((t . ivy--regex-plus)))
   :config
-   (ivy-mode 1)
- )
+  (ivy-mode 1))
 
 (use-package window-numbering
+  :commands (window-numbering-mode)
   :config
   (window-numbering-mode))
 
 (use-package expand-region
-  :defer t
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
 
 (use-package undo-tree
   :config
   (global-undo-tree-mode 1))
+
 (use-package diff-hl
   :defer t
   :config
@@ -96,5 +94,4 @@
 
 
 (require 'my-seas "~/.emacs.d/my-modes/my-seas")
-(require 'my-web "~/.emacs.d/my-modes/my-web")
 (require 'my-scripting "~/.emacs.d/my-modes/my-scripting")

@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package cc-mode
-  :defer t
+  :commands (cc-mode)
   :init
   (setq c-basic-offset 2)
   (setq c-default-style "linux")
@@ -16,17 +16,16 @@
 (use-package company-irony-c-headers
   :defer t
   :config
-
-(eval-after-load 'cc-mode
-  '(progn
-     (define-key c-mode-map  [(tab)] 'company-complete)
-     (define-key c++-mode-map [(tab)] 'company-complete)))
+  (eval-after-load 'cc-mode
+    '(progn
+       (define-key c-mode-map  [(tab)] 'company-complete)
+       (define-key c++-mode-map [(tab)] 'company-complete)))
   (eval-after-load 'company
     '(add-to-list
       'company-backends '(company-irony-c-headers company-irony))))
 
 (use-package d-mode
-  :defer t
+  :commands (d-mode)
   :defines (dmd/root)
   :config
   (add-hook 'd-mode-hook 'company-dcd-mode)
@@ -38,7 +37,7 @@
     (eww-open-file (concat dmd/root f))))
 
 (use-package irony
-  :defer t
+  :commands (irony-mode)
   :after company
   :config
   (add-hook 'irony-mode-hook 'irony-eldoc)
@@ -66,6 +65,8 @@
       'company-backends 'company-irony 'company-c-headers)))
 
 (use-package rtags
+  :commands (company-rtags)
+  :after (company)
   :config
   (setq rtags-completions-enabled t)
   (eval-after-load 'company
@@ -74,20 +75,8 @@
   (setq rtags-autostart-diagnostics t)
   (rtags-enable-standard-keybindings))
 
-;; solid semantics lol
-(semantic-mode 1)
-(global-semanticdb-minor-mode 1)
-(global-semantic-idle-scheduler-mode 1)
-(semantic-add-system-include "/usr/include/boost" 'c++-mode)
-(semantic-add-system-include "~/linux/kernel")
-(semantic-add-system-include "~/linux/include")
-(semantic-add-system-include "/usr/local/include")
-(global-semantic-idle-summary-mode 1)
-(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-;;(setq-local eldoc-documentation-function #'ggtags-eldoc-function)
-
 (use-package rust-mode
-  :defer 1
+  :commands (rust-mode)
   :defines (gbb-command-name)
   :config
   (add-hook 'rust-mode-hook
@@ -96,14 +85,14 @@
               (local-set-key (kbd "C-c <tab>") #'rust-format-buffer))))
 
 (use-package flycheck-rust
+  :commands (flycheck-mode)
   :config
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package cargo
+  :commands (rust-mode)
   :after rust-mode
   :config
   (add-hook 'rust-mode-hook 'cargo-minor-mode))
-
-(setq auto-mode-alist (cons '("\\.tex$" . latex-mode) auto-mode-alist))
 
 (provide 'my-seas)

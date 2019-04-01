@@ -17,6 +17,7 @@
   (evil-ex-define-cmd "Ack" 'counsel-ack)
   (evil-ex-define-cmd "FZF" 'counsel-fzf)
   (evil-ex-define-cmd "Rg" 'counsel-rg)
+  (evil-ex-define-cmd "sp" 'evil-split-window-below)
 
   (with-eval-after-load 'evil
     (require 'evil-anzu)
@@ -111,6 +112,7 @@
     "dk" 'kubernetes-overview
 
     ";" 'projectile-command-map
+    ":" 'counsel-M-x
     "mm" 'magit-status
 
     "mf" 'make-frame
@@ -258,8 +260,9 @@
 
   (use-package evil-colemak-basics
     :after (evil general)
-    :config
+    :init
     (setq evil-colemak-basics-rotate-t-f-j nil)
+    :config
     (global-evil-colemak-basics-mode 1)
 
     (general-def

@@ -56,21 +56,16 @@
   (setq company-begin-commands '(self-insert-command))
   (setq company-transformers '(company-sort-by-occurrence))
   :config
-  (define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-active-map (kbd "C-e") 'company-select-previous-or-abort)
-  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-  (define-key company-search-map (kbd "C-n") 'company-select-next-or-abort)
-  (define-key company-search-map (kbd "C-e") 'company-select-previous-or-abort)
-  (define-key company-search-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (require 'ech-company "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-company.el")
+  (ech-company-setup)
+
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
   (add-to-list 'company-backends 'company-files)
   (add-to-list 'company-backends 'company-elisp)
   (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-ghc)
-  (add-to-list 'company-backends 'company-web-html)
-
-  )
+  (add-to-list 'company-backends 'company-web-html))
 
 (use-package company-quickhelp
   :after company

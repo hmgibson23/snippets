@@ -1,4 +1,11 @@
-xautolock -detectsleep \
-          -notify  900 -notifier "xset dpms force off" \
-          -time     5 -locker   "slock" \
-          -killtime 10 -killer   "systemctl suspend" &
+eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+export SSH_AUTH_SOCK
+
+xset +fp $HOME/.local/share/fonts
+xset fp rehash
+
+setxkbmap gb -variant colemak
+
+emacs --daemon &
+tmux new-session -d
+dropbox start -i

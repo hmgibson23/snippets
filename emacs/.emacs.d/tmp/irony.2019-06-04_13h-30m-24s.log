@@ -1,0 +1,685 @@
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=696, column=1, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=734, column=4, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=733, column=23, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=729, column=29, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=728, column=28, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=721, column=3, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=720, column=26, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=722, column=4, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=723, column=10, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-mwfdcn', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=722, column=2, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-kOEZyn', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=722, column=11, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-NKF2WZ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=723, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ISx5Oi', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=724, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=719, column=3, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=719, column=62, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/dwm/dwm.c', unsavedFile='', dir='', line=723, column=63, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=775, column=9, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=780, column=7, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=4, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-lEuylU', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=11, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=11, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='drw_rect', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-yJHVqc', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-YzBaM3', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-LoZ3xd', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-X8Yrtg', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-VdG03H', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-aQctdA', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-W6HYNJ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-x4QN6i', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Vzg3jw', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-mF0bGm', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-SMCyJi', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=171, column=46, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=222, column=39, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-L3x85a', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-hNoNdf', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-bl9Es6', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-EjxCMZ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-dfDS62', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=745, column=18, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=753, column=11, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=771, column=3, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-gkHgn7', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-dNj9Dk', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-N2FHSF', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=779, column=9, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=779, column=26, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=3, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=41, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-b4v4tF', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-1eaGYU', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-8GvNzW', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=781, column=43, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-AS6X56', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-OBbTjD', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ikYgcV', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-pXhmcV', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-jKtVJ4', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Fjxdfu', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-KivXGL', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Vk8bfM', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=2032, column=9, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=2032, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=2032, column=2, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-N8HR7U', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-wLDrPc', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-VyKXsr', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=88, column=8, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-a53bkv', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-lq1Kso', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-xupgK1', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-FjnRLu', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-uOQKOA', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-51CYDF', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=136, column=10, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=136, column=2, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-7qQj59', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-6mivWV', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-XmuPzE', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-nzFksA', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-SszbrJ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=130, column=2, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-kJjHTg', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-p4Ksug', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-C1ys6T', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ZyfAWH', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-iGEsvC', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-SMUuqv', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-QuauLI', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-qIOSCu', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-YXKYz6', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-fAip3w', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-u8iHU7', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-nKd0Zx', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Hmr6Te', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-vr0BV2', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-8MZ0AT', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-shy18l', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-sQQ8ju', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=164, column=13, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-B0Yl3A', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-gaXDRi', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-1bc32X', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=266, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=692, column=1, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-MsfWHq', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-XY5zYc', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-mVmyvC', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-lNbBeN', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-X7s2vp', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Okla2V', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-i8FS7f', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-dXXl8n', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-pjYDO0', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-tAMRF4', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=82, column=18, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-TN1eN8', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-1m7u5A', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-3bvxjC', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-tDL8sH', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=164, column=46, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-25apU4', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=165, column=35, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-TiFwtB', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ezcy8F', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-7cKxD9', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-GkUAmI', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-1buDZF', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-VVycUB', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-fa94hr', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-bjzWad', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-mo7rI3', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=55, column=57, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=16, column=27, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=57, column=9, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=75, column=35, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=82, column=4, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-yQqvgx', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-xHp3nC', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-jge1nu', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-CM1eii', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-3jDaMk', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ePRXbE', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/layouts.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-KFq8EH', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-RPeEdQ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-7gtWjU', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-cx7Uqv', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=81, column=27, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-xYLvzA', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=122, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-XJtucz', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=2513, column=1, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-LPPMn3', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/dwm.c', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-iGBjks', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-grgNgl', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=160, column=46, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=164, column=46, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=165, column=46, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=176, column=5, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=175, column=5, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=180, column=5, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=78, column=21, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-IAPFZA', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-TCkPXV', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-TvDVm6', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Bme3kD', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-shAU3A', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ctmuhr', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Myyfwu', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-njSzqJ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-3XsJOn', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Q2AIGp', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-nfCzmv', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-ARQh75', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-0BtDIm', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-WWziMt', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-bbp4J2', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-VViazr', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-sMZFvP', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-sgB0AE', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Cf3CnG', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-oUWwHJ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-5W3aWj', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=78, column=22, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-7zAJOe', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-cd8rVm', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-p4F5CQ', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-2C8dTF', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-TkjqoB', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-XVUhE4', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-27Feiy', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-4osG26', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-QuWuzs', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-5XLnl3', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-fTadun', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-jV60gs', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-1WCQgz', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-Py0oYp', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-hk9PUU', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-s9Sq1U', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Parse, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Diagnostics, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}

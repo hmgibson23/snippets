@@ -8,3 +8,4 @@ export PATH="$GOPATH/bin:$PATH"
 source $HOME/.cargo/env
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"

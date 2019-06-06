@@ -4,8 +4,11 @@ export SSH_AUTH_SOCK
 xset +fp $HOME/.local/share/fonts
 xset fp rehash
 
-setxkbmap gb -variant colemak
+compton &
+dunst &
 
-emacs --daemon &
-tmux new-session -d
-dropbox start -i
+setxkbmap gb -variant colemak
+xmodmap $HOME/.Xmodmap
+xautolock -disable
+
+feh --bg-fill $HOME/wallpapers/mist_by_aenami_d9sgs13-fullview.jpg

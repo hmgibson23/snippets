@@ -1,0 +1,2 @@
+;;; -*- no-byte-compile: t -*-
+(define-package "html-script-src" "20120403.1815" "Insert <script src=\"..\"> for popular JavaScript libraries" 'nil :commit "66460f8ab1b24656e6f3ce5bd50cff6a81be8422" :keywords '("tools" "convenience") :authors '(("Johan Andersson" . "johan.rejeep@gmail.com")) :maintainer '("Johan Andersson" . "johan.rejeep@gmail.com") :url "http://github.com/rejeep/html-script-src")

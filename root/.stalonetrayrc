@@ -1,9 +1,7 @@
 decorations none
-transparent false
+transparent true
 dockapp_mode none
 geometry 1x1-0+0
-max_geometry 5x2-0-0
-background "#4f4847"
 kludges force_icons_size
 grow_gravity SE
 icon_gravity SE
@@ -11,5 +9,5 @@ icon_size 8
 sticky true
 window_type dock
 window_layer bottom
-#no_shrink false
+no_shrink true
 skip_taskbar true

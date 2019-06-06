@@ -18,35 +18,39 @@ set_from_resource $cursorColor  cursorColor #000000
 
 set $mod Mod4
 
-for_window [class="^.*"] border pixel 0
-for_window [class="Yad"] floating enable
+force_xinerama yes
 
-font pango:monospace 8, Open Sans, FontAwesome5Free
+font pango:"SauceCodePro Nerd Font:size=12:antialias=true:autohint=true"
 
 # config
-exec --no-startup-id nitrogen --restore &
-
-# Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# assignments
+assign [class="Chromium"] "ix"
+assign [class="Firefox"] "ix"
+assign [class="Slack"] "viii"
+assign [class="Keybase"] "viii"
 
+## window settings
+for_window [class="^.*"] border pixel 0
+for_window [class="Yad"] floating enable
+for_window [class="Pavucontrol"] floating enable
+
+# start a terminal
+bindsym $mod+Shift+Return exec "st -e zsh"
 # kill focused window
-bindsym $mod+Shift+q kill
+bindsym $mod+q kill
+
+bindsym $mod+x move workspace to output right
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run
-bindsym $mod+BackSpace exec "rofi -show drun"
-bindsym $mod+Shift+w exec "rofi -show window"
+bindsym $mod+p exec "$HOME/.config/i3/rofi.sh"
 
 # passwords
 bindsym $mod+Shift+p exec "passmenu"
 
-# There also is the (new) i3-dmenu-desktop which only displays applications
-# shipping a .desktop file. It is a wrapper around dmenu, so you need that
-# installed.
-# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+# lock
+bindsym $mod+Shift+l exec --no-startup-id slock
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -64,6 +68,10 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+n move down
+bindsym $mod+Shift+e move up
+bindsym $mod+Shift+i move right
 
 # split in horizontal orientation
 bindsym $mod+t split h
@@ -93,16 +101,16 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws1 "i"
+set $ws2 "ii"
+set $ws3 "iii"
+set $ws4 "iv"
+set $ws5 "v"
+set $ws6 "vi"
+set $ws7 "vii"
+set $ws8 "viii"
+set $ws9 "ix"
+set $ws10 "x"
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -129,30 +137,24 @@ bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+bindsym $mod+r reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
-bindsym j resize shrink width 10 px or 10 ppt
-bindsym k resize grow height 10 px or 10 ppt
-bindsym l resize shrink height 10 px or 10 ppt
-bindsym semicolon resize grow width 10 px or 10 ppt
+  bindsym n resize shrink width 10 px or 10 ppt
+  bindsym e resize grow height 10 px or 10 ppt
+  bindsym h resize shrink height 10 px or 10 ppt
+  bindsym i resize grow width 10 px or 10 ppt
 
-# same bindings, but for the arrow keys
-bindsym Left resize shrink width 10 px or 10 ppt
-bindsym Down resize grow height 10 px or 10 ppt
-bindsym Up resize shrink height 10 px or 10 ppt
-bindsym Right resize grow width 10 px or 10 ppt
 
-# back to normal: Enter or Escape or $mod+r
-bindsym Return mode "default"
-bindsym Escape mode "default"
-bindsym $mod+r mode "default"
+  # back to normal: Enter or Escape or $mod+r
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+semicolon mode "resize"
 
 # multimedia keys
 # Pulse Audio controls
@@ -160,53 +162,52 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% &&
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% && pkill -RTMIN+10 i3blocks
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle && pkill -RTMIN+10 i3blocks
 
-bindsym XF86MonBrightnessUp exec light -A 5 # increase screen brightness
+bindsym XF86MonBrightnessUp   exec light -A 5 # increase screen brightness
 bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
 bindsym ISO_Next_Group exec pkill -RTMIN+1 i3blocks
 
 # Media player controls
-bindsym XF86AudioPlay exec playerctl play
-bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 set $keyboard_layout Keyboard Layout: (d) Dvorak, (c) Colemak (u) Default
 mode "$keyboard_layout" {
 
-bindsym d exec --no-startup-id setxkbmap -variant dvorak, mode "default"
-bindsym c exec --no-startup-id setxkbmap -variant colemak, mode "default"
-bindsym u exec --no-startup-id setxkbmap -layout gb, mode "default"
-# back to normal: Enter or Escape
-bindsym Return mode "default"
-bindsym Escape mode "default"
+  bindsym d exec --no-startup-id setxkbmap -variant dvorak, mode "default"
+  bindsym c exec --no-startup-id setxkbmap -variant colemak, mode "default"
+  bindsym u exec --no-startup-id setxkbmap -layout gb, mode "default"
+  # back to normal: Enter or Escape
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
 }
+
 bindsym $mod+shift+Z mode "$keyboard_layout"
 
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (p) shutdown
 
 mode "$mode_system" {
-bindsym l exec --no-startup-id i3lock-fancy -gp, mode "default"
-bindsym e exec --no-startup-id i3-msg exit, mode "default"
-bindsym s exec --no-startup-id systemctl suspend, mode "default"
-bindsym h exec --no-startup-id systemctl hibernate, mode "default"
-bindsym r exec --no-startup-id systemctl reboot, mode "default"
-bindsym p exec --no-startup-id systemctl poweroff, mode "default"
+  bindsym l exec --no-startup-id i3lock-fancy -gp, mode "default"
+  bindsym e exec --no-startup-id i3-msg exit, mode "default"
+  bindsym s exec --no-startup-id systemctl suspend, mode "default"
+  bindsym h exec --no-startup-id systemctl hibernate, mode "default"
+  bindsym r exec --no-startup-id systemctl reboot, mode "default"
+  bindsym p exec --no-startup-id systemctl poweroff, mode "default"
 
-bindsym Escape mode "default"
+  bindsym Escape mode "default"
 }
 
-bindsym $mod+Shift+e mode "$mode_system"
-
+bindsym $mod+[ mode "$mode_system"
 bindsym $mod+Shift+m exec xrandr --auto
 
-# start the network applet
-exec --no-startup-id nm-applet &
-# compton for fun times
-exec --no-startup-id compton &
+exec_always ~/.config/i3/autostart.sh
 
-# dunst is nicer
-exec --no-startup-id dunst
-
-gaps outer 5
+# gaps
+gaps outer 6
 gaps inner 5
-exec_always --no-startup-id $HOME/.config/polybar/launch.sh &
+
+bar {
+  status_command i3blocks
+  position top
+}

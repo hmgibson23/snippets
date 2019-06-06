@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-#!/bin/bash
-
 rofi -sidebar-mode \
 -modi run,drun,window \
 -lines 12 \

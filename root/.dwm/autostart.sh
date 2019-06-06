@@ -9,4 +9,4 @@ xautolock -disable
 compton &
 dunst &
 $HOME/.fehbg &
-$HOME/.local/share/bin/lemonbar
+$HOME/git/tools/bin/dzconky

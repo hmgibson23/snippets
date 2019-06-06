@@ -31,6 +31,7 @@
 
 (use-package xresources-theme
   :config
+  (set-frame-font "Hack Nerd Font:size=20:antialias=true:autohint=true")
   (add-hook 'after-make-frame-functions
             (lambda (frame) (load-theme 'xresources t))))
 
@@ -96,4 +97,5 @@
 
 
 (require 'my-seas "~/.emacs.d/my-modes/my-seas")
+(require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww.el")
 (require 'my-scripting "~/.emacs.d/my-modes/my-scripting")

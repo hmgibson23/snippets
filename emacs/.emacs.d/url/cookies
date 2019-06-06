@@ -1,0 +1,26 @@
+;; Emacs-W3 HTTP cookies file
+;; Automatically generated file!!! DO NOT EDIT!!!
+
+(setq url-cookie-storage
+ '(("www.firstthings.com"
+  [url-cookie "2019-06-june-july" "1" "Tue Dec 10 08:37:28 2019 GMT" "/" "www.firstthings.com" nil]
+  [url-cookie "2019-06-june-july-cookie-articles" "%3Aarticle-2019-06-crimes-in-concrete" "Tue Dec 10 08:37:28 2019 GMT" "/" "www.firstthings.com" nil])
+ ("www.newyorker.com"
+  [url-cookie "verso_bucket" "619" "Fri, 22 May 2020 09:03:51 GMT" "/" "www.newyorker.com" nil]
+  [url-cookie "CN_xid" "4804edb3-bdde-4b2a-9c4b-1a4e09d6f7ba" "Tue, 19 Nov 2019 09:03:51 GMT" "/" "www.newyorker.com" nil])
+ ("www.painters-online.co.uk"
+  [url-cookie "ii_Globalisation" "Create=1" "Fri, 05-Jun-2020 14:02:56 GMT" "/" "www.painters-online.co.uk" nil])
+ (".mybluprint.com"
+  [url-cookie "craftsy_countrycode" "GB" "Sat, 03 Mar 2029 13:07:12 GMT" "/" ".mybluprint.com" nil]
+  [url-cookie "craftsy_curcode" "GBP" "Sat, 03 Mar 2029 13:07:12 GMT" "/" ".mybluprint.com" nil]
+  [url-cookie "craftsy_visid" "39c043c2-e831-47b2-a74d-cf4a8135d003" "Sat, 03 Mar 2029 13:07:12 GMT" "/" ".mybluprint.com" nil]))
+)
+(setq url-cookie-secure-storage
+ '(("newyorker.com"
+  [url-cookie "pay_ent_smp" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsInZlciI6MX0.eyJ1cmxzIjpbIi9jdWx0dXJlL29uLWFuZC1vZmYtdGhlLWF2ZW51ZS9nb2xkbWFuLXNhY2hzLXBhdGFnb25pYS1hbmQtdGhlLW15c3Rlcmllcy1vZi1idXNpbmVzcy1jYXN1YWwiXSwiY250IjoxLCJtYXgiOjQsImV4cCI6MjAxOTA1fQ.eSYI9dzDeTYdJ62UJD0HkbxzV0yDsZtrKsUv_YRZIGw" "Fri, 22 May 2020 15:03:51 GMT" "/" "newyorker.com" t]))
+)
+
+;; Local Variables:
+;; version-control: never
+;; no-byte-compile: t
+;; End:

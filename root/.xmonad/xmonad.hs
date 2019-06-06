@@ -60,7 +60,7 @@ main = do
       -- Simple stuff
       { modMask             = modm
       , terminal            = term
-      , focusFollowsMouse   = mouseFocus
+      , focusFollowsMouse   = True
       , borderWidth         = bdrSize
       , normalBorderColor   = bdrNormal
       , focusedBorderColor  = bdrFocus
@@ -86,7 +86,7 @@ browser       = "surf"
 bdrSize       = 0
 bdrNormal     = fgColor
 bdrFocus      = bgColor
-font          = "SauceCodePro Nerd Font:size=9:antialias=true:autohint=true"
+font          = "SauceCodePro Nerd Font:size=12:antialias=true:autohint=true"
 monitorSize   = 1980
 monitor n     = show(round(monitorSize * n))
 monitor' n    = round(monitorSize * n)
@@ -155,7 +155,7 @@ myLogHook h =
 -- }}}
 
 -- Workspaces {{{
-myWorkspaces = ["1", "2", "DEV", "4",  "5", "WORK", "MAIL", "CHAT", "INET"]
+myWorkspaces = ["1", "2", "DEV", "4",  "MEDIA", "WORK", "MAIL", "CHAT", "INET"]
 -- }}}
 
 
@@ -207,7 +207,7 @@ myManageHook =
       chatApp = ["Slack", "Keybase"]
       devApp =
         [ "VirtualBox Manager", "VirtualBox Machine", "Emacs"]
-      entApp = ["MPlayer", "smplayer", "mpv", "Gimp", "VLC"]
+      entApp = ["MPlayer", "smplayer", "mpv", "Gimp", "VLC", "Spotify", "spotify"]
       prodApp = ["zathura", "Audacity", "Calibre"]
       mailApp = ["mail"]
       floatingApp = ["SecureCRT", "TeamViewer", "Xmessage"]
@@ -255,6 +255,9 @@ myKeys =
   , ((0, xF86XK_AudioMute          ), spawn "amixer sset Master toggle")
   , ((0, xF86XK_MonBrightnessDown), spawn "light -U 10")
   , ((0, xF86XK_MonBrightnessUp), spawn "light -A 10")
+  , ((0, xF86XK_AudioPlay), spawn "playerctl play-pause")
+  , ((0, xF86XK_AudioNext), spawn "playerctl next")
+  , ((0, xF86XK_AudioPrev), spawn "playerctl previous")
   ]
   where
     m = modm

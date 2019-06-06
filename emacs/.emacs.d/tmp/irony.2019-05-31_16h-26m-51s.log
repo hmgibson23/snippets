@@ -1,0 +1,21 @@
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-I3tDs0', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=107, column=43, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::SetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='/home/hugo/.emacs.d/tmp/irony-unsaved-hGk5bN', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=110, column=40, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::ResetUnsaved, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=115, column=20, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=146, column=68, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=134, column=25, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=142, column=23, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=136, column=25, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=140, column=25, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}
+execute: Command{action=Command::Complete, file='/home/hugo/git/suckless/dwm/config.def.h', unsavedFile='', dir='', line=141, column=23, prefix='', caseStyle='exact', flags=['-x', 'c'], opt=off}
+execute: Command{action=Command::Candidates, file='', unsavedFile='', dir='', line=0, column=0, prefix='', caseStyle='exact', flags=[], opt=off}

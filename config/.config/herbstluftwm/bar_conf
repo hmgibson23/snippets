@@ -1,0 +1,155 @@
+; ---------- global --------------
+
+[colors]
+foreground        = ${xrdb:color7}
+foreground-alt    = ${xrdb:color8}
+background        = ${xrdb:color0}
+modb              = ${xrdb:color0}
+modb1             = ${xrdb:color0}
+modb2             = ${xrdb:color0}
+red     = ${xrdb:color1}
+orange  = ${xrdb:color9}
+yellow  = ${xrdb:color3}
+green   = ${xrdb:color2}
+cyan    = ${xrdb:color6}
+blue    = ${xrdb:color4}
+magenta = ${xrdb:color5}
+brown   = ${xrdb:color7}
+
+[global/wm]
+margin-top        = 0
+margin-bottom     = 0
+override-redirect = true
+
+; ------------ bars ---------------
+[bar/workspace]
+width               = 340
+height              = 30
+offset-x            = 1560
+offset-y            = 5
+locale              = en_GB.UTF-8
+background          = ${colors.background}
+foreground          = ${colors.background}
+
+font-0              = Iosevka:size=12:autohint:true:antialias=true
+
+border-size  = 1
+border-color = ${colors.foreground}
+
+modules-left        =
+modules-center      = ewmh
+modules-right       =
+spacing             = 0
+padding-left        = 6
+padding-right       = 6
+module-margin-left  = 0
+module-margin-right = 0
+
+[bar/stats]
+width               = 400
+height              = 30
+offset-x            = 10
+offset-y            = 5
+locale              = en_GB.UTF-8
+background          = ${colors.background}
+foreground          = ${colors.background}
+
+font-0              = Iosevka:size=12:autohint:true:antialias=true
+border-size  = 1
+border-color = ${colors.foreground}
+
+modules-left        =
+modules-center      = pulseaudio battery time
+modules-right       =
+tray-position       = right
+tray-padding        = 1
+spacing             = 0
+padding-top         = 2
+padding-left        = 4
+padding-right       = 4
+module-margin-left  = 0
+module-margin-right = 0
+
+
+; ---------- modules ---------------
+[module/ewmh]
+type = internal/xworkspaces
+enable-scroll = true
+format-padding = 2
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+label-active = "  ●"
+label-occupied = "  ○"
+label-urgent = "  ○"
+label-empty = "  ○"
+
+[module/time]
+type                     = custom/script
+interval                 = 1.0
+exec                     = date +%H:%M
+format-prefix            = " "
+format-prefix-foreground = ${colors.green}
+format-padding           = 1
+format-foreground        = ${colors.foreground}
+format-background        = ${colors.background}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+full-at = 89
+poll-interval = 5
+
+label-charging = %percentage%%
+label-discharging = %percentage%%
+
+format-discharging = <ramp-capacity> <label-discharging>
+
+format-full = <ramp-capacity>
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-foreground=#279124
+
+; Only applies if <animation-charging> is used
+format-charging = <animation-charging>
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+; Framerate in milliseconds
+animation-charging-framerate = 750
+
+[module/pulseaudio]
+type = internal/pulseaudio
+use-ui-max = false
+interval = 5
+format-volume = <label-volume> <bar-volume>
+label-volume =
+label-volume-foreground = ${root.foreground}
+format-muted=<label-muted>
+label-muted= 
+
+bar-volume-width = 10
+bar-volume-foreground-0 = #55aa55
+bar-volume-foreground-1 = #55aa55
+bar-volume-foreground-2 = #55aa55
+bar-volume-foreground-3 = #55aa55
+bar-volume-foreground-4 = #55aa55
+bar-volume-foreground-5 = #f5a70a
+bar-volume-foreground-6 = #ff5555
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-fill = |
+bar-volume-empty =
+bar-volume-empty-foreground = ${colors.foreground-alt}
+
+[module/separator]
+type              = custom/script
+format-text       = <label>
+label             = "  |  "
+exec              = echo label
+format-foreground = ${colors.foreground}

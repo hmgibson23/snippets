@@ -8,4 +8,4 @@ xmodmap $HOME/.Xmodmap
 xautolock -disable
 compton &
 dunst &
-$HOME/.2bwm/bar.sh
+$HOME/.2bwm/lemon.sh &

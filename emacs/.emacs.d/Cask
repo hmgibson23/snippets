@@ -374,6 +374,7 @@
 (depends-on "window-numbering")
 (depends-on "with-editor")
 (depends-on "writegood-mode")
+(depends-on "writeroom-mode")
 (depends-on "xref-js2")
 (depends-on "xresources-theme")
 (depends-on "xterm-color")

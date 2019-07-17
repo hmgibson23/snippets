@@ -22,12 +22,33 @@
   (eval-after-load 'company
     '(add-to-list 'company-backends 'company-inf-ruby)))
 
+(use-package elpy
+  :ensure t
+  :defer t
+  :init
+  (advice-add 'python-mode :before 'elpy-enable))
 
 (use-package python
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   :init
   :config
+  (add-hook 'python-mode (lambda () (company-mode)))
+
+  (defun company-yasnippet-or-completion ()
+    "Solve company yasnippet conflicts."
+    (interactive)
+    (let ((yas-fallback-behavior
+           (apply 'company-complete-common nil)))
+      (yas-expand)))
+
+  (add-hook 'company-mode-hook
+            (lambda ()
+              (substitute-key-definition
+               'company-complete-common
+               'company-yasnippet-or-completion
+               company-active-map)))
+
   (defun python-add-breakpoint ()
     (interactive)
     (newline-and-indent)
@@ -113,10 +134,10 @@
   :init
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   :config
-(defun delete-tern-process ()
-  "Delete the tern process if it won't go itself'"
-  (interactive)
-  (delete-process "Tern"))
+  (defun delete-tern-process ()
+    "Delete the tern process if it won't go itself'"
+    (interactive)
+    (delete-process "Tern"))
 
   (add-hook 'rjsx-mode-hook
             (lambda ()

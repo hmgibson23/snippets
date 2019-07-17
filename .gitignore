@@ -3,3 +3,7 @@
 *.o
 *.hi
 *.gpg
+*.emacs.d/.cask
+*.emacs.d/auto-save-list
+*.emacs.d/tmp
+*.emacs.d/eshell

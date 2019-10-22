@@ -28,23 +28,6 @@
     :commands (dired-subtree-insert))
 
 
-(use-package ibuffer
-  :config
-  (setq ibuffer-show-empty-filter-groups nil)
-  (setq ibuffer-saved-filter-groups
-        '(("default"
-           ("html" (mode . web-mode))
-           ("javascript" (or (mode . js2-mode)
-                             (mode . json-mode)))
-           ("css" (or (filename . "*\.less$/")
-                      (filename . "*\.css$/")))
-           ("Magit" (name . "\*magit"))
-           ("emacs" (or
-                     (name . "^\\*scratch\\*$")
-                     (name . "^\\*Messages\\*$")))
-           ("Help" (or (name . "\*Help\*")
-                       (name . "\*Apropos\*")
-                       (name . "\*info\*")))))))
 
 (use-package comint
   :config

@@ -1,4 +1,13 @@
 ;; load up the modes
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (add-to-list
+   'package-archives
+   ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   t))
+
+  (package-initialize)
 
 (require 'my-evil "~/.emacs.d/my-modes/my-evil")
 (require 'my-general "~/.emacs.d/my-modes/my-general")
@@ -28,12 +37,11 @@
 
 (use-package page-break-lines :ensure t)
 
-
-(use-package xresources-theme
+(use-package nord-theme
   :config
   (set-frame-font "Hack Nerd Font:size=20:antialias=true:autohint=true")
   (add-hook 'after-make-frame-functions
-            (lambda (frame) (load-theme 'xresources t))))
+            (lambda (frame) (load-theme 'nord t))))
 
 (use-package ivy
   :bind (("C-c C-r" . ivy-resume)
@@ -44,12 +52,12 @@
          ("<f12>" . counsel-M-x)
          (:map ivy-minibuffer-map
                ("C-r" . ivy-reverse-i-search))
-         ("M-w" . ivy-kill-ring-save))
+   ("M-w" . ivy-kill-ring-save))
   :init
   (setq ivy-use-virtual-buffers t)
   (setq ivy-re-builders-alist
-        '((t . ivy--regex-plus)))
-  :config
+      '((t . ivy--regex-plus)))
+  ;:config
   (require 'ech-ivy "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-ivy.el")
   (ech-ivy-setup)
   (ivy-mode 1))

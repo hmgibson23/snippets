@@ -4,7 +4,7 @@
 
 # terminal emulator
 super + Return
-	st -e fish
+	st -e bash
 
 # program launcher
 super + @space
@@ -21,7 +21,7 @@ super + grave
 super + shift + x : {s,h,r,p}
     sudo {zzz, hibernate, reboot, shutdown}
 
-super + shift + l
+super + l
       slock
 
 super + shift + z

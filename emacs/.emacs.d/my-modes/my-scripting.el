@@ -116,6 +116,7 @@
   (add-to-list 'company-backends 'company-jedi))
 
 
+(require 'rx)
 (use-package anaconda-mode
   :commands (anaconda-mode)
   :config

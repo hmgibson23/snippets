@@ -1,3 +1,4 @@
+(source "melpa" "http://melpa.milkbox.net/packages/")
 (source gnu)
 (source melpa)
 
@@ -123,6 +124,7 @@
 (depends-on "evil-mu4e")
 (depends-on "evil-numbers")
 (depends-on "evil-paredit")
+(depends-on "evil-smartparens")
 (depends-on "evil-surround")
 (depends-on "evil-terminal-cursor-changer")
 (depends-on "exec-path-from-shell")
@@ -259,8 +261,10 @@
 (depends-on "mustache-mode")
 (depends-on "nasm-mode")
 (depends-on "nim-mode")
+(depends-on "nlinum")
 (depends-on "nlinum-relative")
 (depends-on "nodejs-repl")
+(depends-on "nord-theme")
 (depends-on "npm-mode")
 (depends-on "nvm")
 (depends-on "olivetti")

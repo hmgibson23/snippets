@@ -39,7 +39,7 @@ font-2 =  "Hack:pixelsize=10:antialias=true:autohint=true"
 
 modules-left = pulseaudio
 modules-center = date
-modules-right = gmail battery
+modules-right = battery
 
 tray-position = right
 tray-padding = 1
@@ -251,36 +251,6 @@ ramp-1 =
 ramp-2 =
 ramp-foreground = ${colors.secondary}
 
-[module/gmail]
-type = custom/script
-exec = $HOME/.config/polybar/check-mail.sh
-tail = true
-
-[module/updates-arch]
-type = custom/script
-exec = ~/.config/polybar/updates-arch.sh
-interval = 600
-format = <label>
-
-[module/isactive-bluetooth]
-type = custom/script
-exec = ~/.config/polybar/polybar-scripts/isactive-bluetooth.sh
-interval = 10
-
-[module/weather]
-type = custom/script
-exec = ~/.config/polybar/polybar-scripts/openweathermap-simple.sh
-interval = 600
-label-font=5
-padding-top=5
-click-left=sh ~/.config/polybar/polybar-scripts/openweathermap-forecast.sh
-
-[module/system-usb-udev]
-type = custom/script
-exec = ~/polybar-scripts/system-usb-udev.sh
-tail = true
-click-left = ~/polybar-scripts/system-usb-udev.sh --mount
-click-right = ~/polybar-scripts/system-usb-udev.sh --unmount
 ; Available exec commands:
 ;   menu-open-LEVEL
 ;   menu-close

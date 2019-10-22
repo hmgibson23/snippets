@@ -114,6 +114,7 @@
 (depends-on "evil-commentary")
 (depends-on "evil-dvorak")
 (depends-on "evil-easymotion")
+(depends-on "evil-ex-fasd")
 (depends-on "evil-exchange")
 (depends-on "evil-expat")
 (depends-on "evil-goggles")

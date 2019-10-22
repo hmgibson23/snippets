@@ -1,34 +1,8 @@
 ;; -*- lexical-binding: t; -*-;
-(use-package general)
-
-(use-package evil
-  :demand
-  :after (general)
+(use-package general
   :init
-  (setq evil-want-integration nil)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-i-jump nil)
   (general-evil-setup)
-
   :config
-  ;; ex commands
-  (evil-ex-define-cmd "Q" 'save-buffers-kill-terminal)
-  (evil-ex-define-cmd "Ag" 'counsel-ag)
-  (evil-ex-define-cmd "Ack" 'counsel-ack)
-  (evil-ex-define-cmd "FZF" 'counsel-fzf)
-  (evil-ex-define-cmd "Rg" 'counsel-rg)
-  (evil-ex-define-cmd "sp" 'evil-split-window-below)
-
-  (with-eval-after-load 'evil
-    (require 'evil-anzu)
-    (require 'ech-compile "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-compile.el"))
-
-  (evil-mode 1)
-  ;; global keybindings
-  (define-key key-translation-map [?\C-g] [?\C-c])
-  (define-key key-translation-map [?\C-c] [?\C-g])
-
-  ;; evil specific
   (general-mmap
     ;; search commands
     "gs%" 'anzu-query-replace
@@ -171,6 +145,7 @@
 
   (spc-leader
     :states 'motion
+    :keymaps 'override
     :prefix-map 'spc-leader-map
     "/" 'dabbrev-expand
     "tt" 'xref-find-definitions
@@ -187,42 +162,6 @@
     "la" 'insert-line-above
     "lb" 'insert-line-below)
 
-  (spc-leader
-    :states 'emacs
-    :prefix-map 'spc-leader-map
-    :keymaps '(magit-mode-map dired-mode-map compilation-mode))
-
-  (spc-leader
-    :keymap 'docker-image-mode-map
-    :states 'motion
-    "m" 'tablist-mark-forward
-    "u" 'tablist-unmark-forward
-    "l" 'docker-image-ls-popup
-    "D" 'docker-image-rm-popup
-    "F" 'docker-image-pull-popup
-    "P" 'docker-image-push-popup
-    "R" 'docker-image-run-popup)
-
-  (spc-leader
-    :keymap 'docker-container-mode-map
-    :states 'motion
-
-    "m" 'tablist-mark-forward
-    "u" 'tablist-unmark-forward
-    "?" 'docker-container-help-popup
-    "C" 'docker-container-cp-popup
-    "D" 'docker-container-rm-popup
-    "I" 'docker-container-inspect-popup
-    "K" 'docker-container-kill-popup
-    "L" 'docker-container-logs-popup
-    "O" 'docker-container-stop-popup
-    "P" 'docker-container-pause-popup
-    "R" 'docker-container-restart-popup
-    "S" 'docker-container-start-popup
-    "a" 'docker-container-attach-popup
-    "b" 'docker-container-shell-popup
-    "d" 'docker-container-diff-popup)
-
   (general-def
     :keymaps '(cider-repl-mode-map)
     :states '(emacs motion insert)
@@ -237,6 +176,7 @@
 
   (general-def
     :states '(emacs motion)
+    :keymaps 'override
     :prefix "C-w"
     :prefix-map 'window-leader-map
     "o" 'delete-other-windows
@@ -254,18 +194,8 @@
     "bi" 'buf-move-right
     "bh" 'buf-move-left)
 
-  (evil-set-initial-state 'elfeed-search-mode 'emacs)
-  (evil-set-initial-state 'elfeed-show-mode 'emacs)
-  (evil-set-initial-state 'elfeed-mode 'emacs)
-
-  (use-package evil-colemak-basics
-    :after (evil general)
-    :init
-    (setq evil-colemak-basics-rotate-t-f-j nil)
-    :config
-    (global-evil-colemak-basics-mode 1)
-
-    (general-def
+  ;; colemak related stuff
+     (general-def
       :states '(insert emacs motion)
       "TAB" 'indent-for-tab-command
       "C-h" 'evil-backward-char
@@ -294,7 +224,48 @@
       "C-e" 'term-send-down)
 
     (general-nmap
-      "j" 'evil-forward-WORD-end))
+      "j" 'evil-forward-WORD-end)
+
+)
+
+(use-package evil
+  :demand
+  :after (general)
+  :init
+  (setq evil-want-integration nil)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-i-jump nil)
+
+  :config
+  ;; ex commands
+  (evil-ex-define-cmd "Q" 'save-buffers-kill-terminal)
+  (evil-ex-define-cmd "Ag" 'counsel-ag)
+  (evil-ex-define-cmd "Ack" 'counsel-ack)
+  (evil-ex-define-cmd "FZF" 'counsel-fzf)
+  (evil-ex-define-cmd "Rg" 'counsel-rg)
+  (evil-ex-define-cmd "sp" 'evil-split-window-below)
+  (evil-ex-define-cmd "ass" 'async-shell-command)
+
+  (with-eval-after-load 'evil
+    (require 'evil-anzu)
+    (require 'ech-compile "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-compile.el"))
+
+  (evil-mode 1)
+  ;; global keybindings
+  (define-key key-translation-map [?\C-g] [?\C-c])
+  (define-key key-translation-map [?\C-c] [?\C-g])
+
+  ;; evil specific
+  (evil-set-initial-state 'elfeed-search-mode 'emacs)
+  (evil-set-initial-state 'elfeed-show-mode 'emacs)
+  (evil-set-initial-state 'elfeed-mode 'emacs)
+
+  (use-package evil-colemak-basics
+    :after (evil general)
+    :init
+    (setq evil-colemak-basics-rotate-t-f-j nil)
+    :config
+    (global-evil-colemak-basics-mode 1))
 
   ;; other modes that are used very much by evil
 
@@ -305,8 +276,7 @@
   (use-package origami
     :defer t
     :config
-    (orgiami-mode +1)))
-
+    (origami-mode +1)))
 
 (use-package key-chord
   :after evil
@@ -339,7 +309,9 @@
 (use-package evil-magit
   :after evil
   :config
-  (setq evil-magit-use-y-for-yank nil))
+  (setq evil-magit-use-y-for-yank nil)
+
+)
 
 (use-package evil-expat
   :after evil

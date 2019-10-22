@@ -23,9 +23,9 @@
   (ech-dired-setup)
   (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . "")))
 
-  (use-package dired-subtree
-    :after dired
-    :commands (dired-subtree-insert))
+(use-package dired-subtree
+  :after dired
+  :commands (dired-subtree-insert))
 
 
 
@@ -46,6 +46,7 @@
 
 (use-package company
   :commands company-mode
+  :after (general)
   :init
   (setq tab-always-indent 'complete)
   (setq company-global-modes '(not term-mode ac-modes))
@@ -58,8 +59,14 @@
   (setq company-begin-commands '(self-insert-command))
   (setq company-transformers '(company-sort-by-occurrence))
   :config
-  (require 'ech-company "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-company.el")
-  (ech-company-setup)
+  (with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-e") #'company-select-previous))
+
+  ;; (require 'ech-company "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-company.el")
+  ;; (ech-company-setup)
 
   (add-to-list 'company-backends 'company-dabbrev-code)
   (add-to-list 'company-backends 'company-yasnippet)
@@ -167,6 +174,12 @@
   :after go-mode
   :bind (:map gorepl-mode-map (("C-c g g" . gorepl-run)
                                ("C-c C-g" . magit-status))))
+
+(use-package magit
+  :commands magit-status
+  :config
+  (unbind-key (kbd "SPC") magit-mode-map)
+  (setq magit-completing-read-function 'ivy-completing-read))
 
 (defun lisp-setup ()
   (company-mode)
@@ -325,5 +338,23 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package dockerfile-mode
   :mode "\\Dockerfile$")
+
+(use-package ansi-color
+  :config
+  (defun ansi-color-apply-on-buffer ()
+    (ansi-color-apply-on-region (point-min) (point-max)))
+
+  (defun ansi-color-apply-on-minibuffer ()
+    (let ((bufs (remove-if-not
+                 (lambda (x) (string-starts-with (buffer-name x) " *Echo Area"))
+                 (buffer-list))))
+      (dolist (buf bufs)
+        (with-current-buffer buf
+          (ansi-color-apply-on-buffer)))))
+
+  (defun ansi-color-apply-on-minibuffer-advice (proc &rest rest)
+    (ansi-color-apply-on-minibuffer))
+
+  (advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice))
 
 (provide 'my-general)

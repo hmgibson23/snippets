@@ -3,6 +3,8 @@
   :init
   (general-evil-setup)
   :config
+  (general-override-mode +1)
+
   (general-mmap
     ;; search commands
     "gs%" 'anzu-query-replace
@@ -76,6 +78,8 @@
   (exec-leader
     :states 'motion
     :prefix-map 'exec-leader-map
+
+    "j" 'fasd-find-file
 
     "dd" 'docker
     "dcc" 'docker-compose
@@ -195,42 +199,41 @@
     "bh" 'buf-move-left)
 
   ;; colemak related stuff
-     (general-def
-      :states '(insert emacs motion)
-      "TAB" 'indent-for-tab-command
-      "C-h" 'evil-backward-char
-      "C-n" 'evil-next-line
-      "C-o" 'forward-char
-      "C-e" 'evil-previous-line)
+  (general-def
+    :states '(insert emacs motion)
+    "TAB" 'indent-for-tab-command
+    "C-h" 'evil-backward-char
+    "C-n" 'evil-next-line
+    "C-o" 'forward-char
+    "C-e" 'evil-previous-line)
 
-    (general-nmap
-      :keymaps '(comint-mode-map)
-      "]" 'comint-next-input
-      "[" 'comint-previous-input)
+  (general-nmap
+    :keymaps '(comint-mode-map)
+    "]" 'comint-next-input
+    "[" 'comint-previous-input)
 
-    (general-imap
-      :keymaps '(comint-mode-map)
-      "C-n" 'comint-next-input
-      "C-e" 'comint-previous-input)
+  (general-imap
+    :keymaps '(comint-mode-map)
+    "C-n" 'comint-next-input
+    "C-e" 'comint-previous-input)
 
-    (general-imap
-      :keymaps '(term-mode-map)
-      "C-n" 'term-send-up
-      "C-e" 'term-send-down)
+  (general-imap
+    :keymaps '(term-mode-map)
+    "C-n" 'term-send-up
+    "C-e" 'term-send-down)
 
-    (general-nmap
-      :keymaps '(term-mode-map)
-      "C-n" 'term-send-up
-      "C-e" 'term-send-down)
+  (general-nmap
+    :keymaps '(term-mode-map)
+    "C-n" 'term-send-up
+    "C-e" 'term-send-down)
 
-    (general-nmap
-      "j" 'evil-forward-WORD-end)
+  (general-nmap
+    "j" 'evil-forward-WORD-end)
 
-)
+  )
 
 (use-package evil
   :demand
-  :after (general)
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
@@ -307,21 +310,32 @@
   (evil-goggles-mode))
 
 (use-package evil-magit
-  :after evil
+  :after (evil magit)
   :config
   (setq evil-magit-use-y-for-yank nil)
-
-)
+  (with-eval-after-load 'evil-magit
+    (message "Having fun in magit")
+   (evil-define-key* evil-magit-state magit-mode-map "SPC" nil)))
 
 (use-package evil-expat
   :after evil
   :commands (evil-expat)
   :defer t)
 
+(use-package evil-owl
+  :after posframe
+  :config
+  (setq evil-owl-display-method 'posframe
+        evil-owl-extra-posframe-args '(:width 50 :height 20)
+        evil-owl-max-string-length 50)
+  (evil-owl-mode))
+
 (use-package evil-commentary
+  :after evil
   :commands (evil-commentary-mode)
   :config
-  (evil-commentary-mode))
+  (with-eval-after-load 'evil
+    (evil-commentary-mode)))
 
 (use-package evil-ledger
   :after evil
@@ -335,12 +349,19 @@
 (use-package evil-easymotion
   :after evil
   :config
-  (evilem-default-keybindings ",,"))
+  (evilem-default-keybindings "ge"))
 
 (use-package evil-surround
   :after evil
   :commands (global-evil-surround-mode)
   :config
   (global-evil-surround-mode 1))
+
+
+(use-package evil-ex-fasd
+  :after evil
+  :commands (evil-ex-fasd)
+  :config
+  (setq evil-ex-fasd-prefix "j "))
 
 (provide 'my-evil)

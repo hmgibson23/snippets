@@ -99,6 +99,8 @@
   :config
   (exec-path-from-shell-initialize))
 
+(use-package posframe)
+
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 (advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice)
 (require 'my-seas "~/.emacs.d/my-modes/my-seas")

@@ -60,10 +60,10 @@
   (setq company-transformers '(company-sort-by-occurrence))
   :config
   (with-eval-after-load 'company
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-n") #'company-select-next)
-  (define-key company-active-map (kbd "C-e") #'company-select-previous))
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-e") #'company-select-previous))
 
   ;; (require 'ech-company "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-company.el")
   ;; (ech-company-setup)
@@ -179,6 +179,11 @@
   :commands magit-status
   :config
   (unbind-key (kbd "SPC") magit-mode-map)
+  (with-eval-after-load 'magit
+    (setq magit-file-section-map (make-sparse-keymap))
+    (define-key magit-status-mode-map (kbd "SPC") nil)
+    (define-key magit-status-mode-map (kbd "C-w") nil)
+)
   (setq magit-completing-read-function 'ivy-completing-read))
 
 (defun lisp-setup ()

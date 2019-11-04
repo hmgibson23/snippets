@@ -21,6 +21,16 @@
   ;; Less important than recentf.
   :defer t)
 
+(use-package docker-cli
+  :config
+  (defun fsi-args () '("fsi"))
+  (setq docker-cli-commands-alist
+        (append docker-cli-commands-alist '((fsi
+                                             :command "/usr/bin/dotnet"
+                                             :arguments-compose-func fsi-args
+                                             )))))
+
+
 (use-package spaceline
   :demand t
   :init
@@ -95,14 +105,23 @@
   :config
   (editorconfig-mode 1))
 
+
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
 
 (use-package posframe)
 
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-(advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice)
+(use-package ansi-color
+  :config
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+  (advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice)
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))
+
 (require 'my-seas "~/.emacs.d/my-modes/my-seas")
 (require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww.el")
 (require 'my-scripting "~/.emacs.d/my-modes/my-scripting")

@@ -312,10 +312,7 @@
 (use-package evil-magit
   :after (evil magit)
   :config
-  (setq evil-magit-use-y-for-yank nil)
-  (with-eval-after-load 'evil-magit
-    (message "Having fun in magit")
-   (evil-define-key* evil-magit-state magit-mode-map "SPC" nil)))
+  (setq evil-magit-use-y-for-yank nil))
 
 (use-package evil-expat
   :after evil
@@ -353,9 +350,8 @@
 
 (use-package evil-surround
   :after evil
-  :commands (global-evil-surround-mode)
   :config
-  (global-evil-surround-mode 1))
+  (global-evil-surround-mode +1))
 
 
 (use-package evil-ex-fasd

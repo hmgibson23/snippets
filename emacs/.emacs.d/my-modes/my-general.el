@@ -178,7 +178,6 @@
 (use-package magit
   :commands magit-status
   :config
-  (unbind-key (kbd "SPC") magit-mode-map)
   (with-eval-after-load 'magit
     (setq magit-file-section-map (make-sparse-keymap))
     (define-key magit-status-mode-map (kbd "SPC") nil)
@@ -258,11 +257,15 @@
   :defines (terraform-format-on-save-mode)
   :hook (terraform-mode . company-mode)
   :config
-  (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
-  (add-hook 'terraform-mode-hook #'company-terraform-init)
   (if (not (string-match "terraform" compile-command))
       (set (make-local-variable 'compile-command)
            "terraform plan")))
+
+(use-package company-terraform
+  :mode "\\.tf\\'"
+  :config
+  (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
+  (add-hook 'terraform-mode-hook #'company-terraform-init))
 
 (use-package flycheck-yamllint
   :after flycheck

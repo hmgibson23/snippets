@@ -23,6 +23,7 @@
 
 
 (load "~/.emacs.d/my-functions")
+
 (setq package-check-signature nil)
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 ;; load up the modes
@@ -68,7 +69,7 @@
 
 (use-package nord-theme
   :config
-  (set-frame-font "Anonymice Nerd Font:size=35:antialias=true:autohint=true")
+  (set-frame-font "Anonymice Nerd Font:size=20:antialias=true:autohint=true")
   (add-hook 'after-make-frame-functions
             (lambda (frame) (load-theme 'nord t))))
 
@@ -131,7 +132,8 @@
 
 (use-package exec-path-from-shell
   :config
-  (exec-path-from-shell-initialize))
+  (when (string-equal system-type "gnu/linux")
+    (exec-path-from-shell-initialize)))
 
 (use-package posframe)
 

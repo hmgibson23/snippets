@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (docker docker-cli yaml-mode xresources-theme wgrep use-package terraform-doc spaceline rjsx-mode rainbow-delimiters posframe persistent-scratch pallet page-break-lines nord-theme nlinum key-chord jedi insert-shebang hydra hackernews go-mode go general fsharp-mode exec-path-from-shell evil-surround evil-smartparens evil-paredit evil-owl evil-magit evil-expat evil-ex-fasd evil-easymotion evil-commentary evil-colemak-basics evil-anzu elpy elfeed dockerfile-mode counsel-projectile company-web company-terraform company-ghc company-anaconda auto-compile))))
+    (ledger-mode evil-commentary evil-magit magit ahk-mode evil-colemak-basics evil-anzu evil-easymotion key-chord evil-owl rainbow-delimiters auto-compile colemak-evil exec-path-from-shell nord-theme elfeed spaceline posframe hydra evil rjsx-mode jedi elpy page-break-lines use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

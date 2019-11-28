@@ -96,6 +96,7 @@
 (depends-on "elixir-mode")
 (depends-on "elpy")
 (depends-on "emacsql")
+(depends-on "emacsql-mysql")
 (depends-on "emms")
 (depends-on "emojify")
 (depends-on "enh-ruby-mode")

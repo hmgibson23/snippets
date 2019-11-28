@@ -329,7 +329,6 @@
 
 (use-package evil-commentary
   :after evil
-  :commands (evil-commentary-mode)
   :config
   (with-eval-after-load 'evil
     (evil-commentary-mode)))

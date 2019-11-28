@@ -181,8 +181,7 @@
   (with-eval-after-load 'magit
     (setq magit-file-section-map (make-sparse-keymap))
     (define-key magit-status-mode-map (kbd "SPC") nil)
-    (define-key magit-status-mode-map (kbd "C-w") nil)
-)
+    (define-key magit-status-mode-map (kbd "C-w") nil))
   (setq magit-completing-read-function 'ivy-completing-read))
 
 (defun lisp-setup ()
@@ -364,5 +363,26 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     (ansi-color-apply-on-minibuffer))
 
   (advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice))
+
+
+(use-package fsharp-mode
+  :defer t
+  :config
+
+  (when (string-equal system-type "windows-nt")
+   (setq inferior-fsharp-program "\"c:\\Path\To\Fsi.exe\"")
+   (setq fsharp-compiler "\"c:\\Path\To\Fsc.exe\""))
+  (company-mode +1)
+
+(add-to-list 'company-transformers 'company-sort-prefer-same-case-prefix)
+  )
+
+
+(use-package omnisharp
+  :defer t
+  :after flycheck-mode
+  :config
+  (add-hook 'csharp-mode-hook #'flycheck-mode)
+  (add-hook 'csharp-mode-hook 'omnisharp-mode))
 
 (provide 'my-general)

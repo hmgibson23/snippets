@@ -16,6 +16,11 @@ ds() {
   [ -n "$cid" ] && docker stop "$cid"
 }
 
+docker-ip() {
+    local cid=$1
+    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$cid"
+}
+
 zd() {
     local dir
     dir="$(fasd -Rdl "$1" | fzf -1 -0 --no-sort +m)" && cd "${dir}" || return 1

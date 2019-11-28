@@ -207,6 +207,7 @@
 (show-paren-mode 1)
 (global-auto-revert-mode 1)
 (electric-indent-mode -1)
+(electric-pair-mode +1)
 (prefer-coding-system       'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)

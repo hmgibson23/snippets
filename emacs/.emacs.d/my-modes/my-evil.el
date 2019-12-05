@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package general
+  :straight t
   :init
   (general-evil-setup)
   :config
@@ -94,7 +95,7 @@
     "dk" 'kubernetes-overview
 
     ";" 'projectile-command-map
-    "fq" 'counsel-M-x
+    "," 'counsel-M-x
     "mm" 'magit-status
 
     "mf" 'make-frame
@@ -105,6 +106,7 @@
     "e" 'eshell/here
 
     "fr" 'rgrep
+    "fa" 'ag
     "fl" 'lgrep
     "fz" 'zgrep
     "fg" 'find-grep
@@ -238,6 +240,7 @@
 
 (use-package evil
   :demand
+  :straight t
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
@@ -288,29 +291,24 @@
 
 (use-package key-chord
   :after evil
+  :straight t
   :config
   (setq key-chord-two-keys-delay 0.4)
   (key-chord-define evil-insert-state-map "uu" 'evil-normal-state)
   (key-chord-define evil-motion-state-map "uu" 'evil-normal-state)
   (key-chord-mode 1))
 
-(use-package projectile
-  :defer t
-  :commands (projectile-mode)
-  :config
-  (setq projectile-enable-caching t)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-enable-caching t)
-  (projectile-mode +1))
 
 (use-package evil-lion
   :after evil
+  :straight t
   :commands (evil-lion-mode)
   :config
   (evil-lion-mode))
 
 (use-package evil-goggles
   :after evil
+  :straight t
   :commands (evil-goggles-mode)
   :config
   (evil-goggles-use-diff-faces)
@@ -318,16 +316,19 @@
 
 (use-package evil-magit
   :after (evil magit)
+  :straight t
   :config
   (setq evil-magit-use-y-for-yank nil))
 
 (use-package evil-expat
   :after evil
+  :straight t
   :commands (evil-expat)
   :defer t)
 
 (use-package evil-owl
   :after posframe
+  :straight t
   :config
   (setq evil-owl-display-method 'posframe
         evil-owl-extra-posframe-args '(:width 50 :height 20)
@@ -336,34 +337,67 @@
 
 (use-package evil-commentary
   :after evil
+  :straight t
   :config
   (with-eval-after-load 'evil
     (evil-commentary-mode)))
 
 (use-package evil-ledger
   :after evil
+  :straight t
   :commands (evil-ledger-mode))
 
 (use-package evil-numbers
   :after evil
+  :straight t
   :commands (evil-numbers/inc-at-point)
   :defer 10)
 
 (use-package evil-easymotion
   :after evil
+  :straight t
   :config
   (evilem-default-keybindings "ge"))
 
 (use-package evil-surround
   :after evil
+  :straight t
   :config
   (global-evil-surround-mode +1))
 
 
 (use-package evil-ex-fasd
   :after evil
+  :straight t
   :commands (evil-ex-fasd)
   :config
   (setq evil-ex-fasd-prefix "j "))
+
+(use-package fzf
+  :straight t)
+(use-package ag
+  :straight t)
+
+(use-package evil-terminal-cursor-changer
+  :straight t
+  :init
+  (setq evil-motion-state-cursor 'box)  ; █
+  (setq evil-visual-state-cursor 'box)  ; █
+  (setq evil-normal-state-cursor 'box)  ; █
+  (setq evil-insert-state-cursor 'bar)  ; ⎸
+  (setq evil-emacs-state-cursor  'hbar) ; _
+  :config
+  (evil-terminal-cursor-changer-activate))
+
+(use-package projectile
+  :straight t
+  :defer 10
+  :after (general evil)
+  :init
+  (setq projectile-enable-caching t)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-enable-caching t)
+  :config
+  (projectile-mode +1))
 
 (provide 'my-evil)

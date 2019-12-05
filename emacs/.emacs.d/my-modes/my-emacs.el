@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t; -*-;
 
 (use-package ispell
+  :straight t
   :after flyspell
   :defer t
   :config
@@ -9,6 +10,7 @@
   (setq-default ispell-list-command "list"))
 
 (use-package hydra
+  :straight t
   :config
   (defhydra hydra-zoom (global-map "<f2>")
     "zoom"
@@ -24,6 +26,7 @@
   (setq find-ls-option '("-print0 | xargs -0 ls -alhd" . "")))
 
 (use-package dired-subtree
+  :straight t
   :after dired
   :commands (dired-subtree-insert))
 
@@ -33,16 +36,19 @@
   (ech-comint-setup))
 
 (use-package anzu
+  :straight t
   :defer t
   :config
   (global-anzu-mode))
 
 (use-package flycheck
+  :straight t
   :commands (flycheck-mode)
   :defines (flyspell-issue-welcome-flag)
   :hook (#'global-flycheck-mode))
 
 (use-package lsp-mode
+  :straight t
   ;; ..
 
   :config
@@ -52,6 +58,7 @@
   )
 
 (use-package lsp-ui
+  :straight t
   :requires lsp-mode flycheck
   :config
   (setq lsp-ui-doc-enable t
@@ -69,6 +76,7 @@
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-mode
+  :straight t
   :commands lsp
   :config
 
@@ -80,11 +88,13 @@
   (add-hook 'ruby-mode-hook #'lsp))
 
 (use-package company-lsp
+  :straight t
   :commands company-lsp
   :config
   (push 'company-lsp company-backends))
 
 (use-package company
+  :straight t
   :commands company-mode
   :after (general)
   :init
@@ -105,28 +115,27 @@
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-e") #'company-select-previous))
+    (define-key company-active-map (kbd "C-e") #'company-select-previous)))
 
-  (add-to-list 'company-backends 'company-dabbrev-code)
-  (add-to-list 'company-backends 'company-yasnippet)
-  (add-to-list 'company-backends 'company-files)
-  (add-to-list 'company-backends 'company-elisp)
-  (add-to-list 'company-backends 'company-anaconda)
-  (add-to-list 'company-backends 'company-ghc)
-  (add-to-list 'company-backends 'company-web-html))
+(use-package company-files
+  :config
+  (push 'company-files company-backends))
 
 (use-package company-quickhelp
+  :straight t
   :after company
   :commands (company-quickhelp)
   :config
   (company-quickhelp-mode))
 
 (use-package ggtags
+  :straight t
   :commands (ggtags-global-mode)
   :config
   (counsel-gtags-mode +1))
 
 (use-package magit
+  :straight t
   :commands magit-status
   :config
   (with-eval-after-load 'magit
@@ -138,6 +147,7 @@
   (setq magit-completing-read-function 'ivy-completing-read))
 
 (use-package ansi-color
+  :straight t
   :config
   (defun ansi-color-apply-on-buffer ()
     (ansi-color-apply-on-region (point-min) (point-max)))
@@ -156,37 +166,30 @@
   (advice-add 'shell-command :after #'ansi-color-apply-on-minibuffer-advice))
 
 (use-package browse-kill-ring
+  :straight t
   :defer t
   :config (browse-kill-ring-default-keybindings))
 
-(use-package company
-  :config
-  (setq company-idle-delay 0.3)
-
-  (global-company-mode 1)
-
-  (global-set-key (kbd "C-<tab>") 'company-complete))
-
 (use-package company-lsp
+  :straight t
   :requires company
   :config
   (push 'company-lsp company-backends)
-
-   ;; Disable client-side cache because the LSP server does a better job.
   (setq company-transformers nil
         company-lsp-async t
         company-lsp-cache-candidates nil))
 
 (use-package auto-compile
+  :straight t
   :config
   (auto-compile-on-load-mode)
   (auto-compile-on-save-mode))
 
 (use-package uniquify
-  ;; Less important than recentf.
   :defer t)
 
 (use-package spaceline
+  :straight t
   :demand t
   :init
   (setq powerline-default-separator 'wave)
@@ -195,14 +198,19 @@
   (require 'spaceline-config)
   (spaceline-spacemacs-theme))
 
-(use-package page-break-lines :ensure t)
+(use-package page-break-lines
+  :straight t
+  :ensure t)
+
 (use-package nord-theme
+  :straight t
   :config
   (set-frame-font "Anonymice Nerd Font:size=20:antialias=true:autohint=true")
   (add-hook 'after-make-frame-functions
             (lambda (frame) (load-theme 'nord t))))
 
 (use-package ivy
+  :straight t
   :bind (("C-c C-r" . ivy-resume)
          ("C-x C-f" . counsel-find-file)
          ("C-x b" . ivy-switch-buffer)
@@ -224,24 +232,29 @@
   (define-key ivy-minibuffer-map (kbd "[backspace]") 'ivy-backward-delete-char))
 
 (use-package window-numbering
+  :straight t
   :commands (window-numbering-mode)
   :config
   (window-numbering-mode))
 
 (use-package expand-region
+  :straight t
   :commands er/expand-region
   :bind ("C-=" . er/expand-region))
 
 (use-package undo-tree
+  :straight t
   :config
   (global-undo-tree-mode 1))
 
 (use-package diff-hl
+  :straight t
   :defer t
   :config
   (global-diff-hl-mode))
 
 (use-package autopair
+  :straight t
   :defer t
   :config
   (autopair-global-mode +1))
@@ -255,14 +268,16 @@
   (tool-bar-mode -1))
 
 (use-package editorconfig
+  :straight t
   :defer t
   :config
   (editorconfig-mode 1))
 
 (use-package exec-path-from-shell
+  :straight t
   :config
   (when (string-equal system-type "gnu/linux")
     (exec-path-from-shell-initialize)))
 
-(use-package posframe)
+(require 'posframe)
 (provide 'my-emacs)

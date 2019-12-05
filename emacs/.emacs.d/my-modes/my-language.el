@@ -1,11 +1,13 @@
 ;; -*- lexical-binding: t; -*-;
 (use-package ledger-mode
   :commands (ledger-mode)
+  :straight t
   :defines (ledger-reconcile-default-commodity)
   :config
   (setq ledger-reconcile-default-commodity "£"))
 
 (use-package org
+  :straight t
   :defer t
   :init
   (add-hook 'org-mode-hook (lambda () (flyspell-mode t)))
@@ -33,6 +35,7 @@
                            "~/gorg/notes.org")))
 
 (use-package plantuml-mode
+  :straight t
   :commands (plantuml-mode)
   :config
   (with-eval-after-load 'flycheck
@@ -42,17 +45,8 @@
   (add-to-list 'auto-mode-alist '("\\.puml\\'" . plantuml-mode)))
 
 (use-package go-mode
+  :straight t
   :commands (go-mode)
-  :defines (company-backends)
-  :bind (:map go-mode-map (("M-." . godef-jump)
-                           ("M-*" . pop-tag-mark)
-                           ("C-c g a" . go-test-current-project)
-                           ("C-c g m" . go-test-current-file)
-                           ("C-c g ." . go-test-current-test)
-                           ("C-c g t" . go-add-tags)
-                           ("C-c g p" . go-projectile-set-gopath)
-                           ("C-c g i r" . go-remove-unused-imports)
-                           ("C-c g r" . go-run)))
   :config
   (setq gofmt-command "goimports")
   (add-hook 'go-mode-hook #'gorepl-mode)
@@ -60,8 +54,6 @@
    'go-mode-hook
    (lambda ()
      (add-hook 'before-save-hook 'gofmt-before-save)
-     (set (make-local-variable 'company-backends) '(company-go))
-     (company-mode +1)
      (flycheck-mode +1)
      (go-eldoc-setup)
      (if (not (string-match "go" compile-command))
@@ -69,30 +61,48 @@
               "go generate && go build -v && go vet")))))
 
 (use-package company-go
+  :straight t
   :after go-mode
   :commands (company-go)
   :config
+  (push 'company-go company-backends)
   (add-hook 'go-mode-hook 'company-mode))
-(use-package gotest :after go-mode )
-(use-package go-stacktracer :after go-mode)
-(use-package go-add-tags :after go-mode)
-(use-package go-direx :after go-mode)
-(use-package go-dlv :after go-mode)
+
+(use-package gotest
+  :straight t
+ :after go-mode )
+(use-package go-stacktracer
+  :straight t
+ :after go-mode)
+(use-package go-add-tags
+  :straight t
+ :after go-mode)
+(use-package go-direx
+  :straight t
+ :after go-mode)
+(use-package go-dlv
+  :straight t
+ :after go-mode)
 
 
 (use-package gorepl-mode
+  :straight t
   :after go-mode
   :bind (:map gorepl-mode-map (("C-c g g" . gorepl-run)
                                ("C-c C-g" . magit-status))))
 
 (use-package docker-tramp
+  :straight t
   :after docker
   :defer t)
+
 (use-package docker-compose-mode
+  :straight t
   :after docker
   :defer t)
 
 (use-package dockerfile-mode
+  :straight t
   :mode "\\Dockerfile$")
 
 (defun lisp-setup ()
@@ -103,6 +113,7 @@
   (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
 
 (use-package slime
+  :straight t
   :commands (slime)
   :config
   (progn
@@ -116,6 +127,7 @@
 
 (use-package ielm
   :commands (ielm)
+  :straight t
   :config
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
@@ -124,6 +136,7 @@
 
 (use-package lisp-mode
   :ensure nil
+  :straight t
   :config
   (setq tab-always-indent 'complete)
   (add-hook 'lisp-mode-hook #'lisp-setup)
@@ -135,6 +148,7 @@
   (add-hook 'lisp-interaction-mode-hook #'lisp-setup))
 
 (use-package clojure-mode
+  :straight t
   :commands (clojure-mode)
   :mode "\\.clj\\'"
   :config
@@ -147,6 +161,7 @@
 
 (use-package cider
   :commands (cider-jack-in)
+  :straight t
   :custom
   (font-lock-add-keywords 'clojure-mode
                           '(("(\\|)" . 'esk-paren-face)))
@@ -164,6 +179,7 @@
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
+  :straight t
   :defines (terraform-format-on-save-mode)
   :hook (terraform-mode . company-mode)
   :config
@@ -173,12 +189,14 @@
 
 (use-package company-terraform
   :mode "\\.tf\\'"
+  :straight t
   :config
   (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
   (add-hook 'terraform-mode-hook #'company-terraform-init))
 
 (use-package flycheck-yamllint
   :after flycheck
+  :straight t
   :commands (flycheck-yamllint)
   :hook (yaml-mode . flycheck-mode)
   :init
@@ -187,12 +205,14 @@
       '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
 
 (use-package pandoc-mode
+  :straight t
   :commands (pandoc-mode)
   :init
   (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings))
 
 (use-package markdown-mode
   :after hydra
+  :straight t
   :commands (markdown-mode)
   :bind (:map markdown-mode-map (("C-." . hydra-markdown/body)))
   :config
@@ -241,13 +261,16 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     ("R" markdown-insert-reference-link :color blue)))
 
 (use-package vagrant-tramp
+  :straight t
   :commands (tramp)
   :defer t)
 
 (use-package docker
+  :straight t
   :commands (docker))
 
 (use-package fsharp-mode
+  :straight t
   :defer t
   :config
 
@@ -261,15 +284,19 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 
 (use-package omnisharp
+  :straight t
   :defer t
   :after flycheck-mode
   :config
   (add-hook 'csharp-mode-hook #'flycheck-mode)
   (add-hook 'csharp-mode-hook 'omnisharp-mode))
 
-(use-package tuareg)
+(use-package tuareg
+  :straight t
+)
 
 (use-package merlin
+  :straight t
   :defer t
   :config
   (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
@@ -282,9 +309,11 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     (add-to-list 'company-backends 'merlin-company-backend)))
 
 (use-package sibiliant-mode
+  :straight t
   :hook (sibiliant-mode turn-on-paredit))
 
 (use-package haskell-mode
+  :straight t
   :defer t
   :commands haskell-mode
   :mode "\\.hs\\'"
@@ -324,6 +353,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (add-hook 'haskell-mode-hook 'company-mode))
 
 (use-package ruby-mode
+  :straight t
   :mode "\\.rb\\'"
   :defines (company-backends)
   :interpreter "ruby"
@@ -347,11 +377,13 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package elpy
   :ensure t
+  :straight t
   :defer t
   :init
   (advice-add 'python-mode :before 'elpy-enable))
 
 (use-package python
+  :straight t
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   :init
@@ -413,25 +445,21 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
     (highlight-lines-matching-regexp "pdb.set_trace()")))
 
 (use-package pyenv-mode
+  :straight t
   :commands (pyenv-mode)
   :init
   (setq elpy-rpc-python-command "python3")
   :config
-  (defun projectile-pyenv-mode-set ()
-    "Set pyenv version matching project name."
-    (let ((project (projectile-project-name)))
-      (if (member project (pyenv-mode-versions))
-          (pyenv-mode-set project)
-        (pyenv-mode-unset))))
-  (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
   (add-hook 'python-mode-hook 'pyenv-mode)
 
   (use-package pyenv-mode-auto
+  :straight t
     :defer t
     :ensure t))
 
 
 (use-package jedi
+  :straight t
   :defer t
   :after 'company
   :ensure t
@@ -441,6 +469,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (require 'rx)
 (use-package anaconda-mode
+  :straight t
   :commands (anaconda-mode)
   :config
   (use-package company-anaconda
@@ -451,6 +480,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
                     '(company-anaconda :with company-capf)))))
 
 (use-package web-mode
+  :straight t
   :defer t
   :mode ("\\.html\\'"
          "\\.app\\'"
@@ -465,6 +495,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   :init (setq web-mode-markup-indent-offset 4))
 
 (use-package rjsx-mode
+  :straight t
   :commands rjsx-mode
   :defines (flycheck-check-syntax-automatically)
   :defer t
@@ -499,19 +530,23 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
               (setq flycheck-check-syntax-automatically '(save mode-enabled)))))
 
 (use-package js-mode
+  :straight t
   :commands (js-mode)
   :defer t
   :hook (js2-minor js2-minor-mode))
 
 (use-package css-mode
+  :straight t
   :commands (css-mode)
   :hook (css-mode skewer-css-mode))
 
 (use-package html-mode
+  :straight t
   :defer t
   :hook skewer-html-mode)
 
 (use-package elxir-mode
+  :straight t
   :commands elixir-mode
   :init
   (add-to-list 'auto-mode-alist '("\\.ex\\'" . elixir-mode))
@@ -522,11 +557,13 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (use-package alchemist
     :commands alchemist-mode
     :defines (alchemist-mode-map)
+  :straight t
     :defer t
     :bind (:map alchemist-mode-map
                 ([tab] . company-complete))))
 
 (use-package cc-mode
+  :straight t
   :commands (cc-mode)
   :init
   (setq c-basic-offset 2)
@@ -542,6 +579,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package company-irony-c-headers
   :defer t
+  :straight t
   :config
   (eval-after-load 'cc-mode
     '(progn
@@ -554,6 +592,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (use-package d-mode
   :commands (d-mode)
   :defines (dmd/root)
+  :straight t
   :config
   (add-hook 'd-mode-hook 'company-dcd-mode)
   (defun dmd-phobos-docs (f)
@@ -565,6 +604,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package irony
   :commands (irony-mode)
+  :straight t
   :after company
   :config
   (add-hook 'irony-mode-hook 'irony-eldoc)
@@ -593,6 +633,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package rtags
   :commands (company-rtags)
+  :straight t
   :after (company)
   :config
   (setq rtags-completions-enabled t)
@@ -604,6 +645,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package rust-mode
   :commands (rust-mode)
+  :straight t
   :defines (gbb-command-name)
   :config
   (add-hook 'rust-mode-hook
@@ -613,11 +655,13 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package flycheck-rust
   :commands (flycheck-mode)
+  :straight t
   :config
   (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 (use-package cargo
   :commands (rust-mode)
+  :straight t
   :after rust-mode
   :config
   (add-hook 'rust-mode-hook 'cargo-minor-mode))

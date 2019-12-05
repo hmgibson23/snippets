@@ -5,6 +5,9 @@
   :config
   (general-override-mode +1)
 
+  (general-nmap
+    "C-p" 'fzf)
+
   (general-mmap
     ;; search commands
     "gs%" 'anzu-query-replace
@@ -12,6 +15,7 @@
     "gsf" 'search-forward
 
     "g/"  'dabbrev-expand
+
 
     "gz"  'zap-to-char
     "g." 'counsel-yank-pop
@@ -90,7 +94,7 @@
     "dk" 'kubernetes-overview
 
     ";" 'projectile-command-map
-    ":" 'counsel-M-x
+    "fq" 'counsel-M-x
     "mm" 'magit-status
 
     "mf" 'make-frame
@@ -272,7 +276,8 @@
 
   ;; other modes that are used very much by evil
 
-  (use-package counsel-projectile :defer t
+  (use-package counsel-projectile
+    :after (projectile)
     :config
     (counsel-projectile-mode +1))
 
@@ -290,12 +295,14 @@
   (key-chord-mode 1))
 
 (use-package projectile
+  :defer t
   :commands (projectile-mode)
   :config
   (setq projectile-enable-caching t)
   (setq projectile-completion-system 'ivy)
   (setq projectile-enable-caching t)
   (projectile-mode +1))
+
 (use-package evil-lion
   :after evil
   :commands (evil-lion-mode)

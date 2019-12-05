@@ -5,3 +5,6 @@ fun! SetupCommandAlias(from, to)
 endfun
 
 call SetupCommandAlias("grep","GrepperGrep")
+
+command! -nargs=* -complete=shellcmd Rsplit execute "new | r! <args>"
+command! -nargs=* -complete=shellcmd Rtab execute "tabnew | r! <args>"

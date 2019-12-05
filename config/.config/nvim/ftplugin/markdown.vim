@@ -16,6 +16,5 @@ autocmd! User GoyoLeave Limelight!
 autocmd! User GoyoEnter set spell
 autocmd! User GoyoLeave set spell!
 autocmd! User GoyoLeave set spell!
-call deoplete#custom#buffer_option('auto_complete', v:false)
 hi clear SpellBad
 hi SpellBad cterm=underline ctermfg=red

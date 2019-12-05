@@ -34,6 +34,8 @@ nnoremap <C-W>h <C-W>h|xnoremap <C-W>h <C-W>h|
 nnoremap <C-W>n <C-W>j|xnoremap <C-W>n <C-W>j|
 nnoremap <C-W>e <C-W>k|xnoremap <C-W>e <C-W>k|
 nnoremap <C-W>i <C-W>l|xnoremap <C-W>i <C-W>l|
+nnoremap <C-W>t :sp|xnoremap <C-W>t :sp|
+nnoremap <C-W>v :vsp|xnoremap <C-W>v :vsp|
 "Command
 omap <C-p> <C-e>
 omap <C-n> <C-n>
@@ -45,11 +47,15 @@ let mapleader = ","
 
 "Fzf
 nnoremap <leader>fb :<C-u>Buffers<CR>
+nnoremap <leader>fw :<C-u>Windows<CR>
 nnoremap <leader>fc :<C-u>Commands<CR>
 nnoremap <leader>fa :<C-u>Ag<CR>
 nnoremap <leader>fm :<C-u>Marks<CR>
-nnoremap <leader>fh :<C-u>History<CR>
+nnoremap <leader>fq :<C-u>History:<CR>
 nnoremap <leader>ff :ZL<CR>
+nnoremap <leader>fg :GFiles<CR>
+nnoremap <leader>fs :FZF<CR>
+map <C-p> :Files<CR>
 
 " Other
 inoremap uu <Esc>|tnoremap uu <C-\><C-n>
@@ -59,7 +65,6 @@ nnoremap <leader>tc :tabclose<CR>
 nnoremap <leader>bp :bp<CR>
 nnoremap <leader>bn :bn<CR>
 nnoremap <leader>mm :Gstatus<CR>
-map <C-p> :Files<CR>
 
 inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 inoremap <silent><expr><s-tab> pumvisible() ? "\<c-e>" : "\<s-tab>"

@@ -1,6 +1,6 @@
 " Ale
 let g:ale_fix_on_save = 1
-let g:ale_open_list = 1
+let g:ale_open_list = 0
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '/'
 let g:ale_lint_on_text_changed = 'never'
@@ -28,26 +28,11 @@ let g:ale_fixers = {
 " Airline
 let g:airline_powerline_fonts = 1
 
-" Deoplete
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#omni_patterns = {}
-let g:deoplete#enable_at_startup = 1
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-autocmd QuitPre * if empty(&bt) | lclose | endif
-call deoplete#initialize()
-
 " python
 autocmd BufWritePre *.py :%s/\s\+$//e
 
 " go
 let g:go_fmt_options = ''
-
-function! Multiple_cursors_before()
-    let b:deoplete_disable_auto_complete = 1
-endfunction
-function! Multiple_cursors_after()
-    let b:deoplete_disable_auto_complete = 0
-endfunction
 
 "Ledger
 au BufNewFile,BufRead *.ldg,*.ledger,*.dat setf ledger
@@ -72,10 +57,6 @@ augroup END
 
 " Change directory
 " autocmd BufEnter * silent! lcd %:p:h
-
-" deoplete
-let g:deoplete#omni#input_patterns = {}
-let g:deoplete#omni#input_patterns.lua = '\w+|[^. *\t][.:]\w*'
 
 " yaml
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent

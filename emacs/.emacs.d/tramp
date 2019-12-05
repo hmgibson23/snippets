@@ -1,10 +1,8 @@
-;; -*- emacs-lisp -*- <19/05/31 09:30:02 /home/hugo/.emacs.d/tramp>
+;; -*- emacs-lisp -*- <19/11/28 14:34:43 /home/hugo/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
-(((tramp-file-name "susudo" nil nil "ant" nil nil nil)
-  nil)
- ((tramp-file-name "sudo" "root" nil "ant" nil nil nil)
+(((tramp-file-name "sudo" "root" nil "ant" nil nil nil)
   ("uname" "Linux 5.1.5-arch1-2-ARCH")
   ("locale" "LC_ALL=C")
   ("test" "test")
@@ -25,4 +23,6 @@
   ("gid-integer" 0)
   ("readlink" "\\readlink")
   ("gid-string" "root")
-  ("uid-integer" 0)))
+  ("uid-integer" 0))
+ ((tramp-file-name "docker" nil nil "hugo-void" nil nil nil)
+  nil))

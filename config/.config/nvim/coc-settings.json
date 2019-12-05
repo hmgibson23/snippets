@@ -1,0 +1,28 @@
+{
+  "coc.preferences.formatOnSaveFiletypes": ["css", "Markdown", "javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "coc.source.tag.enable": true,
+  "coc.source.ultisnips.enable": true,
+  "coc.source.ultisnips.priority": 100,
+  "snippets.priority": 100,
+  "snippets.extends": {
+    "javascriptreact": [
+      "javascript"
+    ],
+    "typescript": [
+      "javascript"
+    ],
+    "typescriptreact": [
+      "javascript"
+    ]
+  },
+  "prettier.requireConfig": true,
+  "suggest.triggerAfterInsertEnter": true,
+  "suggest.noselect": true,
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    }
+  }
+}

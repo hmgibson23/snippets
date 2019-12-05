@@ -67,10 +67,8 @@ alias ec="emacsclient -t"
 alias k="kubectl"
 alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
 alias tmux="TERM=screen-256color-bce tmux"
-alias nv="nvim"
+alias n="nvim"
 alias k_compl="source <(kubectl completion zsh)"
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
 eval "$(fasd --init auto)"
 
 bindkey -e

@@ -6,6 +6,7 @@
   :config
   (setq ledger-reconcile-default-commodity "£"))
 
+
 (use-package org
   :straight t
   :defer t
@@ -70,19 +71,19 @@
 
 (use-package gotest
   :straight t
- :after go-mode )
+  :after go-mode )
 (use-package go-stacktracer
   :straight t
- :after go-mode)
+  :after go-mode)
 (use-package go-add-tags
   :straight t
- :after go-mode)
+  :after go-mode)
 (use-package go-direx
   :straight t
- :after go-mode)
+  :after go-mode)
 (use-package go-dlv
   :straight t
- :after go-mode)
+  :after go-mode)
 
 
 (use-package gorepl-mode
@@ -106,11 +107,13 @@
   :mode "\\Dockerfile$")
 
 (defun lisp-setup ()
-  (company-mode)
+  (message "lisp setup")
   (rainbow-delimiters-mode)
   (turn-on-eldoc-mode)
   (paredit-mode +1)
-  (add-hook 'emacs-lisp-mode-hook 'evil-paredit-mode))
+  (evil-paredit-mode +1))
+
+(add-hook 'emacs-lisp-mode-hook #'lisp-setup)
 
 (use-package slime
   :straight t
@@ -131,13 +134,13 @@
   :config
   (add-hook 'ielm-mode-hook #'eldoc-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
-  (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'ielm-mode-hook #'company-mode))
+  (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
 
 (use-package lisp-mode
   :ensure nil
   :straight t
-  :config
+  :init
+  (lisp-setup)
   (setq tab-always-indent 'complete)
   (add-hook 'lisp-mode-hook #'lisp-setup)
   (add-hook 'emacs-lisp-mode-hook #'lisp-setup)
@@ -154,7 +157,6 @@
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
   (add-hook 'clojure-mode-hook #'cider-mode)
-  (add-hook 'clojure-mode-hook #'company-mode)
   (add-hook 'clojure-mode-hook #'evil-paredit-mode)
   (add-hook 'clojure-mode-hook #'subword-mode)
   (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
@@ -277,11 +279,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (when (string-equal system-type "windows-nt")
     (setq inferior-fsharp-program "\"c:\\Path\To\Fsi.exe\"")
     (setq fsharp-compiler "\"c:\\Path\To\Fsc.exe\""))
-  (company-mode +1)
-
-  (add-to-list 'company-transformers 'company-sort-prefer-same-case-prefix)
-  )
-
+  (add-to-list 'company-transformers 'company-sort-prefer-same-case-prefix))
 
 (use-package omnisharp
   :straight t
@@ -290,23 +288,6 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   :config
   (add-hook 'csharp-mode-hook #'flycheck-mode)
   (add-hook 'csharp-mode-hook 'omnisharp-mode))
-
-(use-package tuareg
-  :straight t
-)
-
-(use-package merlin
-  :straight t
-  :defer t
-  :config
-  (let ((opam-share (ignore-errors (car (process-lines "opam" "config" "var" "share")))))
-    (when (and opam-share (file-directory-p opam-share))
-      (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
-      (autoload 'merlin-mode "merlin" nil t nil)
-      (add-hook 'tuareg-mode-hook 'merlin-mode t)
-      (add-hook 'caml-mode-hook 'merlin-mode t)))
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'merlin-company-backend)))
 
 (use-package sibiliant-mode
   :straight t
@@ -345,17 +326,14 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (add-hook 'haskell-mode-hook 'flymake-hlint-load)
   (add-hook 'haskell-mode-hook 'flymake-haskell-enable)
   (add-hook 'haskell-mode-hook  #'rainbow-delimiters-mode)
-  (add-hook 'haskell-interactive-mode-hook 'company-mode)
   (add-hook 'w3m-display-hook 'w3m-haddock-display)
   (autoload 'ghc-init "ghc" nil t)
   (autoload 'ghc-debug "ghc" nil t)
-  (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-  (add-hook 'haskell-mode-hook 'company-mode))
+  (add-hook 'haskell-mode-hook (lambda () (ghc-init))))
 
 (use-package ruby-mode
   :straight t
   :mode "\\.rb\\'"
-  :defines (company-backends)
   :interpreter "ruby"
   :init
   (setq flyspell-issue-message-flg nil)
@@ -371,12 +349,9 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (add-hook 'enh-ruby-mode-hook
             (lambda () (flyspell-prog-mode)))
   (add-hook 'ruby-mode-hook 'robe-mode)
-  (add-hook 'ruby-mode-hook 'inf-ruby-mode)
-  (eval-after-load 'company
-    '(add-to-list 'company-backends 'company-inf-ruby)))
+  (add-hook 'ruby-mode-hook 'inf-ruby-mode))
 
 (use-package elpy
-  :ensure t
   :straight t
   :defer t
   :init
@@ -385,64 +360,47 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (use-package python
   :straight t
   :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :init
-  :config
-  (add-hook 'python-mode (lambda () (company-mode)))
+  :interpreter ("python" . python-mode))
 
-  (defun company-yasnippet-or-completion ()
-    "Solve company yasnippet conflicts."
-    (interactive)
-    (let ((yas-fallback-behavior
-           (apply 'company-complete-common nil)))
-      (yas-expand)))
+(defun python-add-breakpoint ()
+  (interactive)
+  (newline-and-indent)
+  (insert "import ipdb; ipdb.set_trace()")
+  (highlight-lines-matching-regexp "^[ ]*import ipdb; ipdb.set_trace()"))
 
-  (add-hook 'company-mode-hook
-            (lambda ()
-              (substitute-key-definition
-               'company-complete-common
-               'company-yasnippet-or-completion
-               company-active-map)))
+(defun run-virtualenv-python (&optional env)
+  "Run Python in this virtualenv."
+  (interactive)
+  (let ((env-root (locate-dominating-file
+                   (or env default-directory) "bin/python")))
+    (apply 'run-python
+           (when env-root
+             (list (concat (absolute-dirname env-root) "bin/python"))))))
 
-  (defun python-add-breakpoint ()
-    (interactive)
-    (newline-and-indent)
-    (insert "import ipdb; ipdb.set_trace()")
-    (highlight-lines-matching-regexp "^[ ]*import ipdb; ipdb.set_trace()"))
+(defun python-generate-repl-name (&optional buffer)
+  "Generate a better name for a Python buffer."
+  (let ((buffer (or buffer (window-buffer))))
+    (with-current-buffer buffer
+      (concat
+       "*Python-"
+       (file-name-nondirectory
+        (substring default-directory 0
+                   (when (equal (substring default-directory -1) "/") -1)))
+       "@"
+       (car (split-string (if (tramp-tramp-file-p default-directory)
+                              (with-parsed-tramp-file-name default-directory py
+                                                           py-host)
+                            (system-name)) "\\."))
+       "*"))))
 
-  (defun run-virtualenv-python (&optional env)
-    "Run Python in this virtualenv."
-    (interactive)
-    (let ((env-root (locate-dominating-file
-                     (or env default-directory) "bin/python")))
-      (apply 'run-python
-             (when env-root
-               (list (concat (absolute-dirname env-root) "bin/python"))))))
-
-  (defun python-generate-repl-name (&optional buffer)
-    "Generate a better name for a Python buffer."
-    (let ((buffer (or buffer (window-buffer))))
-      (with-current-buffer buffer
-        (concat
-         "*Python-"
-         (file-name-nondirectory
-          (substring default-directory 0
-                     (when (equal (substring default-directory -1) "/") -1)))
-         "@"
-         (car (split-string (if (tramp-tramp-file-p default-directory)
-                                (with-parsed-tramp-file-name default-directory py
-                                  py-host)
-                              (system-name)) "\\."))
-         "*"))))
-
-  (add-hook 'inferior-python-mode-hook
-            (lambda () (rename-buffer (python-generate-repl-name))))
+(add-hook 'inferior-python-mode-hook
+          (lambda () (rename-buffer (python-generate-repl-name))))
 
 
-  (defun annotate-pdb ()
-    (interactive)
-    (highlight-lines-matching-regexp "import pdb")
-    (highlight-lines-matching-regexp "pdb.set_trace()")))
+(defun annotate-pdb ()
+  (interactive)
+  (highlight-lines-matching-regexp "import pdb")
+  (highlight-lines-matching-regexp "pdb.set_trace()")))
 
 (use-package pyenv-mode
   :straight t
@@ -453,31 +411,14 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (add-hook 'python-mode-hook 'pyenv-mode)
 
   (use-package pyenv-mode-auto
-  :straight t
+    :straight t
     :defer t
-    :ensure t))
-
-
-(use-package jedi
-  :straight t
-  :defer t
-  :after 'company
-  :ensure t
-  :init
-  (add-to-list 'company-backends 'company-jedi))
-
+    ))
 
 (require 'rx)
 (use-package anaconda-mode
   :straight t
-  :commands (anaconda-mode)
-  :config
-  (use-package company-anaconda
-    :ensure t
-    :init (add-hook 'python-mode-hook 'anaconda-mode)
-    (eval-after-load "company"
-      '(add-to-list 'company-backends
-                    '(company-anaconda :with company-capf)))))
+  :commands (anaconda-mode))
 
 (use-package web-mode
   :straight t
@@ -489,51 +430,28 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
          "\\.php\\'"
          "\\.phtml\\'"
          "\\.ssp\\'"
-         "\\.jsx\\'"
          "\\.ejs\\'")
-  :hook ((web-mode flyspell-prog-mode) . company-mode)
+  :hook ((web-mode flyspell-prog-mode))
   :init (setq web-mode-markup-indent-offset 4))
 
+(use-package prettier-js
+  :straight t)
+
 (use-package rjsx-mode
+  :ensure t
   :straight t
   :commands rjsx-mode
-  :defines (flycheck-check-syntax-automatically)
-  :defer t
-  :ensure t
-  :init
-  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
-  :config
-  (defun delete-tern-process ()
-    "Delete the tern process if it won't go itself'"
-    (interactive)
-    (delete-process "Tern"))
+  :mode (("\\.js$\\'" . rjsx-mode))
+  :hook ((rjsx-mode (lambda ()
+                      (set (make-local-variable 'compile-command)
+                           (format "npm test"))
+                      (prettier-js-mode)
+                      (js2-imenu-extras-mode)
+                      (js2-refactor-mode)
+                      (yas-minor-mode)
+                      (eldoc-mode +1)
 
-  (add-hook 'rjsx-mode-hook
-            (lambda ()
-              (interactive)
-              (tide-setup)
-              (lsp-mode)
-              (flycheck-mode +1)
-              (set (make-local-variable 'compile-command)
-                   (format "npm test"))
-              (js2-imenu-extras-setup)
-              (flow-minor-enable-automatically)
-              (prettier-js-mode)
-              (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
-              (js2-imenu-extras-mode)
-              (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)
-              (skewer-mode)
-              (js2-refactor-mode)
-              (yas-minor-mode)
-              (eldoc-mode +1)
-              (company-mode +1)
-              (setq flycheck-check-syntax-automatically '(save mode-enabled)))))
-
-(use-package js-mode
-  :straight t
-  :commands (js-mode)
-  :defer t
-  :hook (js2-minor js2-minor-mode))
+                      ))))
 
 (use-package css-mode
   :straight t
@@ -557,7 +475,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (use-package alchemist
     :commands alchemist-mode
     :defines (alchemist-mode-map)
-  :straight t
+    :straight t
     :defer t
     :bind (:map alchemist-mode-map
                 ([tab] . company-complete))))
@@ -579,15 +497,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 
 (use-package company-irony-c-headers
   :defer t
-  :straight t
-  :config
-  (eval-after-load 'cc-mode
-    '(progn
-       (define-key c-mode-map  [(tab)] 'company-complete)
-       (define-key c++-mode-map [(tab)] 'company-complete)))
-  (eval-after-load 'company
-    '(add-to-list
-      'company-backends '(company-irony-c-headers company-irony))))
+  :straight t)
 
 (use-package d-mode
   :commands (d-mode)
@@ -608,7 +518,6 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   :after company
   :config
   (add-hook 'irony-mode-hook 'irony-eldoc)
-  (add-hook 'irony-mode-hook 'company-mode)
   (eval-after-load 'flycheck
     '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
@@ -619,17 +528,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
       'irony-completion-at-point-async))
   (add-hook 'irony-mode-hook 'my-irony-mode-hook)
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-
-  (eval-after-load 'company-mode
-    '(define-key company-active-map [tab] 'complete-indent-or-complete-common))
-  (eval-after-load 'company-mode
-    '(define-key company-active-map (kbd "TAB") 'complete-indent-or-complete-common))
-
-  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-  (setq company-backends (delete 'company-semantic company-backends))
-  (eval-after-load 'company
-    '(add-to-list
-      'company-backends 'company-irony 'company-c-headers)))
+  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 
 (use-package rtags
   :commands (company-rtags)
@@ -637,9 +536,6 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   :after (company)
   :config
   (setq rtags-completions-enabled t)
-  (eval-after-load 'company
-    '(add-to-list
-      'company-backends 'company-rtags))
   (setq rtags-autostart-diagnostics t)
   (rtags-enable-standard-keybindings))
 

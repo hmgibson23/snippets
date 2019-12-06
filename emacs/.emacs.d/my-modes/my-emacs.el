@@ -17,6 +17,8 @@
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")))
 
+
+
 (use-package dired
   :defer t
   :commands dired-mode
@@ -45,81 +47,43 @@
   :straight t
   :commands (flycheck-mode)
   :defines (flyspell-issue-welcome-flag)
-  :hook (#'global-flycheck-mode))
+  :init (global-flycheck-mode))
 
-(use-package lsp-mode
+(use-package eglot
   :straight t
-  ;; ..
-
-  :config
-  (setq lsp-prefer-flymake nil) ;; Prefer using lsp-ui (flycheck) over flymake.
-
-  ;; ..
-  )
-
-(use-package lsp-ui
-  :straight t
-  :requires lsp-mode flycheck
-  :config
-  (setq lsp-ui-doc-enable t
-        lsp-ui-doc-use-childframe t
-        lsp-ui-doc-position 'top
-        lsp-ui-doc-include-signature t
-        lsp-ui-sideline-enable nil
-        lsp-ui-flycheck-enable t
-        lsp-ui-flycheck-list-position 'right
-        lsp-ui-flycheck-live-reporting t
-        lsp-ui-peek-enable t
-        lsp-ui-peek-list-width 60
-        lsp-ui-peek-peek-height 25)
-
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-
-(use-package lsp-mode
-  :straight t
-  :commands lsp
-  :config
-
-  (add-hook 'go-mode-hook #'lsp)
-  (add-hook 'python-mode-hook #'lsp)
-  (add-hook 'js2-mode-hook #'lsp)
-  (add-hook 'js2-mode-hook #'lsp)
-  (message "hooks added")
-  (add-hook 'ruby-mode-hook #'lsp))
-
-(use-package company-lsp
-  :straight t
-  :commands company-lsp
-  :config
-  (push 'company-lsp company-backends))
+  :hook
+  ((js2-mode . #'eglot)
+   (js-mode . #'eglot)
+   (javascript-mode . #'eglot)
+   (rjsx-mode . #'eglot)
+   (go-mode . #'eglot)
+   (shell-mode . #'eglot)
+   (dockerfile-mode . #'eglot)
+   (python-mode . #'eglot)
+   (fsharp-mode . #'eglot)
+   (ruby-mode . #'eglot)))
 
 (use-package company
   :straight t
   :commands company-mode
-  :after (general)
   :init
+  (global-company-mode)
+  :config
   (setq tab-always-indent 'complete)
   (setq company-dabbrev-downcase 0)
-  (setq company-idle-delay .1)
-  (setq company-begin-commands '(self-insert-command))
+  (setq company-idle-delay .2)
+  (setq company-tooltip-align-annotations t)
   (setq company-tooltip-limit 20)
   (setq company-minimum-prefix-length 1)
   (setq company-echo-delay 0)
   (setq company-begin-commands '(self-insert-command))
   (setq company-transformers '(company-sort-by-occurrence))
 
-  :config
-  (global-company-mode 1)
-
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-n") #'company-select-next)
     (define-key company-active-map (kbd "C-e") #'company-select-previous)))
-
-(use-package company-files
-  :config
-  (push 'company-files company-backends))
 
 (use-package company-quickhelp
   :straight t
@@ -128,21 +92,15 @@
   :config
   (company-quickhelp-mode))
 
-(use-package ggtags
-  :straight t
-  :commands (ggtags-global-mode)
-  :config
-  (counsel-gtags-mode +1))
-
 (use-package magit
   :straight t
   :commands magit-status
   :config
   (with-eval-after-load 'magit
     (setq magit-file-section-map (make-sparse-keymap))
-    (define-key magit-status-mode-map (kbd "SPC") nil)
+    ;; (define-key magit-status-mode-map (kbd "SPC") nil)
     (define-key magit-status-mode-map (kbd "C-w") nil)
-    (define-key magit-status-mode-map (kbd "u") 'magit-unstage-file)
+    ;; (define-key magit-status-mode-map (kbd "u") 'magit-unstage-file)
     )
   (setq magit-completing-read-function 'ivy-completing-read))
 
@@ -173,6 +131,7 @@
 (use-package company-lsp
   :straight t
   :requires company
+  :after company
   :config
   (push 'company-lsp company-backends)
   (setq company-transformers nil
@@ -199,8 +158,7 @@
   (spaceline-spacemacs-theme))
 
 (use-package page-break-lines
-  :straight t
-  :ensure t)
+  :straight t)
 
 (use-package nord-theme
   :straight t
@@ -279,5 +237,5 @@
   (when (string-equal system-type "gnu/linux")
     (exec-path-from-shell-initialize)))
 
-(require 'posframe)
+(straight-use-package 'posframe)
 (provide 'my-emacs)

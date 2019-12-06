@@ -33,6 +33,8 @@
 (add-hook 'after-init-hook #'hmg23:restore-file-name-handler-alist)
 (add-hook 'desktop-save-mode-hook #'hmg23:restore-file-name-handler-alist)
 
+(straight-use-package 'use-package)
+
 (require 'my-evil "~/.emacs.d/my-modes/my-evil")
 (require 'my-emacs"~/.emacs.d/my-modes/my-emacs")
 (require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww.el")
@@ -107,18 +109,3 @@
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (evil-commentary evil-magit magit ahk-mode evil-colemak-basics evil-anzu evil-easymotion key-chord evil-owl rainbow-delimiters auto-compile colemak-evil exec-path-from-shell nord-theme elfeed spaceline posframe hydra evil rjsx-mode jedi elpy page-break-lines use-package))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

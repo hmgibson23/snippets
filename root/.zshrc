@@ -1,4 +1,3 @@
-export ZSH="/home/hugo/.oh-my-zsh"
 
 ZSH_THEME="fishy"
 
@@ -39,7 +38,6 @@ ve () {
 source $ZSH/oh-my-zsh.sh
 plugins=(git git-extras)
 
-SSH_ENV="$HOME/.ssh/environment"
 
 function start_agent {
     echo "Initialising new SSH agent..."

@@ -6,7 +6,12 @@
   :config
   (general-override-mode +1)
 
+  (general-imap
+    "C-p" 'fzf
+    "C-s" 'swiper-isearch)
+
   (general-nmap
+    "C-s" 'swiper-isearch
     "C-p" 'fzf)
 
   (general-mmap
@@ -257,7 +262,6 @@
   (evil-ex-define-cmd "ass" 'async-shell-command)
 
   (with-eval-after-load 'evil
-    (require 'evil-anzu)
     (require 'ech-compile "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-compile.el"))
 
   (evil-mode 1)
@@ -271,6 +275,7 @@
   (evil-set-initial-state 'elfeed-mode 'emacs)
 
   (use-package evil-colemak-basics
+    :straight t
     :after (evil general)
     :init
     (setq evil-colemak-basics-rotate-t-f-j nil)
@@ -280,16 +285,19 @@
   ;; other modes that are used very much by evil
 
   (use-package counsel-projectile
+    :straight t
     :after (projectile)
     :config
     (counsel-projectile-mode +1))
 
   (use-package origami
+    :straight t
     :defer t
     :config
     (origami-mode +1)))
 
 (use-package key-chord
+    :straight t
   :after evil
   :straight t
   :config
@@ -298,6 +306,9 @@
   (key-chord-define evil-motion-state-map "uu" 'evil-normal-state)
   (key-chord-mode 1))
 
+(use-package evil-anzu
+  :after evil
+  :straight t)
 
 (use-package evil-lion
   :after evil

@@ -11,6 +11,7 @@
 (setq-default shr-use-fonts nil)
 
 (use-package gnus
+ :straight t
   :config
   (defun switch-to-gnus (&optional arg)
     "Switch to a Gnus related buffer.
@@ -85,7 +86,6 @@
 
 (use-package bbdb
   :commands bbdb-initialize
-  :defer
   :config
   (bbdb-initialize 'gnus 'message)
   (setq
@@ -113,6 +113,7 @@ This moves them into the Spam folder."
   (gnus-summary-move-article nil "nnimap+imap.gmail.com:[Gmail]/Spam"))
 
 (use-package elfeed
+  :straight t
   :init
   (setq elfeed-feeds
         '("http://planet.emacsen.org/atom.xml"
@@ -137,9 +138,9 @@ This moves them into the Spam folder."
           "https://feeds.feedburner.com/efluxjournal?format=xml/"
           "https://commercialtype.com/news/rss")))
 
-;;(use-package gmail2bbdb)
 (use-package erc
   :ensure nil
+  :straight t
   :defer t
   :config
   (add-hook 'window-configuration-change-hook

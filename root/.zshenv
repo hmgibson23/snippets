@@ -1,4 +1,6 @@
 # exports
+export ZSH="/home/hugo/.oh-my-zsh"
+export SSH_ENV="$HOME/.ssh/environment"
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.local/share/bin
 export PATH="$HOME/.pyenv/bin:$PATH"

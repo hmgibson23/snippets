@@ -99,7 +99,7 @@
 (setq compilation-ask-about-save nil)
 (add-hook 'prog-mode-hook 'subword-mode)
 
-(setq dired-listing-switches "-lash")
+(setq dired-listing-switches "-la")
 (setq ad-redefinition-action 'accept)
 (setq browse-url-browser-function 'eww-browse-url)
 (toggle-scroll-bar -1)

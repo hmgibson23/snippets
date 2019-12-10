@@ -233,7 +233,7 @@ myStartupHook = do
 -- /usr/include/X11/keysymdef.h
 myKeys =
   [ ((m, xK_b), spawn browser)
-  , ((m, xK_p), spawn rofi)
+  , ((m, xK_p), spawn dmenu)
   , ((m .|. s, xK_l), spawn slock)
   , ((m .|. s, xK_n),  nextWS)
   , ((m .|. s, xK_e),    prevWS)
@@ -247,7 +247,7 @@ myKeys =
   , ((m, xK_equal), toggleWS)
   , ((m, xK_grave), toggleWS)
   , ((m, xK_f), sendMessage $ Toggle FULL)
-  , ((m .|. c , xK_m), namedScratchpadAction scratchpads "mksh")
+  , ((m .|. c , xK_m), namedScratchpadAction scratchpads "zsh")
   , ((m .|. c , xK_b), namedScratchpadAction scratchpads "bash")
   , ((m .|. c , xK_s), namedScratchpadAction scratchpads "surf")
   , ((0, xF86XK_AudioLowerVolume), spawn "amixer sset Master 5%-")
@@ -264,7 +264,7 @@ myKeys =
     s = shiftMask
     c = controlMask
     slock = "slock"
-    rofi = "$HOME/.xmonad/rofi.sh"
+    rofi = "$HOME/.xmonad/dmenu.sh"
     dmenu =
       "dmenu_run -i \
       \ -fn '" ++ fn ++ "' \

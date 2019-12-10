@@ -6,6 +6,7 @@
   :config
   (setq ledger-reconcile-default-commodity "£"))
 
+(straight-use-package 'yaml)
 
 (use-package org
   :straight t

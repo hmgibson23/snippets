@@ -36,7 +36,6 @@ ve () {
 }
 
 source $ZSH/oh-my-zsh.sh
-plugins=(git git-extras)
 
 
 function start_agent {
@@ -86,3 +85,4 @@ bindkey -s '^[[Z' '\t'
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+source ~/.commacd.sh

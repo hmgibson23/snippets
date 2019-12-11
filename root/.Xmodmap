@@ -1,4 +1,11 @@
-clear lock
-clear control
+clear Control
 keycode 66 = Control_L
-add control = Control_L Control_R
+add Control = Control_L
+add Control = Control_R
+
+
+! add this to the x11 keyboard map
+! key { [ h, H, Left, Left  ]  };
+! key { [ j, J, Down, Down  ]  };
+! key { [ k, K, Up, Up  ]  };
+! key { [ l, L, Right, Right  ]  };

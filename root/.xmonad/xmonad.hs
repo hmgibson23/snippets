@@ -239,6 +239,7 @@ myStartupHook = do
 myKeys =
   [ ((m, xK_b), spawn browser)
   , ((m, xK_p), spawn dmenu)
+  , ((m, xK_y), spawn passmenu)
   , ((m .|. s, xK_l), spawn slock)
   , ((m .|. s, xK_n),  nextWS)
   , ((m .|. s, xK_e),    prevWS)
@@ -270,6 +271,7 @@ myKeys =
     c = controlMask
     slock = "slock"
     dmenu = "$HOME/.xmonad/dmenu.sh"
+    passmenu = "passmenu"
 -- }}}
 --
 eventLogHook = do

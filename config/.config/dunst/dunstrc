@@ -52,6 +52,9 @@
     history = ctrl+shift+grave
     context = ctrl+shift+u
 
+frame_color = "#E5E9F0"
+separator_color = "#E5E9F0"
+
 [base16_low]
     msg_urgency = low
     background = "#2b303b"

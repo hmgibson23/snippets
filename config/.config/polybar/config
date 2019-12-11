@@ -1,13 +1,19 @@
 [colors]
-background = #37648A
-background-alt = #434c5e
-foreground = #dfdfdf
+;;nord 10
+background = #3b4252
+background-alt = #444
+background-desktop = #8fbcbb
+background-battery-nord = #81A1C1
+background-wlan-nord = #BF616A
+background-cpu-nord = #D08770
+background-memory-nord = #B48EAD
+background-volume-nord = #EBCB8B
+;nord 6
+foreground = #3b4252
 foreground-alt = #555
 primary = #ffb52a
-red = #CC6666
-yellow = #F0C674
-secondary = #e60053
-alert = #bd2c40
+secondary = #81a1c1
+alert = #bf616a
 
 [bar/top]
 monitor = ${env:MONITOR:eDP1}
@@ -49,8 +55,11 @@ override-redirect = true
 
 
 ;; ewmh
-[module/ewmh]
-type = internal/xworkspaces
+[module/workspaces-xmonad]
+type = custom/script
+exec = tail -F /tmp/.xmonad-workspace-log
+exec-if = [ -p /tmp/.xmonad-workspace-log  ]
+tail = true
 
 pin-workspaces = false
 enable-click = true

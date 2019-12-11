@@ -52,6 +52,7 @@ import qualified XMonad.StackSet as W
 main = do
   forM_ [".xmonad-workspace-log", ".xmonad-title-log"] $ \file -> do
     safeSpawn "touch" ["/tmp/" ++ file]
+
   wsPanel     <- spawnPipe wsBar
   xmonad
     $ docks
@@ -68,7 +69,7 @@ main = do
 
       -- Lets hook up
       , handleEventHook     = eventHook
-      , logHook             = logHook' wsPanel
+      , logHook             = eventLogHook
       , layoutHook          = layoutHook'
       , manageHook          = manageHook'
       , startupHook         = startupHook'
@@ -117,13 +118,9 @@ startupHook'  = myStartupHook
 
 -- Dzen2 {{{
 wsBar      =
-  "dzen2 -dock -ta l      \
-  \ -bg '" ++ barBgColor  ++ "' \
-  \ -fg '" ++ barFgColor  ++ "' \
-  \ -w  '" ++ leftBarSize ++ "' \
-  \ -h  '" ++ barHeight   ++ "' \
-  \ -x  '" ++ leftBarPos  ++ "' \
-  \ -fn '" ++ font        ++ "' "
+  "killall -q polybar\n \
+  \while pgrep -x polybar >/dev/null; do sleep 1; done\n \
+  \polybar top"
 -- }}}
 
 -- Log Hook {{{
@@ -162,13 +159,21 @@ myWorkspaces = ["1", "2", "DEV", "4",  "MEDIA", "WORK", "MAIL", "CHAT", "INET"]
 -- Layouts {{{
 standardLayout = smartBorders $
   renamed [CutWordsLeft 1] $
-  smartSpacingWithEdge 8 $ layoutHook defaultConfig
+   spacingRaw True (Border 0 10 10 10) True (Border 10 10 10 10) True
+  $ layoutHook def
+
 tallLayout = named "tall" $ avoidStruts $ standardLayout
+
 wideLayout = named "wide" $ avoidStruts $ Mirror standardLayout
+
 singleLayout = named "single" $ avoidStruts $ noBorders Full
+
 fullscreenLayout = named "fullscreen" $ noBorders Full
+
 termLayout = gaps [(L,50), (U,50), (R,50), (D,50)] $ standardLayout
+
 gridLayout = named "grid" $ gaps [(L,50), (U,50), (R,50), (D,50)] $ Grid
+
 extra = simpleTabbed ||| simpleFloat ||| Accordion
 
 myLayoutHook =
@@ -264,14 +269,20 @@ myKeys =
     s = shiftMask
     c = controlMask
     slock = "slock"
-    rofi = "$HOME/.xmonad/dmenu.sh"
-    dmenu =
-      "dmenu_run -i \
-      \ -fn '" ++ fn ++ "' \
-      \ -nf '" ++ fgColor ++ "' \
-      \ -sf '" ++ fgColor ++ "' \
-      \ -nb '" ++ bgColor ++ "' \
-      \ -sb '" ++ layoutColor ++ "'"
-      where
-        fn = "Misc Termsyn.Icons:size=18"
+    dmenu = "$HOME/.xmonad/dmenu.sh"
 -- }}}
+--
+eventLogHook = do
+  winset <- gets windowset
+  title <- maybe (return "") (fmap show . getName) . W.peek $ winset
+  let currWs = W.currentTag winset
+  let wss = map W.tag $ W.workspaces winset
+  let wsStr = join $ map (fmt currWs) $ sort' wss
+
+  io $ appendFile "/tmp/.xmonad-title-log" (title ++ "\n")
+  io $ appendFile "/tmp/.xmonad-workspace-log" (wsStr ++ "\n")
+
+  where fmt currWs ws
+          | currWs == ws = "[" ++ ws ++ "]"
+          | otherwise    = " " ++ ws ++ " "
+        sort' = sortBy (compare `on` (!! 0))

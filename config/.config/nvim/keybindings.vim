@@ -66,6 +66,8 @@ nnoremap <leader>bp :bp<CR>
 nnoremap <leader>bn :bn<CR>
 nnoremap <leader>mm :Gstatus<CR>
 
+nnoremap <leader>as :AsyncRun
+
 inoremap <silent><expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 inoremap <silent><expr><s-tab> pumvisible() ? "\<c-e>" : "\<s-tab>"
 

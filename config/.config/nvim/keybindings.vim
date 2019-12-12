@@ -58,6 +58,8 @@ nnoremap <leader>fs :FZF<CR>
 map <C-p> :Files<CR>
 
 nnoremap <leader>pf :Clap git_files<CR>
+nnoremap <leader>pu :Clap git_files<CR>
+nnoremap <leader>pb :Clap buffers<CR>
 nnoremap <leader>ph :Clap command_history<CR>
 nnoremap <leader>pr :Clap registers<CR>
 

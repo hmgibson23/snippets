@@ -57,6 +57,10 @@ nnoremap <leader>fg :GFiles<CR>
 nnoremap <leader>fs :FZF<CR>
 map <C-p> :Files<CR>
 
+nnoremap <leader>pf :Clap git_files<CR>
+nnoremap <leader>ph :Clap command_history<CR>
+nnoremap <leader>pr :Clap registers<CR>
+
 " Other
 inoremap uu <Esc>|tnoremap uu <C-\><C-n>
 nnoremap <leader>tp :tabNext<CR>

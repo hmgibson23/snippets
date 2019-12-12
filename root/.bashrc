@@ -4,6 +4,9 @@
 [[ $- != *i* ]] && return
 
 alias ls='ls --color=auto'
+alias n="nvim"
+alias ec="emacsclient"
+
 PS1='[\u@\h \W]\$ '
 
 export NVM_DIR="$HOME/.nvm"

@@ -1,4 +1,7 @@
-" Ale
+" Async
+let g:asyncrun_open = 10
+
+"Ale
 let g:ale_fix_on_save = 1
 let g:ale_open_list = 0
 let g:ale_sign_error = '>>'

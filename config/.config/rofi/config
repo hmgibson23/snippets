@@ -1,21 +1,12 @@
-# Config for rofi-wifi-menu
-
-# position values:
-# 1 2 3
-# 8 0 4
-# 7 6 5
-POSITION=3
-
-#y-offset
-YOFF=30
-
-#x-offset
-XOFF=0
-
-#fields to be displayed
-FIELDS=SSID,SECURITY,BARS
-
-#font
-FONT="DejaVu Sans Mono Bold 12"
-rofi.blur-background = true
-rofi.theme: .config/rofi/carbo.rasi
+rofi.show-icons:            false
+rofi.modi:                  drun,run,window,ssh
+rofi.lines:                 7
+rofi.line-padding:          10
+rofi.matching:              fuzzy
+rofi.bw:                    0
+rofi.padding:               0
+rofi.separator-style:       none
+rofi.hide-scrollbar:        true
+rofi.line-margin:           0
+rofi.font:                  sans-serif 10
+rofi.theme: /usr/share/rofi/themes/custom-nord.rasi

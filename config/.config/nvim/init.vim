@@ -1,5 +1,7 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'skywind3000/asyncrun.vim'
+
 Plug 'neoclide/coc.nvim', {
       \ 'branch': 'release',
       \}
@@ -9,7 +11,6 @@ Plug 'fsharp/vim-fsharp', {
       \ 'do':  'make fsautocomplete',
       \}
 
-Plug 'OmniSharp/omnisharp-vim', { 'for': 'fsharp' }
 Plug 'liuchengxu/vim-clap'
 
 Plug 'bronson/vim-trailing-whitespace'
@@ -18,7 +19,6 @@ Plug 'mhinz/vim-startify'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries', 'for' : 'go' }
 Plug 'easymotion/vim-easymotion'
 
-Plug 'sebdah/vim-delve', { 'for': 'go' }
 Plug 'wellle/targets.vim'
 Plug 'godoctor/godoctor.vim', { 'for': 'go' }
 
@@ -48,7 +48,6 @@ Plug 'tpope/vim-markdown', {'for': 'markdown'}
 Plug 'vim-scripts/grep.vim'
 Plug 'vim-scripts/mru.vim'
 Plug 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
-
 
 Plug 'janko-m/vim-test'
 

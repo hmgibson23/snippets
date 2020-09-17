@@ -166,6 +166,8 @@
     "tt" 'xref-find-definitions
     "ts" 'xref-find-apropos
 
+    "y" 'counsel-M-x
+
     "son" 'scroll-other-window
     "sop" 'scroll-other-window-down
     "ff" 'counsel-find-file

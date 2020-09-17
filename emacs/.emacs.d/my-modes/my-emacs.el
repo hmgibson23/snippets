@@ -20,7 +20,6 @@
 
 
 (use-package dired
-  :defer t
   :commands dired-mode
   :config
   (require 'ech-dired "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-dired.el")
@@ -33,6 +32,7 @@
   :commands (dired-subtree-insert))
 
 (use-package comint
+  :after (general)
   :config
   (require 'ech-comint "$HOME/.emacs.d/my-modes/evil-collection-hacks/ech-comint.el")
   (ech-comint-setup))
@@ -54,8 +54,7 @@
   :hook
   ((js2-mode . #'eglot)
    (js-mode . #'eglot)
-   (javascript-mode . #'eglot)
-   (rjsx-mode . #'eglot)
+   ; (rjsx-mode . #'eglot)
    (go-mode . #'eglot)
    (shell-mode . #'eglot)
    (dockerfile-mode . #'eglot)
@@ -163,9 +162,11 @@
 (use-package nord-theme
   :straight t
   :config
-  (set-frame-font "Anonymice Nerd Font:size=20:antialias=true:autohint=true")
+  ;; (set-frame-font "Anonymice Nerd Font:size=20:antialias=true:autohint=true")
   (add-hook 'after-make-frame-functions
             (lambda (frame) (load-theme 'nord t))))
+
+(load-theme 'nord t)
 
 (use-package ivy
   :straight t

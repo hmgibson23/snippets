@@ -34,10 +34,8 @@
 (add-hook 'desktop-save-mode-hook #'hmg23:restore-file-name-handler-alist)
 
 (straight-use-package 'use-package)
+; (setq straight-use-package-by-default t)
 
-(require 'my-evil "~/.emacs.d/my-modes/my-evil")
-(require 'my-emacs"~/.emacs.d/my-modes/my-emacs")
-(require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww.el")
 
 ;; These are outside of the use-package system
 (setq load-prefer-newer t
@@ -102,10 +100,15 @@
 (setq dired-listing-switches "-la")
 (setq ad-redefinition-action 'accept)
 (setq browse-url-browser-function 'eww-browse-url)
-(toggle-scroll-bar -1)
+(setq toggle-scroll-bar -1)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+(require 'my-language "~/.emacs.d/my-modes/my-language")
+(require 'my-emacs "~/.emacs.d/my-modes/my-emacs")
+(require 'my-evil "~/.emacs.d/my-modes/my-evil")
+(require 'mail-and-eww "~/.emacs.d/my-modes/mail-and-eww.el")

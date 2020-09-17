@@ -1,4 +1,19 @@
 ;; -*- lexical-binding: t; -*-;
+(straight-use-package 'evil-paredit)
+
+(use-package typescript-mode
+  :straight t
+  :mode ("\\.ts\\'")
+  :config
+  (setq-default typescript-indent-level 2))
+
+(use-package tide
+  :straight t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
 (use-package ledger-mode
   :commands (ledger-mode)
   :straight t
@@ -6,7 +21,7 @@
   :config
   (setq ledger-reconcile-default-commodity "£"))
 
-(straight-use-package 'yaml)
+(straight-use-package 'yaml-mode)
 
 (use-package org
   :straight t
@@ -107,6 +122,13 @@
   :straight t
   :mode "\\Dockerfile$")
 
+(use-package rainbow-delimiters
+ :straight t)
+
+(use-package paredit
+ :straight t)
+
+
 (defun lisp-setup ()
   (message "lisp setup")
   (rainbow-delimiters-mode)
@@ -119,6 +141,7 @@
 (use-package slime
   :straight t
   :commands (slime)
+  :after (evil-paredit)
   :config
   (progn
     (setq inferior-lisp-program "/usr/bin/clisp")
@@ -139,7 +162,7 @@
 
 (use-package lisp-mode
   :ensure nil
-  :straight t
+  :after (evil-paredit)
   :init
   (lisp-setup)
   (setq tab-always-indent 'complete)
@@ -154,6 +177,7 @@
 (use-package clojure-mode
   :straight t
   :commands (clojure-mode)
+  :after (evil-paredit)
   :mode "\\.clj\\'"
   :config
   (add-hook 'clojure-mode-hook #'paredit-mode)
@@ -191,7 +215,6 @@
            "terraform plan")))
 
 (use-package company-terraform
-  :mode "\\.tf\\'"
   :straight t
   :config
   (add-hook 'terraform-mode-hook (lambda () (terraform-format-on-save-mode +1)))
@@ -290,9 +313,9 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
   (add-hook 'csharp-mode-hook #'flycheck-mode)
   (add-hook 'csharp-mode-hook 'omnisharp-mode))
 
-(use-package sibiliant-mode
+(use-package sibilant-mode
   :straight t
-  :hook (sibiliant-mode turn-on-paredit))
+  :hook (sibilant-mode turn-on-paredit))
 
 (use-package haskell-mode
   :straight t
@@ -401,7 +424,7 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (defun annotate-pdb ()
   (interactive)
   (highlight-lines-matching-regexp "import pdb")
-  (highlight-lines-matching-regexp "pdb.set_trace()")))
+  (highlight-lines-matching-regexp "pdb.set_trace()"))
 
 (use-package pyenv-mode
   :straight t
@@ -438,33 +461,32 @@ Links, footnotes  C-c C-a    _L_: link          _U_: uri        _F_: footnote   
 (use-package prettier-js
   :straight t)
 
-(use-package rjsx-mode
-  :ensure t
-  :straight t
-  :commands rjsx-mode
-  :mode (("\\.js$\\'" . rjsx-mode))
-  :hook ((rjsx-mode (lambda ()
-                      (set (make-local-variable 'compile-command)
-                           (format "npm test"))
-                      (prettier-js-mode)
-                      (js2-imenu-extras-mode)
-                      (js2-refactor-mode)
-                      (yas-minor-mode)
-                      (eldoc-mode +1)
+; (use-package rjsx-mode
+;   :ensure t
+;   :straight t
+;   :commands rjsx-mode
+;   :mode (("\\.js$\\'" . rjsx-mode))
+;   :hook ((rjsx-mode (lambda ()
+;                       (set (make-local-variable 'compile-command)
+;                            (format "npm test"))
+;                       (prettier-js-mode)
+;                       (js2-imenu-extras-mode)
+;                       (js2-refactor-mode)
+;                       (yas-minor-mode)
+;                       (eldoc-mode +1)
 
-                      ))))
+;                       ))))
 
 (use-package css-mode
   :straight t
   :commands (css-mode)
   :hook (css-mode skewer-css-mode))
 
-(use-package html-mode
-  :straight t
-  :defer t
-  :hook skewer-html-mode)
+; (use-package html-mode
+;   :defer t
+;   :hook skewer-html-mode)
 
-(use-package elxir-mode
+(use-package elixir-mode
   :straight t
   :commands elixir-mode
   :init

@@ -1,24 +1,4 @@
-
 ZSH_THEME="fishy"
-
-da() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
-
-  [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
-}
-
-ds() {
-  local cid
-  cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
-
-  [ -n "$cid" ] && docker stop "$cid"
-}
-
-docker-ip() {
-    local cid=$1
-    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$cid"
-}
 
 zd() {
     local dir
@@ -37,7 +17,6 @@ ve () {
 
 source $ZSH/oh-my-zsh.sh
 
-
 function start_agent {
     echo "Initialising new SSH agent..."
     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
@@ -47,26 +26,7 @@ function start_agent {
     /usr/bin/ssh-add;
 }
 
-# Source SSH settings, if applicable
-
-if [ -f "${SSH_ENV}" ]; then
-    . "${SSH_ENV}" > /dev/null
-    #ps ${SSH_AGENT_PID} doesn't work under cywgin
-    ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-        start_agent;
-    }
-else
-    start_agent;
-  fi
-
-alias loadrbenv= "rbenv init -"
-alias ec="emacsclient -t"
-alias k="kubectl"
-alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
-alias tmux="TERM=screen-256color-bce tmux"
-alias n="nvim"
-alias k_compl="source <(kubectl completion zsh)"
-eval "$(fasd --init auto)"
+bindkey -s '^[[Z' '\t'
 
 bindkey -e
 bindkey '^R' history-incremental-search-backward
@@ -81,8 +41,31 @@ bindkey '^X^N' accept-and-infer-next-history
 bindkey '^W' kill-region
 bindkey '^I' complete-word
 ## Fix weird sequence that rxvt produces
-bindkey -s '^[[Z' '\t'
 
+# Source SSH settings, if applicable
+
+if [ -f "${SSH_ENV}" ]; then
+    . "${SSH_ENV}" > /dev/null
+    #ps ${SSH_AGENT_PID} doesn't work under cywgin
+    ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+        start_agent;
+    }
+else
+    start_agent;
+fi
+
+
+alias loadrbenv= "rbenv init -"
+alias ec="emacsclient -t"
+alias k="kubectl"
+alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+alias tmux="TERM=screen-256color-bce tmux"
+alias n="nvim"
+alias k_compl="source <(kubectl completion zsh)"
+alias set_display_wsl="export DISPLAY=$( awk '/nameserver/ { print $2  }' /etc/resolv.conf  ):0"
+alias ed="emacs --daemon"
+eval "$(fasd --init auto)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 source ~/.commacd.sh

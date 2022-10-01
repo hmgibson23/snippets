@@ -22,10 +22,10 @@
 
 (package-initialize)
 
-(require 'cask "~/.cask/cask.el")
-(cask-initialize)
-(require 'pallet)
-(pallet-mode t)
+; (require 'cask "~/.cask/cask.el")
+; (cask-initialize)
+; (require 'pallet)
+; (pallet-mode t)
 
 (load "~/.emacs.d/my-functions")
 (load "~/.emacs.d/init")

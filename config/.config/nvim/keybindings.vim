@@ -46,22 +46,21 @@ inoremap <C-e> <C-o>A
 let mapleader = ","
 
 "Fzf
-nnoremap <leader>fb :<C-u>Buffers<CR>
-nnoremap <leader>fw :<C-u>Windows<CR>
-nnoremap <leader>fc :<C-u>Commands<CR>
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap <leader>fr <cmd>Telescope registers<cr>
+nnoremap <leader>fc <cmd>Telescope autocommands<cr>
 nnoremap <leader>fa :<C-u>Ag<CR>
-nnoremap <leader>fm :<C-u>Marks<CR>
-nnoremap <leader>fq :<C-u>History:<CR>
-nnoremap <leader>ff :ZL<CR>
-nnoremap <leader>fg :GFiles<CR>
-nnoremap <leader>fs :FZF<CR>
-map <C-p> :Files<CR>
+" nnoremap <leader>fm :<C-u>Marks<CR>
+" nnoremap <leader>fq :<C-u>History:<CR>
+" nnoremap <leader>ff :ZL<CR>
+" nnoremap <leader>fg :GFiles<CR>
+" nnoremap <leader>fs :FZF<CR>
+nnoremap <c-P> <cmd>Telescope find_files<cr>
+nnoremap <c-T> <cmd>Telescope<cr>
 
-nnoremap <leader>pf :Clap git_files<CR>
-nnoremap <leader>pu :Clap git_files<CR>
-nnoremap <leader>pb :Clap buffers<CR>
-nnoremap <leader>ph :Clap command_history<CR>
-nnoremap <leader>pr :Clap registers<CR>
 
 " Other
 inoremap uu <Esc>|tnoremap uu <C-\><C-n>
@@ -70,7 +69,7 @@ nnoremap <leader>tn :tabnew<CR>
 nnoremap <leader>tc :tabclose<CR>
 nnoremap <leader>bp :bp<CR>
 nnoremap <leader>bn :bn<CR>
-nnoremap <leader>mm :Gstatus<CR>
+nnoremap <leader>mm :Git<CR>
 
 nnoremap <leader>as :AsyncRun
 

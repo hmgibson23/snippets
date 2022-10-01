@@ -58,7 +58,7 @@ fi
 alias loadrbenv= "rbenv init -"
 alias ec="emacsclient -t"
 alias k="kubectl"
-alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+alias loadnvm='"$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
 alias tmux="TERM=screen-256color-bce tmux"
 alias n="nvim"
 alias k_compl="source <(kubectl completion zsh)"
@@ -66,6 +66,16 @@ alias set_display_wsl="export DISPLAY=$( awk '/nameserver/ { print $2  }' /etc/r
 alias ed="emacs --daemon"
 eval "$(fasd --init auto)"
 
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 source ~/.commacd.sh
+
+[ -s "/home/hugo/.jabba/jabba.sh" ] && source "/home/hugo/.jabba/jabba.sh"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

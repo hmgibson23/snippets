@@ -1,5 +1,6 @@
 " Z - cd to recent / frequent directories
 command! -nargs=* Z :call Z(<f-args>)
+
 function! Z(...)
   if a:0 == 0
     let list = split(system('fasd -dlR'), '\n')

@@ -1,4 +1,3 @@
-export PATH="$HOME/.cargo/bin:$PATH"
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/.local/share/bin
 export PATH="~/.pyenv/bin:$PATH"
@@ -7,5 +6,4 @@ export GOPATH="/home/hugo/git/simba/go"
 export PATH="$GOPATH/bin:$PATH"
 source $HOME/.cargo/env
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
-export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.rbenv/shims:$PATH"

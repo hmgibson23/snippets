@@ -19,3 +19,4 @@ export PYENV_VIRTUALENV_DISABLE_PROMPT=1
 export GTAGSCONF=~/.gtags.conf
 export GTAGSLABEL=pygments
 export PATH="$HOME/.rbenv/versions/2.5.3/bin:$PATH"
+. "$HOME/.cargo/env"

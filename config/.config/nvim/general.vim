@@ -1,5 +1,6 @@
 " Async
 let g:asyncrun_open = 10
+set re=0
 
 "Ale
 let g:ale_fix_on_save = 1
@@ -30,6 +31,8 @@ let g:ale_fixers = {
 
 " Airline
 let g:airline_powerline_fonts = 1
+
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 " python
 autocmd BufWritePre *.py :%s/\s\+$//e
@@ -64,3 +67,13 @@ augroup END
 " yaml
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+" For ledger
+au BufNewFile,BufRead *.ldg,*.ledger setf ledger | comp ledger
+let g:ledger_maxwidth = 120
+let g:ledger_fold_blanks = 1
+function LedgerSort()
+    :%! ledger -f - print --sort 'date, amount'
+    :%LedgerAlign
+endfunction
+command LedgerSort call LedgerSort()

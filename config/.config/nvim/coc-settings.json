@@ -3,6 +3,7 @@
   "coc.source.tag.enable": true,
   "coc.source.ultisnips.enable": true,
   "coc.source.ultisnips.priority": 100,
+  "git.enableGlobalStatus": false,
   "snippets.priority": 100,
   "snippets.extends": {
     "javascriptreact": [
@@ -18,12 +19,17 @@
   "prettier.requireConfig": true,
   "suggest.triggerAfterInsertEnter": true,
   "suggest.noselect": true,
+  "codeLens.enable": true,
+  "solargraph.useBundler": true,
+  "solargraph.autoformat": true,
   "languageserver": {
     "golang": {
       "command": "gopls",
       "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
       "filetypes": ["go"]
-    }
+    },
   },
-  "python.jediEnabled": false
+  "python.jediEnabled": false,
+  "tslint.autoFixOnSave": true,
+  "java.home": "/home/hugo/.jabba/jdk/adopt@1.16.0-1"
 }

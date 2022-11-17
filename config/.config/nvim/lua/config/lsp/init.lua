@@ -3,21 +3,21 @@ local M = {}
 -- local util = require "lspconfig.util"
 
 local servers = {
-	gopls = {
-		settings = {
-			gopls = {
-				hints = {
-					assignVariableTypes = true,
-					compositeLiteralFields = true,
-					compositeLiteralTypes = true,
-					constantValues = true,
-					functionTypeParameters = true,
-					parameterNames = true,
-					rangeVariableTypes = true,
-				},
-			},
-		},
-	},
+	-- gopls = {
+	-- 	settings = {
+	-- 		gopls = {
+	-- 			hints = {
+	-- 				assignVariableTypes = true,
+	-- 				compositeLiteralFields = true,
+	-- 				compositeLiteralTypes = true,
+	-- 				constantValues = true,
+	-- 				functionTypeParameters = true,
+	-- 				parameterNames = true,
+	-- 				rangeVariableTypes = true,
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
 	html = {},
 	jsonls = {
 		settings = {
@@ -81,27 +81,28 @@ local servers = {
 		settings = {
 			javascript = {
 				inlayHints = {
-					includeInlayEnumMemberValueHints = true,
-					includeInlayFunctionLikeReturnTypeHints = true,
-					includeInlayFunctionParameterTypeHints = true,
-					includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all';
-					includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-					includeInlayPropertyDeclarationTypeHints = true,
-					includeInlayVariableTypeHints = true,
+					includeInlayEnumMemberValueHints = false,
+					includeInlayFunctionLikeReturnTypeHints = false,
+					includeInlayFunctionParameterTypeHints = false,
+					includeInlayParameterNameHints = "none", -- 'none' | 'literals' | 'all';
+					includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+					includeInlayPropertyDeclarationTypeHints = false,
+					includeInlayVariableTypeHints = false,
 				},
 			},
 			typescript = {
 				inlayHints = {
-					includeInlayEnumMemberValueHints = true,
-					includeInlayFunctionLikeReturnTypeHints = true,
-					includeInlayFunctionParameterTypeHints = true,
-					includeInlayParameterNameHints = "all", -- 'none' | 'literals' | 'all';
-					includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-					includeInlayPropertyDeclarationTypeHints = true,
-					includeInlayVariableTypeHints = true,
+					includeInlayEnumMemberValueHints = false,
+					includeInlayFunctionLikeReturnTypeHints = false,
+					includeInlayFunctionParameterTypeHints = false,
+					includeInlayParameterNameHints = "none", -- 'none' | 'literals' | 'all';
+					includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+					includeInlayPropertyDeclarationTypeHints = false,
+					includeInlayVariableTypeHints = false,
 				},
 			},
 		},
+		flags = { allow_incremental_sync = true, debounce_text_changes = 500 },
 	},
 	vimls = {},
 	yamlls = {
@@ -134,22 +135,7 @@ function M.on_attach(client, bufnr)
 	vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
 
 	-- Configure key mappings
-	local bufopts = { noremap = true, silent = true, buffer = bufnr }
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-	vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-	vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-	vim.keymap.set("n", "<space>wl", function()
-		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-	end, bufopts)
-	vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-	vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-	vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-	vim.keymap.set("n", "<space>f", vim.lsp.buf.format, bufopts)
+	require("config.lsp.keymaps").setup(client, buffer)
 
 	-- Configure formatting
 	require("config.lsp.null-ls.formatters").setup(client, bufnr)
@@ -162,6 +148,10 @@ function M.on_attach(client, bufnr)
 	-- sqls
 	if client.name == "sqls" then
 		require("sqls").on_attach(client, bufnr)
+	end
+
+	if client.name == "tsserver" then
+		vim.lsp.handlers["textDocument/publishDiagnostics"] = function() end
 	end
 
 	-- Configure for jdtls
@@ -179,7 +169,7 @@ function M.on_attach(client, bufnr)
 
 	if client.name ~= "null-ls" then
 		-- aerial.nvim
-		require("aerial").on_attach(client, bufnr)
+		require("aerial").setup()
 
 		-- inlay-hints
 		local ih = require("inlay-hints")
@@ -215,7 +205,7 @@ capabilities.textDocument.completion.completionItem.resolveSupport = {
 		"additionalTextEdits",
 	},
 }
-M.capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities) -- for nvim-cmp
+M.capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities) -- for nvim-cmp
 -- M.capabilities = capabilities
 
 local opts = {

@@ -2,6 +2,12 @@ return require("packer").startup(function()
 	-- Packer can manage itself
 	use("wbthomason/packer.nvim")
 	use("b0o/schemastore.nvim")
+	use({
+		"lewis6991/gitsigns.nvim",
+		config = function()
+			require("gitsigns").setup()
+		end,
+	})
 	-- Rust
 	use({
 		"simrat39/rust-tools.nvim",
@@ -59,6 +65,14 @@ return require("packer").startup(function()
 		module = { "aerial" },
 		cmd = { "AerialToggle" },
 	})
+
+	use({
+		"akinsho/toggleterm.nvim",
+		tag = "*",
+		config = function()
+			require("toggleterm").setup()
+		end,
+	})
 	use({
 		"abecodes/tabout.nvim",
 		wants = { "nvim-treesitter" },
@@ -103,12 +117,16 @@ return require("packer").startup(function()
 		},
 	})
 
+	use({
+		"goolord/alpha-nvim",
+		config = function()
+			require("alpha").setup(require("alpha.themes.dashboard").config)
+		end,
+	})
 	use("airblade/vim-gitgutter")
 	use("bronson/vim-trailing-whitespace")
 	use("editorconfig/editorconfig-vim")
-	use("mhinz/vim-startify")
 	use("easymotion/vim-easymotion")
-	use("wellle/targets.vim")
 	use("haya14busa/incsearch.vim")
 	use("jiangmiao/auto-pairs")
 	use("vim-scripts/grep.vim")
@@ -121,10 +139,27 @@ return require("packer").startup(function()
 	use("tpope/vim-surround")
 	use("tpope/vim-fugitive")
 	use("itchyny/lightline.vim")
-	use("puremourning/vimspector")
 	use("nvim-lua/plenary.nvim")
 	use("janko-m/vim-test")
 
+	use({
+		"glepnir/lspsaga.nvim",
+		cmd = { "Lspsaga" },
+		config = function()
+			require("lspsaga").init_lsp_saga()
+		end,
+	})
+	use({
+		"folke/trouble.nvim",
+		requires = "kyazdani42/nvim-web-devicons",
+		config = function()
+			require("trouble").setup({
+				-- your configuration comes here
+				-- or leave it empty to use the default settings
+				-- refer to the configuration section below
+			})
+		end,
+	})
 	use({
 		"neovim/nvim-lspconfig",
 		event = "VimEnter",
@@ -141,7 +176,6 @@ return require("packer").startup(function()
 			"mason-lspconfig.nvim",
 			"mason-tool-installer.nvim",
 			"inlay-hints.nvim",
-			-- "nvim-lsp-ts-utils",
 			"typescript.nvim",
 		}, -- for coq.nvim
 		config = function()
@@ -226,6 +260,9 @@ return require("packer").startup(function()
 	use({
 		"nvim-telescope/telescope.nvim",
 		requires = { { "nvim-lua/plenary.nvim" } },
+		config = function()
+			require'telescope'.load_extension('project')
+		end
 	})
 	use({
 		"folke/which-key.nvim",
@@ -237,7 +274,7 @@ return require("packer").startup(function()
 			})
 		end,
 	})
-	use({ "mrjones2014/legendary.nvim" })
+	use({ "mrjones2014/legendary.nvim", tag = "v2.2.0" })
 	-- Debugging
 	use({
 		"mfussenegger/nvim-dap",

@@ -261,8 +261,8 @@ return require("packer").startup(function()
 		"nvim-telescope/telescope.nvim",
 		requires = { { "nvim-lua/plenary.nvim" } },
 		config = function()
-			require'telescope'.load_extension('project')
-		end
+			require("telescope").load_extension("project")
+		end,
 	})
 	use({
 		"folke/which-key.nvim",

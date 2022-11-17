@@ -1,4 +1,10 @@
-return require("packer").startup(function()
+vim.cmd([[
+  augroup packer_user_config
+    autocmd!
+    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+  augroup end
+]])
+return require("packer").startup(function(use)
 	-- Packer can manage itself
 	use("wbthomason/packer.nvim")
 	use("b0o/schemastore.nvim")
@@ -103,7 +109,9 @@ return require("packer").startup(function()
 		"nvim-treesitter/nvim-treesitter",
 		opt = true,
 		event = "BufReadPre",
-		run = ":TSUpdate",
+		run = function()
+			require("nvim-treesitter.install").update({ with_sync = true })
+		end,
 		config = function()
 			require("config.treesitter").setup()
 		end,
@@ -258,11 +266,21 @@ return require("packer").startup(function()
 	})
 
 	use({
+		"nvim-telescope/telescope-z.nvim",
+		requires = {
+			{ "nvim-lua/plenary.nvim" },
+			{ "nvim-lua/popup.nvim" },
+			{ "nvim-telescope/telescope.nvim" },
+		},
+		config = function()
+			require("telescope").load_extension("z")
+			-- ... other telescope settings
+		end,
+	})
+
+	use({
 		"nvim-telescope/telescope.nvim",
 		requires = { { "nvim-lua/plenary.nvim" } },
-		config = function()
-			require("telescope").load_extension("project")
-		end,
 	})
 	use({
 		"folke/which-key.nvim",

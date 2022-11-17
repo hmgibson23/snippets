@@ -116,12 +116,12 @@ return require("packer").startup(function(use)
 			require("config.treesitter").setup()
 		end,
 		requires = {
-			{ "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre" },
-			{ "windwp/nvim-ts-autotag", event = "InsertEnter" },
-			{ "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
-			{ "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre" },
-			-- { "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre" },
-			{ "p00f/nvim-ts-rainbow", event = "BufReadPre" },
+			{ "nvim-treesitter/nvim-treesitter-textobjects" },
+			{ "windwp/nvim-ts-autotag" },
+			{ "JoosepAlviste/nvim-ts-context-commentstring" },
+			{ "nvim-treesitter/nvim-treesitter-context" },
+			{ "RRethy/nvim-treesitter-textsubjects" },
+			{ "p00f/nvim-ts-rainbow" },
 		},
 	})
 

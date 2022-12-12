@@ -7,11 +7,19 @@ vim.cmd([[
 return require("packer").startup(function(use)
 	-- Packer can manage itself
 	use("wbthomason/packer.nvim")
+	use("neomake/neomake")
 	use("b0o/schemastore.nvim")
+	use("skywind3000/asyncrun.vim")
 	use({
 		"lewis6991/gitsigns.nvim",
 		config = function()
 			require("gitsigns").setup()
+		end,
+	})
+	use({
+		"is0n/jaq-nvim",
+		config = function()
+			require("config.jaq").setup()
 		end,
 	})
 	-- Rust

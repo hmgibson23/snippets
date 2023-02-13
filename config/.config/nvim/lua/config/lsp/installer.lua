@@ -6,7 +6,7 @@ function M.setup(servers, server_options)
 	require("mason").setup()
 
 	require("mason-tool-installer").setup({
-		ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd" },
+		ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls" },
 		auto_update = false,
 		run_on_start = true,
 	})
@@ -27,12 +27,18 @@ function M.setup(servers, server_options)
 		["jdtls"] = function()
 			-- print "jdtls is handled by nvim-jdtls"
 		end,
-		["awk_ls"] = function()
+		["awk_ls"] = function() end,
+		["lua_ls"] = function()
+			local opts = vim.tbl_deep_extend("force", server_options, servers["lua_ls"] or {})
+			lspconfig.lua_ls.setup(require("neodev").setup({ lspconfig = opts }))
 		end,
-		["sumneko_lua"] = function()
-			local opts = vim.tbl_deep_extend("force", server_options, servers["sumneko_lua"] or {})
-			lspconfig.sumneko_lua.setup(require("neodev").setup({ lspconfig = opts }))
-			-- lspconfig.sumneko_lua.setup(require("neodev").setup { runtime_path = true, lspconfig = opts })
+		["terraformls"] = function()
+			vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+				pattern = { "*.tf", "*.tfvars" },
+				callback = function()
+					vim.lsp.buf.format()
+				end,
+			})
 		end,
 		["rust_analyzer"] = function()
 			local opts = vim.tbl_deep_extend("force", server_options, servers["rust_analyzer"] or {})

@@ -7,3 +7,4 @@ export PATH="$GOPATH/bin:$PATH"
 source $HOME/.cargo/env
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
 export PATH="$HOME/.rbenv/shims:$PATH"
+export PATH=~/.npm-global/bin:$PATH

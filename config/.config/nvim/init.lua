@@ -1,4 +1,3 @@
-
 -- let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 -- vim.cmd [[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]]
 -- -- or
@@ -12,6 +11,7 @@ autocmd VimEnter - if exists(':Dotenv') | exe 'Dotenv! ~/.env.local|Dotenv! ~/.e
 
 set runtimepath+=~/.vim,~/.vim/after
 set packpath+=~/.vim
+
 
 "Turn on backup option
 set backup
@@ -66,6 +66,6 @@ source ~/.config/nvim/aliases.vim
 source  ~/.config/nvim/general.vim
 source ~/.config/nvim/functions.vim
 ]])
-require('keybindings')
+require("keybindings")
 
-require('plugins')
+require("plugins")

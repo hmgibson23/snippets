@@ -11,6 +11,13 @@ return require("packer").startup(function(use)
 	use("b0o/schemastore.nvim")
 	use("skywind3000/asyncrun.vim")
 	use({
+		"stevearc/overseer.nvim",
+		config = function()
+			require("config.overseer").setup()
+		end,
+	})
+	-- use({ "hkupty/iron.nvim" })
+	use({
 		"lewis6991/gitsigns.nvim",
 		config = function()
 			require("gitsigns").setup()
@@ -19,7 +26,14 @@ return require("packer").startup(function(use)
 	use({
 		"is0n/jaq-nvim",
 		config = function()
-			require("config.jaq").setup()
+			-- require("config.jaq").setup()
+		end,
+	})
+	use({
+		"ray-x/sad.nvim",
+		requires = { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
+		config = function()
+			require("sad").setup({})
 		end,
 	})
 	-- Rust
@@ -84,7 +98,16 @@ return require("packer").startup(function(use)
 		"akinsho/toggleterm.nvim",
 		tag = "*",
 		config = function()
-			require("toggleterm").setup()
+			require("toggleterm").setup({
+				hide_numbers = true,
+				shade_terminals = true,
+				winbar = {
+					enabled = false,
+					name_formatter = function(term)
+						return term.name
+					end,
+				},
+			})
 		end,
 	})
 	use({
@@ -130,13 +153,15 @@ return require("packer").startup(function(use)
 			{ "nvim-treesitter/nvim-treesitter-context" },
 			{ "RRethy/nvim-treesitter-textsubjects" },
 			{ "p00f/nvim-ts-rainbow" },
+			{ "yioneko/nvim-yati" },
 		},
 	})
 
 	use({
-		"goolord/alpha-nvim",
+		"startup-nvim/startup.nvim",
+		requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
 		config = function()
-			require("alpha").setup(require("alpha.themes.dashboard").config)
+			require("startup").setup()
 		end,
 	})
 	use("airblade/vim-gitgutter")
@@ -310,18 +335,33 @@ return require("packer").startup(function(use)
 		module = { "dap" },
 		wants = { "nvim-dap-virtual-text", "nvim-dap-ui", "nvim-dap-python", "which-key.nvim" },
 		requires = {
-			-- "alpha2phi/DAPInstall.nvim",
-			-- { "Pocco81/dap-buddy.nvim", branch = "dev" },
 			"theHamsta/nvim-dap-virtual-text",
 			"rcarriga/nvim-dap-ui",
 			"mfussenegger/nvim-dap-python",
 			"nvim-telescope/telescope-dap.nvim",
 			{ "leoluz/nvim-dap-go", module = "dap-go" },
 			{ "jbyuki/one-small-step-for-vimkind", module = "osv" },
+			{ "mxsdev/nvim-dap-vscode-js", module = { "dap-vscode-js" } },
+			{
+				"microsoft/vscode-js-debug",
+				opt = true,
+				run = "npm install --legacy-peer-deps && npm run compile",
+				disable = false,
+			},
 		},
 		config = function()
 			require("config.dap").setup()
 		end,
 		disable = false,
 	})
+	use {
+		"ahmedkhalf/project.nvim",
+		config = function()
+			require("project_nvim").setup {
+				detection_methods = { "pattern", "lsp" },
+				patterns = { ".git" },
+				ignore_lsp = { "null-ls" },
+			}
+		end
+	}
 end)

@@ -14,6 +14,8 @@ map("n", "<leader>fr", "<cmd>Telescope live_registers<cr>", opts)
 map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opts)
 map("n", "<leader>fc", ":<C-u>Ag<cr>", opts)
 
+map("n", "<leader>tt", ":ToggleTerm<cr>", opts)
+
 vim.cmd([[inoremap uu <Esc>|tnoremap uu <C-\><C-n>
 " map /  <Plug>(incsearch-forward)
 " map ?  <Plug>(incsearch-backward)

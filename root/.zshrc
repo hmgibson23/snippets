@@ -2,7 +2,7 @@ ZSH_THEME="fishy"
 
 zd() {
     local dir
-    dir="$(fasd -Rdl "$1" | fzf -1 -0 --no-sort +m)" && cd "${dir}" || return 1
+    dir="$(zoxide query | fzf -1 -0 --no-sort +m)" && cd "${dir}" || return 1
 }
 
 v() {
@@ -64,7 +64,7 @@ alias n="nvim"
 alias k_compl="source <(kubectl completion zsh)"
 alias set_display_wsl="export DISPLAY=$( awk '/nameserver/ { print $2  }' /etc/resolv.conf  ):0"
 alias ed="emacs --daemon"
-eval "$(fasd --init auto)"
+# eval "$(fasd --init auto)"
 
 autoload -U edit-command-line
 zle -N edit-command-line
@@ -80,3 +80,6 @@ source ~/.commacd.sh
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+alias ls="lsd"
+eval "$(zoxide init zsh)"

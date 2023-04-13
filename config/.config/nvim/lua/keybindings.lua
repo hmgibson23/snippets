@@ -4,13 +4,15 @@ local xpr = { noremap = true, expr = true }
 
 vim.g.mapleader = ","
 
--- Telescrope
+-- Telescope
 map("n", "<c-P>", "<cmd>Telescope find_files<cr>", opts)
 map("n", "<c-T>", "<cmd>Telescope find_files<cr>", opts)
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opts)
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", opts)
 map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts)
-map("n", "<leader>fr", "<cmd>Telescope live_registers<cr>", opts)
+map("n", "<leader>fr", "<cmd>Telescope registers<cr>", opts)
+map("n", "<leader>ft", "<cmd>Telescope treesitter<cr>", opts)
+map("n", "<leader>fm", "<cmd>Telescope man_pages<cr>", opts)
 map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opts)
 map("n", "<leader>fc", ":<C-u>Ag<cr>", opts)
 
@@ -26,6 +28,17 @@ map K <Plug>(incsearch-nohl)<Plug>(anzu-N-with-echo)
 map * <Plug>(incsearch-nohl)<Plug>(anzu-star-with-echo)
 map # <Plug>(incsearch-nohl)<Plug>(anzu-sharp-with-echo)
 
+]])
+
+vim.cmd([[
+map *   <Plug>(asterisk-*)
+map #   <Plug>(asterisk-#)
+map g*  <Plug>(asterisk-g*)
+map g#  <Plug>(asterisk-g#)
+map z*  <Plug>(asterisk-z*)
+map gz* <Plug>(asterisk-gz*)
+map z#  <Plug>(asterisk-z#)
+map gz# <Plug>(asterisk-gz#)
 ]])
 vim.g.anzu_status_format = "%p(%i/%l) %w"
 -- Specials

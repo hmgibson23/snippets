@@ -1,8 +1,5 @@
 local M = {}
 
--- require"treesitter-context".setup({
--- 	enable = true,
--- })
 function M.setup()
 	local swap_next, swap_prev = (function()
 		local swap_objects = {
@@ -132,9 +129,9 @@ function M.setup()
 		},
 
 		-- endwise
-		endwise = {
-			enable = true,
-		},
+		-- endwise = {
+		-- 	enable = true,
+		-- },
 
 		-- autotag
 		autotag = {

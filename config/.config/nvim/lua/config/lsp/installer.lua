@@ -30,7 +30,8 @@ function M.setup(servers, server_options)
 		["awk_ls"] = function() end,
 		["lua_ls"] = function()
 			local opts = vim.tbl_deep_extend("force", server_options, servers["lua_ls"] or {})
-			lspconfig.lua_ls.setup(require("neodev").setup({ lspconfig = opts }))
+			require("neodev").setup({ lspconfig = opts })
+			lspconfig.lua_ls.setup()
 		end,
 		["terraformls"] = function()
 			vim.api.nvim_create_autocmd({ "BufWritePre" }, {

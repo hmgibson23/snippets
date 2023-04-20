@@ -9,6 +9,13 @@ return require("packer").startup({
 	function(use)
 		-- Packer can manage itself
 		use("wbthomason/packer.nvim")
+		use({
+			"nvim-tree/nvim-web-devicons",
+			module = "nvim-web-devicons",
+			config = function()
+				require("nvim-web-devicons").setup({ default = true })
+			end,
+		})
 		use({ "lewis6991/impatient.nvim" })
 		use({
 			"TaDaa/vimade",
@@ -205,20 +212,6 @@ return require("packer").startup({
 		-- })
 
 		use({
-			"RRethy/nvim-treesitter-endwise",
-			opt = true,
-			event = "InsertEnter",
-			disable = true,
-			requires = "nvim-treesitter/nvim-treesitter",
-		})
-
-		use({
-			"nvim-treesitter/nvim-treesitter-textobjects",
-			after = "nvim-treesitter",
-			requires = "nvim-treesitter/nvim-treesitter",
-		})
-
-		use({
 			"nvim-treesitter/nvim-treesitter",
 			opt = true,
 			run = function()
@@ -229,10 +222,10 @@ return require("packer").startup({
 			end,
 			requires = {
 				{ "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre", disable = false },
-				{ "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
-				{ "p00f/nvim-ts-rainbow", event = "BufReadPre", disable = true },
 				{ "windwp/nvim-ts-autotag", event = "InsertEnter", disable = true },
-				{ "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre", disable = true },
+				{ "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre", disable = true },
+				{ "p00f/nvim-ts-rainbow", event = "BufReadPre", disable = true },
+				{ "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre", disable = false },
 				{ "RRethy/nvim-treesitter-endwise", event = "BufReadPre", disable = true },
 				{ "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
 				{ "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", disable = true },

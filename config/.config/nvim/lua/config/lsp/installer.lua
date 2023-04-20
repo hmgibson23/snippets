@@ -3,11 +3,11 @@ local M = {}
 function M.setup(servers, server_options)
 	local lspconfig = require("lspconfig")
 
-	require("mason").setup()
+	require("mason").setup({})
 
 	require("mason-tool-installer").setup({
 		ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls" },
-		auto_update = false,
+		auto_update = true,
 		run_on_start = true,
 	})
 
@@ -31,7 +31,7 @@ function M.setup(servers, server_options)
 		["lua_ls"] = function()
 			local opts = vim.tbl_deep_extend("force", server_options, servers["lua_ls"] or {})
 			require("neodev").setup({ lspconfig = opts })
-			lspconfig.lua_ls.setup()
+			lspconfig.lua_ls.setup({})
 		end,
 		["terraformls"] = function()
 			vim.api.nvim_create_autocmd({ "BufWritePre" }, {

@@ -87,9 +87,8 @@ function M.setup()
 
 			swap = {
 				enable = true,
-				swap_next = swap_next,
-				swap_previous = swap_prev,
-				-- swap_next = {
+
+				-- xt = {
 				--   ["<leader>cx"] = "@parameter.inner",
 				-- },
 				-- swap_previous = {

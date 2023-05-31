@@ -18,6 +18,8 @@ map("n", "<leader>fc", ":<C-u>Ag<cr>", opts)
 
 map("n", "<leader>tt", ":ToggleTerm<cr>", opts)
 
+map("n", "<leader>tp", "<cmd>TSPlaygroundToggle<cr>", opts)
+
 vim.cmd([[inoremap uu <Esc>|tnoremap uu <C-\><C-n>
 " map /  <Plug>(incsearch-forward)
 " map ?  <Plug>(incsearch-backward)

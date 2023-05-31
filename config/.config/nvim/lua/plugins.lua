@@ -16,7 +16,42 @@ return require("packer").startup({
 				require("nvim-web-devicons").setup({ default = true })
 			end,
 		})
+
+		use({
+			"nvim-tree/nvim-tree.lua",
+			cmd = { "NvimTreeToggle", "NvimTreeClose" },
+			config = function()
+				require("config.nvimtree").setup()
+			end,
+		})
+
 		use({ "lewis6991/impatient.nvim" })
+
+		use({
+			"goolord/alpha-nvim",
+			config = function()
+				require("config.alpha").setup()
+			end,
+		})
+
+		use({
+			"jinh0/eyeliner.nvim",
+			keys = { "F", "f", "T", "t" },
+			config = function()
+				require("eyeliner").setup({
+					highlight_on_key = true,
+				})
+			end,
+		})
+		use({
+			"echasnovski/mini.nvim",
+			event = { "BufReadPre" },
+			config = function()
+				require("mini.align").setup()
+				require("mini.test").setup()
+				require("mini.doc").setup()
+			end,
+		})
 		use({
 			"TaDaa/vimade",
 			cmd = { "VimadeToggle", "VimadeEnable", "VimadeDisable" },
@@ -213,33 +248,46 @@ return require("packer").startup({
 
 		use({
 			"nvim-treesitter/nvim-treesitter",
-			opt = true,
-			run = function()
-				require("nvim-treesitter.install").update({ with_sync = true })
-			end,
+			run = ":TSUpdate",
 			config = function()
 				require("config.treesitter").setup()
 			end,
 			requires = {
-				{ "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre", disable = false },
-				{ "windwp/nvim-ts-autotag", event = "InsertEnter", disable = true },
-				{ "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre", disable = true },
+				{ "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre" },
+				{ "windwp/nvim-ts-autotag", event = "InsertEnter" },
+				{ "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
 				{ "p00f/nvim-ts-rainbow", event = "BufReadPre", disable = true },
-				{ "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre", disable = false },
-				{ "RRethy/nvim-treesitter-endwise", event = "BufReadPre", disable = true },
+				{ "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre" },
 				{ "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
+				-- {
+				--   "lewis6991/spellsitter.nvim",
+				--   config = function()
+				--     require("spellsitter").setup()
+				--   end,
+				-- },
 				{ "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", disable = true },
 				{ "mfussenegger/nvim-treehopper", module = { "tsht" }, disable = true },
+				{
+					"m-demare/hlargs.nvim",
+					config = function()
+						require("config.hlargs").setup()
+					end,
+					disable = false,
+				},
+				{
+					"AckslD/nvim-FeMaco.lua",
+					config = function()
+						require("femaco").setup()
+					end,
+					ft = { "markdown" },
+					cmd = { "Femaco" },
+					module = { "femaco_edit" },
+					disable = true,
+				},
+				-- { "yioneko/nvim-yati", event = "BufReadPre" },
 			},
 		})
 
-		use({
-			"startup-nvim/startup.nvim",
-			requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
-			config = function()
-				require("startup").setup()
-			end,
-		})
 		use("airblade/vim-gitgutter")
 		use("bronson/vim-trailing-whitespace")
 		use("editorconfig/editorconfig-vim")
@@ -425,16 +473,14 @@ return require("packer").startup({
 			end,
 			disable = false,
 		})
-		-- use {
-		-- 	"ahmedkhalf/project.nvim",
-		-- 	config = function()
-		-- 		require("project_nvim").setup {
-		-- 			detection_methods = { "pattern", "lsp" },
-		-- 			patterns = { ".git" },
-		-- 			ignore_lsp = { "null-ls" },
-		-- 		}
-		-- 	end
-		-- }
+
+		use({
+			"gnikdroy/projections.nvim",
+			requires = { "nvim-telescope/telescope.nvim" },
+			config = function()
+				require("config.projections").setup()
+			end,
+		})
 	end,
 	config = {
 		clone_timeout = 9999,

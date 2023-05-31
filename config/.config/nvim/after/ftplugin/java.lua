@@ -1,5 +1,4 @@
 local jdtls_ok, jdtls = pcall(require, "jdtls")
-local coq = require('coq')
 if not jdtls_ok then
   vim.notify "JDTLS not found, install with `:LspInstall jdtls`"
   return
@@ -11,6 +10,9 @@ local JDTLS_LOCATION = vim.fn.stdpath "data" .. "/lsp_servers/jdtls"
 -- Data directory - change it to your liking
 local HOME = os.getenv "HOME"
 local WORKSPACE_PATH = HOME .. "/workspace/java/"
+
+-- Debugger installation location
+local DEBUGGER_LOCATION = HOME .. "/.local/share/nvim"
 
 -- Only for Linux and Mac
 local SYSTEM = "linux"
@@ -30,7 +32,15 @@ end
 local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
-local config = coq.lsp_ensure_capabilities({
+-- Debugging
+local bundles = {
+  vim.fn.glob(
+    DEBUGGER_LOCATION .. "/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar"
+  ),
+}
+vim.list_extend(bundles, vim.split(vim.fn.glob(DEBUGGER_LOCATION .. "/vscode-java-test/server/*.jar"), "\n"))
+
+local config = {
   cmd = {
     "java",
     "-Declipse.application=org.eclipse.jdt.ls.core.id1",
@@ -52,8 +62,8 @@ local config = coq.lsp_ensure_capabilities({
     workspace_dir,
   },
 
-  -- on_attach = require("config.lsp").on_attach,
-  -- capabilities = require("config.lsp").capabilities,
+  on_attach = require("config.lsp").on_attach,
+  capabilities = require("config.lsp").capabilities,
   root_dir = root_dir,
 
   -- Here you can configure eclipse.jdt.ls specific settings
@@ -111,6 +121,9 @@ local config = coq.lsp_ensure_capabilities({
       toString = {
         template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
       },
+      hashCodeEquals = {
+        useJava7Objects = true,
+      },
       useBlocks = true,
     },
   },
@@ -126,15 +139,26 @@ local config = coq.lsp_ensure_capabilities({
   --
   -- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
   init_options = {
-    bundles = {},
+    bundles = bundles,
   },
-})
+}
 -- This starts a new client & server,
 -- or attaches to an existing client & server depending on the `root_dir`.
 jdtls.start_or_attach(config)
 
 -- Add the commands
 require("jdtls.setup").add_commands()
+-- vim.api.nvim_exec(
+--   [[
+-- command! -buffer -nargs=? -complete=custom,v:lua.require'jdtls'._complete_compile JdtCompile lua require('jdtls').compile(<f-args>)
+-- command! -buffer -nargs=? -complete=custom,v:lua.require'jdtls'._complete_set_runtime JdtSetRuntime lua require('jdtls').set_runtime(<f-args>)
+-- command! -buffer JdtUpdateConfig lua require('jdtls').update_project_config()
+-- command! -buffer JdtJol lua require('jdtls').jol()
+-- command! -buffer JdtBytecode lua require('jdtls').javap()
+-- command! -buffer JdtJshell lua require('jdtls').jshell(),
+--   ]],
+--   false
+-- )
+
 vim.bo.shiftwidth = 2
 vim.bo.tabstop = 2
-

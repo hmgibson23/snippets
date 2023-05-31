@@ -2,7 +2,7 @@ local M = {}
 
 local whichkey = require("which-key")
 local legendary = require("legendary")
-local l = require('legendary.integrations.which-key')
+local l = require("legendary.integrations.which-key")
 
 -- local keymap = vim.api.nvim_set_keymap
 -- local buf_keymap = vim.api.nvim_buf_set_keymap
@@ -37,6 +37,7 @@ local function keymappings(client, bufnr)
 			L = { "<cmd>lua vim.lsp.codelens.refresh()<CR>", "Refresh CodeLens" },
 			l = { "<cmd>lua vim.lsp.codelens.run()<CR>", "Run CodeLens" },
 			D = { "<cmd>lua require('config.lsp').toggle_diagnostics()<CR>", "Toggle Inline Diagnostics" },
+			e = { "<cmd>lua require('aerial').toggle()<CR>", "Toggle Aerial" },
 		},
 	}
 	if client.server_capabilities.documentFormattingProvider then

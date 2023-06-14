@@ -9,6 +9,7 @@ return require("packer").startup({
 	function(use)
 		-- Packer can manage itself
 		use("wbthomason/packer.nvim")
+		use({ "lewis6991/impatient.nvim" })
 		use({
 			"nvim-tree/nvim-web-devicons",
 			module = "nvim-web-devicons",
@@ -25,8 +26,6 @@ return require("packer").startup({
 			end,
 		})
 
-		use({ "lewis6991/impatient.nvim" })
-
 		use({
 			"goolord/alpha-nvim",
 			config = function()
@@ -34,15 +33,17 @@ return require("packer").startup({
 			end,
 		})
 
-		use({
-			"jinh0/eyeliner.nvim",
-			keys = { "F", "f", "T", "t" },
-			config = function()
-				require("eyeliner").setup({
-					highlight_on_key = true,
-				})
-			end,
-		})
+		-- use({
+		-- 	"jinh0/eyeliner.nvim",
+		-- 	keys = { "F", "f", "T", "t" },
+		-- 	config = function()
+		-- 		require("eyeliner").setup({
+		-- 			highlight_on_key = true,
+		-- 			dim = true
+		-- 		})
+		-- 	end,
+		-- })
+
 		use({
 			"echasnovski/mini.nvim",
 			event = { "BufReadPre" },
@@ -92,8 +93,6 @@ return require("packer").startup({
 		use("skywind3000/asyncrun.vim")
 		use({
 			"stevearc/overseer.nvim",
-			opt = true,
-			module = { "neotest.consumers.overseer" },
 			cmd = {
 				"OverseerToggle",
 				"OverseerOpen",
@@ -288,10 +287,17 @@ return require("packer").startup({
 			},
 		})
 
+		use({
+			"ggandor/leap.nvim",
+			config = function()
+				require("leap").add_default_mappings()
+				-- require("config.leap").setup()
+			end,
+		})
+
 		use("airblade/vim-gitgutter")
 		use("bronson/vim-trailing-whitespace")
 		use("editorconfig/editorconfig-vim")
-		use("easymotion/vim-easymotion")
 		use("haya14busa/incsearch.vim")
 		use("jiangmiao/auto-pairs")
 		use("vim-scripts/grep.vim")
@@ -302,11 +308,30 @@ return require("packer").startup({
 		use("tpope/vim-commentary")
 		use("tpope/vim-eunuch")
 		use("tpope/vim-sleuth")
-		use("tpope/vim-surround")
 		use("tpope/vim-fugitive")
 		use("itchyny/lightline.vim")
 		use("nvim-lua/plenary.nvim")
 		use("janko-m/vim-test")
+
+		use({
+			"kylechui/nvim-surround",
+			tag = "*", -- Use for stability; omit to use `main` branch for the latest features
+			config = function()
+				require("nvim-surround").setup({
+					keymaps = {
+						normal = "gy",
+						normal_cur = "gyy",
+						normal_line = "gY",
+						normal_cur_line = "gYY",
+						visual = "gy",
+						visual_line = "gY",
+						delete = "dy",
+						change = "cy",
+						change_line = "cY",
+					},
+				})
+			end,
+		})
 
 		use({
 			"glepnir/lspsaga.nvim",
@@ -348,6 +373,7 @@ return require("packer").startup({
 				module = { "nvim-navic" },
 				{
 					"j-hui/fidget.nvim",
+					tag = "legacy",
 					config = function()
 						require("fidget").setup({})
 					end,
@@ -393,28 +419,16 @@ return require("packer").startup({
 				{
 					"L3MON4D3/LuaSnip",
 					wants = { "friendly-snippets", "vim-snippets" },
-					-- config = function()
-					--   require("config.snip").setup()
-					-- end,
+					config = function()
+						require("config.snippets").setup()
+					end,
+					run = "make install_jsregexp",
 				},
 				"rafamadriz/friendly-snippets",
 				"honza/vim-snippets",
 				-- { "tzachar/cmp-tabnine", run = "./install.sh" },
 			},
 		})
-
-		-- use({
-		-- 	"nvim-telescope/telescope-z.nvim",
-		-- 	requires = {
-		-- 		{ "nvim-lua/plenary.nvim" },
-		-- 		{ "nvim-lua/popup.nvim" },
-		-- 		{ "nvim-telescope/telescope.nvim" },
-		-- 	},
-		-- 	config = function()
-		-- 		require("telescope").load_extension("z")
-		-- 		-- ... other telescope settings
-		-- 	end,
-		-- })
 
 		use({
 			"nvim-telescope/telescope.nvim",
@@ -431,17 +445,18 @@ return require("packer").startup({
 					requires = "tami5/sqlite.lua",
 				},
 				{ "nvim-telescope/telescope-smart-history.nvim" },
+				{ "cljoly/telescope-repo.nvim" },
+				{ "Zane-/cder.nvim" },
 			},
+			config = function()
+				require("config.telescope").setup()
+			end,
 		})
 
 		use({
 			"folke/which-key.nvim",
 			config = function()
-				require("which-key").setup({
-					-- your configuration comes here
-					-- or leave it empty to use the default settings
-					-- refer to the configuration section below
-				})
+				require("which-key").setup()
 			end,
 		})
 		use({ "mrjones2014/legendary.nvim", tag = "v2.2.0" })
@@ -449,7 +464,7 @@ return require("packer").startup({
 		use({
 			"mfussenegger/nvim-dap",
 			opt = true,
-			-- event = "BufReadPre",
+			event = "BufReadPre",
 			keys = { [[<leader>d]] },
 			module = { "dap" },
 			wants = { "nvim-dap-virtual-text", "nvim-dap-ui", "nvim-dap-python", "which-key.nvim" },
@@ -463,9 +478,7 @@ return require("packer").startup({
 				{ "mxsdev/nvim-dap-vscode-js", module = { "dap-vscode-js" } },
 				{
 					"microsoft/vscode-js-debug",
-					opt = true,
 					run = "npm install --legacy-peer-deps && npm run compile",
-					disable = false,
 				},
 			},
 			config = function()
@@ -473,12 +486,32 @@ return require("packer").startup({
 			end,
 			disable = false,
 		})
+		use({
+			"jay-babu/mason-nvim-dap.nvim",
+			requires = {
+				"williamboman/mason.nvim",
+				"mfussenegger/nvim-dap",
+			},
+			config = function()
+				require("mason-nvim-dap").setup({
+					automatic_setup = true,
+					ensure_installed = { "stylua", "jq", "node2", "js", "chrome", "firefox" },
+				})
+			end,
+		})
 
 		use({
 			"gnikdroy/projections.nvim",
 			requires = { "nvim-telescope/telescope.nvim" },
 			config = function()
 				require("config.projections").setup()
+			end,
+		})
+
+		use({
+			"chentoast/marks.nvim",
+			config = function()
+				require("config.marks").setup()
 			end,
 		})
 	end,

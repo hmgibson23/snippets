@@ -11,7 +11,7 @@ function M.setup()
 			{ "~/git", {} },
 			{ "~/git/newsuk", {} },
 			{ "~/git/flowers", {} },
-			{ "~/.config/", { ".projections_project" } },
+			{ "~/", { ".git" } },
 		},
 	})
 

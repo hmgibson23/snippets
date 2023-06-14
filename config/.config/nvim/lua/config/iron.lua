@@ -1,5 +1,6 @@
 local M = {}
 local iron = require("iron.core")
+local whichkey = require("which-key")
 
 function M.setup()
 	iron.setup({
@@ -22,6 +23,15 @@ function M.setup()
 			clear = "<space>cl",
 		},
 	})
+
+	whichkey.register({
+		i = {
+			name = "Iron", -- optional group name
+			i = { "<cmd>IronRepl<cr>", "Iron Repl" },
+			f = { "<cmd>IronFocus<cr>", "Iron Focus" },
+			h = { "<cmd>IronHide<cr>", "Iron Hide" },
+		},
+	}, { prefix = "<leader>" })
 end
 
 return M

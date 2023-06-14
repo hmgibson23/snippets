@@ -3,19 +3,16 @@ local M = {}
 local overseer = require("overseer")
 local whichkey = require("which-key")
 function M.setup()
-	local keymap_l = {
-		o = {
-			name = "Overseer",
-			d = { "<cmd>OverseerRun<CR>", "Overseer Run" },
-			o = { "<cmd>OverseerOpen<CR>", "Overseer Open" },
-			q = { "<cmd>OverseerQuickAction<CR>", "Overseer Quick Action" },
-			a = { "<cmd>OverseerRunCmd<CR>", "Overseer Quick Action" },
-		},
-	}
-
-	local o = { prefix = "<leader>" }
-	whichkey.register(keymap_l, o)
 	overseer.setup()
+	whichkey.register({
+		o = {
+			name = "Overseer", -- optional group name
+			b = { "<cmd>OverseerBuild<cr>", "OverseerBuild" },
+			r = { "<cmd>OverseerRun<cr>", "OverseerRun" },
+			t = { "<cmd>OverseerToggle<cr>", "OverseerToggle" },
+			c = { "<cmd>OverseerRunCmd<cr>", "OverseerRunCmd" },
+		},
+	}, { prefix = "<leader>" })
 end
 
 return M

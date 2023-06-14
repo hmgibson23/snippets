@@ -96,7 +96,7 @@ map("n", "te", ":tabnext<CR>", opts)
 map("n", "tn", ":tabprev<CR>", opts)
 map("n", "th", ":tabfirst<CR>", opts)
 map("n", "ti", ":tablast<CR>", opts)
-map("n", "<leader>mm", ":Git<CR>", opts)
+map("n", "<leader>mm", ":Neogit<CR>", opts)
 map("n", "cd", ":lcd %:p:h<CR>", opts)
 
 -- }}}

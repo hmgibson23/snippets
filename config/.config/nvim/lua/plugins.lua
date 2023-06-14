@@ -1,3 +1,6 @@
+---@module Plugins
+---@author Hugo Gibson
+
 -- vim.cmd([[
 --  augroup packer_user_config
 --    autocmd!
@@ -68,7 +71,11 @@ return require("packer").startup({
 			requires = {
 				{
 					"vim-test/vim-test",
-					event = { "BufReadPre" },
+					cmd = {
+						"TestLast",
+						"TestSuite",
+						"TestNearest",
+					},
 					config = function()
 						require("config.test").setup()
 					end,
@@ -86,13 +93,11 @@ return require("packer").startup({
 			config = function()
 				require("config.neotest").setup()
 			end,
-			disable = false,
 		})
-		use("neomake/neomake")
 		use("b0o/schemastore.nvim")
-		use("skywind3000/asyncrun.vim")
 		use({
 			"stevearc/overseer.nvim",
+			module = { "neotest.consumers.overseer" },
 			cmd = {
 				"OverseerToggle",
 				"OverseerOpen",
@@ -122,12 +127,13 @@ return require("packer").startup({
 				require("gitsigns").setup()
 			end,
 		})
-		use({
-			"is0n/jaq-nvim",
-			config = function()
-				-- require("config.jaq").setup()
-			end,
-		})
+		-- use({
+		-- 	"is0n/jaq-nvim",
+		-- 	config = function()
+		-- 		-- require("config.jaq").setup()
+		-- 	end,
+		-- })
+		--
 		use({
 			"ray-x/sad.nvim",
 			requires = { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
@@ -295,23 +301,28 @@ return require("packer").startup({
 			end,
 		})
 
-		use("airblade/vim-gitgutter")
+		use({
+			"TimUntersberger/neogit",
+			requires = "nvim-lua/plenary.nvim",
+			config = function()
+				require("neogit").setup()
+			end,
+		})
+		use({
+			"numToStr/Comment.nvim",
+			keys = { "gc", "gcc", "gbc" },
+			config = function()
+				require("Comment").setup({
+					ignore = "^$",
+					pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+				})
+			end,
+		})
 		use("bronson/vim-trailing-whitespace")
-		use("editorconfig/editorconfig-vim")
-		use("haya14busa/incsearch.vim")
-		use("jiangmiao/auto-pairs")
-		use("vim-scripts/grep.vim")
-		use("vim-scripts/mru.vim")
 		use("osyo-manga/vim-anzu")
 		use("haya14busa/vim-asterisk")
-		use("sheerun/vim-polyglot")
-		use("tpope/vim-commentary")
-		use("tpope/vim-eunuch")
-		use("tpope/vim-sleuth")
-		use("tpope/vim-fugitive")
 		use("itchyny/lightline.vim")
 		use("nvim-lua/plenary.nvim")
-		use("janko-m/vim-test")
 
 		use({
 			"kylechui/nvim-surround",
@@ -431,6 +442,26 @@ return require("packer").startup({
 		})
 
 		use({
+			"michaelb/sniprun",
+			run = "bash ./install.sh",
+			cmd = { "SnipRun", "SnipInfo", "SnipReset", "SnipReplMemoryClean", "SnipClose", "SnipLive" },
+			module = { "sniprun", "sniprun.api" },
+			requires = { "folke/which-key.nvim" },
+			config = function()
+				require("config.sniprun").setup()
+			end,
+		})
+
+		use({
+			"rcarriga/nvim-notify",
+			event = "BufReadPre",
+			config = function()
+				require("config.notify").setup()
+			end,
+			disable = false,
+		})
+
+		use({
 			"nvim-telescope/telescope.nvim",
 			requires = {
 				"nvim-lua/popup.nvim",
@@ -456,7 +487,7 @@ return require("packer").startup({
 		use({
 			"folke/which-key.nvim",
 			config = function()
-				require("which-key").setup()
+				require("config.whichkey").setup()
 			end,
 		})
 		use({ "mrjones2014/legendary.nvim", tag = "v2.2.0" })

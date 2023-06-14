@@ -1,5 +1,5 @@
 local M = {}
-
+local whichkey = require("which-key")
 function M.javascript_runner()
 	local runners = { "cypress", "jest" }
 	vim.ui.select(runners, { prompt = "Choose Javascript Runner" }, function(selected)

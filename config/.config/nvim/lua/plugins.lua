@@ -75,6 +75,7 @@ return require("packer").startup({
 						"TestLast",
 						"TestSuite",
 						"TestNearest",
+						"TestFile",
 					},
 					config = function()
 						require("config.test").setup()
@@ -477,7 +478,22 @@ return require("packer").startup({
 				},
 				{ "nvim-telescope/telescope-smart-history.nvim" },
 				{ "cljoly/telescope-repo.nvim" },
+				{ "nvim-telescope/telescope-project.nvim" },
 				{ "Zane-/cder.nvim" },
+				{
+					"ahmedkhalf/project.nvim",
+					config = function()
+						require("project_nvim").setup({
+							sync_root_with_cwd = true,
+							respect_buf_cwd = true,
+							update_focused_file = {
+								enable = true,
+								update_root = true,
+							},
+							ignore_lsp = { "null-ls" },
+						})
+					end,
+				},
 			},
 			config = function()
 				require("config.telescope").setup()
@@ -543,6 +559,12 @@ return require("packer").startup({
 			"chentoast/marks.nvim",
 			config = function()
 				require("config.marks").setup()
+			end,
+		})
+		use({
+			"kevinhwang91/nvim-hlslens",
+			config = function()
+				require("config.hslens").setup()
 			end,
 		})
 	end,

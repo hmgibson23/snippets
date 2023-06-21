@@ -42,6 +42,7 @@ function M.setup()
 	telescope.load_extension("frecency")
 	telescope.load_extension("repo")
 	telescope.load_extension("cder")
+	-- telescope.load_extension("projects")
 	whichkey.register({
 		fl = {
 			name = "Telescope LSP",

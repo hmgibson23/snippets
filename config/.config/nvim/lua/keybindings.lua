@@ -25,23 +25,23 @@ vim.cmd([[inoremap uu <Esc>|tnoremap uu <C-\><C-n>
 " map ?  <Plug>(incsearch-backward)
 " map g/ <Plug>(incsearch-stay)
 " let g:incsearch#auto_nohlsearch = 1
-map k <Plug>(incsearch-nohl)<Plug>(anzu-n-with-echo)
-map K <Plug>(incsearch-nohl)<Plug>(anzu-N-with-echo)
-map * <Plug>(incsearch-nohl)<Plug>(anzu-star-with-echo)
-map # <Plug>(incsearch-nohl)<Plug>(anzu-sharp-with-echo)
+" map k <Plug>(incsearch-nohl)<Plug>(anzu-n-with-echo)
+" map K <Plug>(incsearch-nohl)<Plug>(anzu-N-with-echo)
+" map * <Plug>(incsearch-nohl)<Plug>(anzu-star-with-echo)
+" map # <Plug>(incsearch-nohl)<Plug>(anzu-sharp-with-echo)
 
 ]])
 
-vim.cmd([[
-map *   <Plug>(asterisk-*)
-map #   <Plug>(asterisk-#)
-map g*  <Plug>(asterisk-g*)
-map g#  <Plug>(asterisk-g#)
-map z*  <Plug>(asterisk-z*)
-map gz* <Plug>(asterisk-gz*)
-map z#  <Plug>(asterisk-z#)
-map gz# <Plug>(asterisk-gz#)
-]])
+-- vim.cmd([[
+-- map *   <Plug>(asterisk-*)
+-- map #   <Plug>(asterisk-#)
+-- map g*  <Plug>(asterisk-g*)
+-- map g#  <Plug>(asterisk-g#)
+-- map z*  <Plug>(asterisk-z*)
+-- map gz* <Plug>(asterisk-gz*)
+-- map z#  <Plug>(asterisk-z#)
+-- map gz# <Plug>(asterisk-gz#)
+-- ]])
 vim.g.anzu_status_format = "%p(%i/%l) %w"
 -- Specials
 -- map('i', '<Esc>', 'uu <C-\><C-n>', opts)
@@ -56,8 +56,6 @@ map("o", "e", "k", opts)
 map("n", "i", "l", opts)
 map("x", "i", "l", opts)
 map("o", "i", "l", opts)
-
-
 
 -- Colemak Insert
 map("n", "u", "i", opts)

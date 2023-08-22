@@ -13,12 +13,42 @@ return require("packer").startup({
 		-- Packer can manage itself
 		use("wbthomason/packer.nvim")
 		use({ "lewis6991/impatient.nvim" })
+		use({ "dccsillag/magma-nvim", run = ":UpdateRemotePlugins" })
+		use({ "untitled-ai/jupyter_ascending.vim" })
+		use({
+			"jcdickinson/codeium.nvim",
+			requires = {
+				"nvim-lua/plenary.nvim",
+				"hrsh7th/nvim-cmp",
+			},
+			config = function()
+				require("codeium").setup({})
+			end,
+		})
 		use({
 			"nvim-tree/nvim-web-devicons",
 			module = "nvim-web-devicons",
 			config = function()
 				require("nvim-web-devicons").setup({ default = true })
 			end,
+		})
+
+		use({
+			"kevinhwang91/nvim-ufo",
+			opt = true,
+			keys = { "zc", "zo", "zR", "zm" },
+			wants = { "promise-async" },
+			requires = "kevinhwang91/promise-async",
+			config = function()
+				require("ufo").setup({
+					provider_selector = function(_, _)
+						return { "treesitter", "indent" }
+					end,
+				})
+				vim.keymap.set("n", "zR", require("ufo").openAllFolds)
+				vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+			end,
+			disable = true,
 		})
 
 		use({
@@ -190,7 +220,14 @@ return require("packer").startup({
 			end,
 		})
 
-		use({ "mfussenegger/nvim-jdtls", ft = { "java" } })
+		use({
+			"mfussenegger/nvim-jdtls",
+			config = function()
+				-- https://github.com/fitrh/init.nvim/blob/main/lua/plugin/jdtls/config.lua
+				-- require("plugin.jdtls.config").attach()
+			end,
+			module = "jdtls",
+		})
 		use({
 			"stevearc/aerial.nvim",
 			config = function()
@@ -205,8 +242,10 @@ return require("packer").startup({
 			tag = "*",
 			config = function()
 				require("toggleterm").setup({
-					hide_numbers = true,
+					hide_numbers = false,
 					shade_terminals = true,
+					direction = "vertical",
+					size = 60,
 					winbar = {
 						enabled = false,
 						name_formatter = function(term)
@@ -409,6 +448,7 @@ return require("packer").startup({
 			"hrsh7th/nvim-cmp",
 			event = "InsertEnter",
 			opt = true,
+			module = { "nvim-cmp" },
 			config = function()
 				require("config.cmp").setup()
 			end,
@@ -478,22 +518,21 @@ return require("packer").startup({
 				},
 				{ "nvim-telescope/telescope-smart-history.nvim" },
 				{ "cljoly/telescope-repo.nvim" },
-				{ "nvim-telescope/telescope-project.nvim" },
 				{ "Zane-/cder.nvim" },
-				{
-					"ahmedkhalf/project.nvim",
-					config = function()
-						require("project_nvim").setup({
-							sync_root_with_cwd = true,
-							respect_buf_cwd = true,
-							update_focused_file = {
-								enable = true,
-								update_root = true,
-							},
-							ignore_lsp = { "null-ls" },
-						})
-					end,
-				},
+				-- {
+				-- 	"ahmedkhalf/project.nvim",
+				-- 	config = function()
+				-- 		require("project_nvim").setup({
+				-- 			sync_root_with_cwd = true,
+				-- 			respect_buf_cwd = true,
+				-- 			update_focused_file = {
+				-- 				enable = true,
+				-- 				update_root = true,
+				-- 			},
+				-- 			ignore_lsp = { "null-ls" },
+				-- 		})
+				-- 	end,
+				-- },
 			},
 			config = function()
 				require("config.telescope").setup()
@@ -550,6 +589,7 @@ return require("packer").startup({
 		use({
 			"gnikdroy/projections.nvim",
 			requires = { "nvim-telescope/telescope.nvim" },
+			branch = "pre_release",
 			config = function()
 				require("config.projections").setup()
 			end,
@@ -562,7 +602,18 @@ return require("packer").startup({
 			end,
 		})
 		use({
+			"bennypowers/nvim-regexplainer",
+			config = function()
+				require("regexplainer").setup()
+			end,
+			requires = {
+				"nvim-treesitter/nvim-treesitter",
+				"MunifTanjim/nui.nvim",
+			},
+		})
+		use({
 			"kevinhwang91/nvim-hlslens",
+			event = "BufReadPre",
 			config = function()
 				require("config.hslens").setup()
 			end,

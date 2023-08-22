@@ -33,6 +33,7 @@ function M.setup()
 			buffers = {
 				theme = "ivy",
 				previewer = false,
+				show_all_buffers = true,
 			},
 		},
 	})

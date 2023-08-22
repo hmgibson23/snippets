@@ -187,6 +187,7 @@ function M.setup()
 			{ name = "nvim_lsp", max_item_count = 15 },
 			{ name = "nvim_lsp_signature_help" },
 			{ name = "luasnip" },
+			{ name = "codeium" },
 			-- { name = "cmp_tabnine" },
 			{ name = "treesitter" },
 			{ name = "rg", max_item_count = 8 },

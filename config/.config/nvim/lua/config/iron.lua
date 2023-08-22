@@ -1,20 +1,43 @@
 local M = {}
 local iron = require("iron.core")
 local view = require("iron.view")
-local whichkey = require("which-key")
 
 function M.setup()
 	iron.setup({
 		config = {
-			should_map_plug = false,
-			scratch_repl = true,
+			scratch_repl = false,
 			repl_definition = {
 				sh = {
 					command = { "zsh" },
 				},
+				python = {
+					command = { "ipython" },
+					format = require("iron.fts.common").bracketed_paste,
+				},
+				java = {
+					command = function(meta)
+						--        local bufnr = api.nvim_get_current_buf()
+						--       local uri = vim.uri_from_bufnr(bufnr)
+						--       if vim.startswith(uri, "jdt://") then
+						--          options = vim.fn.json_encode({ scope = "runtime" })
+						--        else
+						--          local err, is_test_file = M.execute_command(is_test_file_cmd, nil, bufnr)
+						--          assert(not err, vim.inspect(err))
+						--          options = vim.fn.json_encode({
+						--            scope = is_test_file and 'test' or 'runtime';
+						--          })
+						--        end
+						--        local cmd = {
+						--          command = 'java.project.getClasspaths';
+						--          arguments = { uri, options };
+						--        }
+						return { "jshell" }
+					end,
+				},
 			},
 		},
 
+		repl_open_cmd = view.right(40),
 		keymaps = {
 			send_motion = "<space>sc",
 			visual_send = "<space>sc",
@@ -29,17 +52,7 @@ function M.setup()
 			exit = "<space>sq",
 			clear = "<space>cl",
 		},
-		repl_open_cmd = view.split("30%"),
 	})
-
-	whichkey.register({
-		i = {
-			name = "Iron", -- optional group name
-			i = { "<cmd>IronRepl<cr>", "Iron Repl" },
-			f = { "<cmd>IronFocus<cr>", "Iron Focus" },
-			h = { "<cmd>IronHide<cr>", "Iron Hide" },
-		},
-	}, { prefix = "<leader>" })
 end
 
 return M

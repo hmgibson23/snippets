@@ -6,15 +6,6 @@ vim.g.mapleader = ","
 
 -- Telescope
 map("n", "<c-P>", "<cmd>Telescope find_files<cr>", opts)
-map("n", "<c-T>", "<cmd>Telescope find_files<cr>", opts)
-map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opts)
-map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", opts)
-map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts)
-map("n", "<leader>fr", "<cmd>Telescope registers<cr>", opts)
-map("n", "<leader>ft", "<cmd>Telescope treesitter<cr>", opts)
-map("n", "<leader>fm", "<cmd>Telescope man_pages<cr>", opts)
-map("n", "<leader>fo", "<cmd>Telescope oldfiles<cr>", opts)
-map("n", "<leader>fc", ":<C-u>Ag<cr>", opts)
 
 map("n", "<leader>tt", ":ToggleTerm<cr>", opts)
 

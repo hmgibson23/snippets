@@ -2,11 +2,25 @@ local M = {}
 
 function M.setup(servers, server_options)
 	local lspconfig = require("lspconfig")
+  local icons = require "config.icons"
 
-	require("mason").setup({})
+	require("mason").setup({
+		ui = {
+			icons = {
+				package_installed = icons.lsp.server_installed,
+				package_pending = icons.lsp.server_pending,
+				package_uninstalled = icons.lsp.server_uninstalled,
+			},
+		},
+	})
+
+	require("mason-null-ls").setup({
+		automatic_setup = true,
+	})
+	-- require("mason-null-ls").setup_handlers()
 
 	require("mason-tool-installer").setup({
-		ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls" },
+		ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls", "prettierd" },
 		auto_update = true,
 		run_on_start = true,
 	})

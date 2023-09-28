@@ -34,6 +34,9 @@ function M.setup()
 						return { "jshell" }
 					end,
 				},
+				cpp = {
+					command = { "clang-repl" },
+				},
 			},
 		},
 

@@ -43,6 +43,7 @@ function M.setup()
 				compare.recently_used,
 				compare.offset,
 				compare.exact,
+				require("clangd_extensions.cmp_scores"),
 				compare.kind,
 				compare.sort_text,
 				compare.length,

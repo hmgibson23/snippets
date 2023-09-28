@@ -61,7 +61,7 @@ function M.setup()
 				type = "pwa-chrome",
 				name = "Launch Chrome",
 				request = "launch",
-				url = "http://localhost:3000",
+				url = "http://localhost:4000",
 			},
 		}
 	end

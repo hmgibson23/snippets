@@ -22,25 +22,13 @@ function M.setup()
 
 	local function footer()
 		-- Number of plugins
-		local total_plugins = #vim.tbl_keys(packer_plugins)
 		local datetime = os.date("%d-%m-%Y %H:%M:%S")
-		local plugins_text = "   "
-			.. total_plugins
-			.. " plugins"
-			.. "   v"
-			.. vim.version().major
-			.. "."
-			.. vim.version().minor
-			.. "."
-			.. vim.version().patch
-			.. "   "
-			.. datetime
 
 		-- Quote
 		local fortune = require("alpha.fortune")
 		local quote = table.concat(fortune(), "\n")
 
-		return plugins_text .. "\n" .. quote
+		return quote
 	end
 
 	dashboard.section.footer.val = footer()

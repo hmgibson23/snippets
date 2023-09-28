@@ -58,7 +58,6 @@ fi
 alias loadrbenv= "rbenv init -"
 alias ec="emacsclient -t"
 alias k="kubectl"
-alias loadnvm='"$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
 alias tmux="TERM=screen-256color-bce tmux"
 alias n="nvim"
 alias k_compl="source <(kubectl completion zsh)"
@@ -75,6 +74,7 @@ bindkey -M vicmd v edit-command-line
 source ~/.commacd.sh
 
 [ -s "/home/hugo/.jabba/jabba.sh" ] && source "/home/hugo/.jabba/jabba.sh"
+"$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"

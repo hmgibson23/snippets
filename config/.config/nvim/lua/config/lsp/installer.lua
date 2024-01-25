@@ -2,7 +2,7 @@ local M = {}
 
 function M.setup(servers, server_options)
 	local lspconfig = require("lspconfig")
-  local icons = require "config.icons"
+	local icons = require("config.icons")
 
 	require("mason").setup({
 		ui = {
@@ -46,6 +46,13 @@ function M.setup(servers, server_options)
 			local opts = vim.tbl_deep_extend("force", server_options, servers["lua_ls"] or {})
 			require("neodev").setup({ lspconfig = opts })
 			lspconfig.lua_ls.setup({})
+		end,
+		["clangd"] = function()
+			local opts = vim.tbl_deep_extend("force", server_options, servers["clangd"] or {})
+			print("clanging")
+			require("clangd_extensions.inlay_hints").setup_autocmd()
+			require("clangd_extensions.inlay_hints").set_inlay_hints()
+			print(opts)
 		end,
 		["terraformls"] = function()
 			vim.api.nvim_create_autocmd({ "BufWritePre" }, {

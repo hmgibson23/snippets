@@ -24,6 +24,8 @@ function M.setup()
 			},
 		},
 	})
+	ls.filetype_extend("lua", { "c" })
+	ls.filetype_set("cpp", { "cpp" })
 
 	-- Lazy load snippets
 	require("luasnip.loaders.from_vscode").lazy_load()

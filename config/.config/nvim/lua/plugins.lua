@@ -11,6 +11,21 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"Civitasv/cmake-tools.nvim",
+		config = function()
+			require("config.cmake").setup()
+		end,
+	},
+	-- { "indrets/diffview.nvim" },
+	{
+		"kosayoda/nvim-lightbulb",
+		config = function()
+			require("nvim-lightbulb").setup({
+				autocmd = { enabled = true },
+			})
+		end,
+	},
+	{
 		"anuvyklack/hydra.nvim",
 		config = function()
 			require("config.hydra").setup()
@@ -19,10 +34,46 @@ require("lazy").setup({
 	{ "savq/melange-nvim" },
 	"filipdutescu/renamer.nvim",
 	"wbthomason/packer.nvim",
-	"p00f/clangd_extensions.nvim",
+	{
+		"p00f/clangd_extensions.nvim",
+		config = function()
+			require("config.clangd").setup()
+		end,
+	},
 	{ "lewis6991/impatient.nvim" },
 	{ "folke/neoconf.nvim", cmd = "Neoconf" },
 	{ "dccsillag/magma-nvim", build = ":UpdateRemotePlugins" },
+	{ "luk400/vim-jukit" },
+	{
+		"benlubas/molten-nvim",
+		version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+		dependencies = { "3rd/image.nvim" },
+		build = ":UpdateRemotePlugins",
+		init = function()
+			-- these are examples, not defaults. Please see the readme
+			vim.g.molten_image_provider = "image.nvim"
+			vim.g.molten_output_win_max_height = 20
+		end,
+	},
+	{
+		-- see the image.nvim readme for more information about configuring this plugin
+		"3rd/image.nvim",
+		config = function()
+			require("image").setup()
+			-- note: I removed redundant ';' from the ends of each path
+			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua"
+			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua"
+		end,
+		opts = {
+			backend = "kitty", -- whatever backend you would like to use
+			max_width = 100,
+			max_height = 12,
+			max_height_window_percentage = math.huge,
+			max_width_window_percentage = math.huge,
+			window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
+			window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
+		},
+	},
 	{ "untitled-ai/jupyter_ascending.vim" },
 	{
 		"jcdickinson/codeium.nvim",
@@ -350,6 +401,7 @@ require("lazy").setup({
 	{
 		"numToStr/Comment.nvim",
 		keys = { "gc", "gcc", "gbc" },
+		lazy = false,
 		config = function()
 			require("Comment").setup()
 		end,
@@ -409,20 +461,22 @@ require("lazy").setup({
 			"ray-x/lsp_signature.nvim",
 			"folke/lua-dev.nvim",
 			"RRethy/vim-illuminate",
-			"jose-elias-alvarez/null-ls.nvim",
+			"nvimtools/none-ls.nvim",
 			{ "b0o/schemastore.nvim" },
 			{ "jose-elias-alvarez/typescript.nvim" },
 			"alpha2phi/nvim-navic",
 			config = function()
 				require("nvim-navic").setup({})
 			end,
-			{
-				"j-hui/fidget.nvim",
-				version = "legacy",
-				config = function()
-					require("fidget").setup({})
-				end,
-			},
+			-- {
+			-- 	"j-hui/fidget.nvim",
+			-- 	tag = "legacy",
+			-- 	config = function()
+			-- 		require("fidget").setup({
+			-- 			ignore = { "code_action", "null-ls" },
+			-- 		})
+			-- 	end,
+			-- },
 			{
 				"simrat39/inlay-hints.nvim",
 				config = function()
@@ -465,6 +519,7 @@ require("lazy").setup({
 				config = function()
 					require("config.snippets").setup()
 				end,
+				dependencies = { "rafamadriz/friendly-snippets" },
 				build = "make install_jsregexp",
 			},
 			"rafamadriz/friendly-snippets",
@@ -594,4 +649,6 @@ require("lazy").setup({
 			require("config.hslens").setup()
 		end,
 	},
+}, {
+	concurrency = 2,
 })

@@ -29,7 +29,7 @@ local sources = {
 	b.formatting.isort,
 	b.formatting.stylua,
 	-- b.formatting.uncrustify,
-	-- b.formatting.zigfmt,
+	b.formatting.zigfmt,
 	b.formatting.google_java_format,
 	-- with_root_file(b.formatting.stylua, "stylua.toml"),
 
@@ -41,7 +41,7 @@ local sources = {
 	b.diagnostics.cmake_lint,
 	b.diagnostics.cppcheck,
 	b.diagnostics.cpplint,
-	-- b.formatting.clang_format,
+	b.formatting.clang_format,
 	b.diagnostics.eslint_d,
 	-- b.diagnostics.flake8.with { extra_args = { "--max-line-length=120" } },
 	b.diagnostics.tsc,

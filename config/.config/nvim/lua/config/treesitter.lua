@@ -1,6 +1,7 @@
 local M = {}
 
 function M.setup()
+	require("ts_context_commentstring").setup({})
 	local swap_next, swap_prev = (function()
 		local swap_objects = {
 			p = "@parameter.inner",
@@ -135,12 +136,6 @@ function M.setup()
 		-- autotag
 		autotag = {
 			enable = true,
-		},
-
-		-- context_commentstring
-		context_commentstring = {
-			enable = true,
-			--enable_autocmd = false,
 		},
 
 		-- indent

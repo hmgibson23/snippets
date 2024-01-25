@@ -3,6 +3,7 @@ local M = {}
 local icons = require("config.icons")
 
 function M.setup()
+	vim.opt.termguicolors = true
 	local notify = require("notify")
 	notify.setup({
 		background_colour = "#000000",

@@ -3,59 +3,6 @@ local M = {}
 -- local util = require "lspconfig.util"
 
 local servers = {
-	clangd = {
-		server = {
-			root_dir = function(...)
-				return require("lspconfig.util").root_pattern(
-					"compile_commands.json",
-					"compile_flags.txt",
-					"configure.ac",
-					".git"
-				)(...)
-			end,
-			capabilities = {
-				offsetEncoding = { "utf-16" },
-			},
-			cmd = {
-				"clangd",
-				"--background-index",
-				"--clang-tidy",
-				"--header-insertion=iwyu",
-				"--completion-style=detailed",
-				"--function-arg-placeholders",
-				"--fallback-style=llvm",
-			},
-			init_options = {
-				usePlaceholders = true,
-				completeUnimported = true,
-				clangdFileStatus = true,
-			},
-		},
-		extensions = {
-			inlay_hints = {
-				inline = false,
-			},
-			ast = {
-				role_icons = {
-					type = "",
-					declaration = "",
-					expression = "",
-					specifier = "",
-					statement = "",
-					["template argument"] = "",
-				},
-				kind_icons = {
-					Compound = "",
-					Recovery = "",
-					TranslationUnit = "",
-					PackExpansion = "",
-					TemplateTypeParm = "",
-					TemplateTemplateParm = "",
-					TemplateParamObject = "",
-				},
-			},
-		},
-	},
 	gopls = {
 		settings = {
 			gopls = {
@@ -177,6 +124,7 @@ local servers = {
 	bashls = {},
 	taplo = {},
 	omnisharp = {},
+	zls = {},
 	-- kotlin_language_server = {},
 	-- emmet_ls = {},
 	-- marksman = {},
@@ -299,9 +247,78 @@ function M.setup()
 
 	-- Inlay hints
 	require("config.lsp.inlay-hints").setup()
-	local ccapabilities = vim.lsp.protocol.make_client_capabilities()
-	ccapabilities.offsetEncoding = { "utf-16" }
-	require("lspconfig").clangd.setup({ capabilities = ccapabilities })
+	require("lspconfig").clangd.setup({
+		server = {
+			--[[ 			cmd = {
+				"clangd",
+				"--background-index",
+				"--clang-tidy",
+				"--header-insertion=iwyu",
+				"--completion-style=detailed",
+				"--function-arg-placeholders",
+				"--fallback-style=llvm",
+				"--suggest-missing-includes",
+				"--compile_args_from=filesystem",
+				"--all-scopes-completion",
+				"--log=error",
+			},
+			init_options = {
+				usePlaceholders = true,
+				completeUnimported = true,
+				clangdFileStatus = true,
+			},
+			capabilities = ccapabilities, ]]
+			--[[ root_dir = function(...)
+				return require("lspconfig.util").root_pattern(
+					"compile_commands.json",
+					"compile_flags.txt",
+					"configure.ac",
+					".git"
+				)(...)
+			end,
+	 ]]
+			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities), -- for nvim-cmp
+		},
+		cmd = {
+			"clangd",
+			"--background-index",
+			"--clang-tidy",
+			"--header-insertion=iwyu",
+			"--completion-style=detailed",
+			"--function-arg-placeholders",
+			"--fallback-style=llvm",
+			"--suggest-missing-includes",
+			"--compile_args_from=filesystem",
+			"--all-scopes-completion",
+			"--log=error",
+		},
+
+		extensions = {
+			inlay_hints = {
+				inline = false,
+			},
+			ast = {
+				role_icons = {
+					type = "",
+					declaration = "",
+					expression = "",
+					specifier = "",
+					statement = "",
+					["template argument"] = "",
+				},
+				kind_icons = {
+					Compound = "",
+					Recovery = "",
+					TranslationUnit = "",
+					PackExpansion = "",
+					TemplateTypeParm = "",
+					TemplateTemplateParm = "",
+					TemplateParamObject = "",
+				},
+			},
+		},
+		-- },
+	})
 end
 
 local diagnostics_active = true

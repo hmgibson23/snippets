@@ -1,7 +1,64 @@
 ---@module Plugins
 ---@author Hugo Gibson
 require("lazy").setup({
-	-- Packer can manage itself
+	{
+		"romgrk/kirby.nvim",
+		dependencies = {
+			{ "romgrk/fzy-lua-native", build = "make install" },
+			{ "romgrk/kui.nvim" },
+			{ "nvim-tree/nvim-web-devicons" },
+			{ "nvim-lua/plenary.nvim" },
+		},
+	},
+	-- {
+	-- 	"nvim-neorg/neorg",
+	-- 	-- build = ":Neorg sync-parsers",
+	-- 	lazy = false, -- specify lazy = false because some lazy.nvim distributions set lazy = true by default
+	-- 	ft = "norg",
+	-- 	-- tag = "*",
+	-- 	dependencies = { "nvim-lua/plenary.nvim", { "nvim-neorg/neorg-telescope" } },
+	-- 	config = function()
+	-- 		require("neorg").setup({
+	-- 			load = {
+	-- 				["core.defaults"] = {}, -- Loads default behaviour
+	-- 				["core.completion"] = { config = { engine = "nvim-cmp", name = "[Norg]" } },
+	-- 				["core.integrations.nvim-cmp"] = {},
+	-- 				["core.integrations.telescope"] = {},
+	-- 				["core.concealer"] = { config = { icon_preset = "diamond" } },
+	-- 				["core.keybinds"] = {
+	-- 					config = {
+	-- 						default_keybinds = true,
+	-- 						neorg_leader = "<Leader><Leader>",
+	-- 					},
+	-- 				},
+	-- 				["core.esupports.metagen"] = { config = { type = "auto", update_date = true } },
+	-- 				["core.qol.toc"] = {},
+	-- 				["core.qol.todo_items"] = {},
+	-- 				["core.looking-glass"] = {},
+	-- 				["core.presenter"] = { config = { zen_mode = "zen-mode" } },
+	-- 				["core.export"] = {},
+	-- 				["core.export.markdown"] = { config = { extensions = "all" } },
+	-- 				["core.summary"] = {},
+	-- 				["core.tangle"] = { config = { report_on_empty = false } },
+	-- 				-- ["core.ui.calendar"] = {},
+	-- 				-- ["external.context"] = {},
+	-- 				["core.journal"] = {
+	-- 					config = {
+	-- 						strategy = "flat",
+	-- 						workspace = "Notes",
+	-- 					},
+	-- 				},
+	-- 				["core.dirman"] = { -- Manages Neorg workspaces
+	-- 					config = {
+	-- 						workspaces = {
+	-- 							notes = "~/notes",
+	-- 						},
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
 	{
 		"mrjones2014/legendary.nvim",
 		priority = 10000,
@@ -11,20 +68,34 @@ require("lazy").setup({
 		end,
 	},
 	{
+		"tadmccorkle/markdown.nvim",
+		ft = "markdown", -- or 'event = "VeryLazy"'
+		opts = {
+			-- configuration here or empty for defaults
+		},
+		config = function(_, opts)
+			require("markdown").setup(opts)
+		end,
+	},
+	{
+		"GCBallesteros/jupytext.nvim",
+		config = function()
+			require("jupytext").setup({
+				style = "markdown",
+				output_extension = "md",
+				force_ft = "markdown",
+				fmt = "py",
+			})
+		end,
+	},
+	{
 		"Civitasv/cmake-tools.nvim",
 		config = function()
 			require("config.cmake").setup()
 		end,
 	},
 	-- { "indrets/diffview.nvim" },
-	{
-		"kosayoda/nvim-lightbulb",
-		config = function()
-			require("nvim-lightbulb").setup({
-				autocmd = { enabled = true },
-			})
-		end,
-	},
+	{ "shaunsingh/nord.nvim" },
 	{
 		"anuvyklack/hydra.nvim",
 		config = function()
@@ -42,17 +113,99 @@ require("lazy").setup({
 	},
 	{ "lewis6991/impatient.nvim" },
 	{ "folke/neoconf.nvim", cmd = "Neoconf" },
-	{ "dccsillag/magma-nvim", build = ":UpdateRemotePlugins" },
-	{ "luk400/vim-jukit" },
+	-- { "dccsillag/magma-nvim", build = ":UpdateRemotePlugins" },
+	-- { "luk400/vim-jukit" },
 	{
 		"benlubas/molten-nvim",
-		version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
-		dependencies = { "3rd/image.nvim" },
 		build = ":UpdateRemotePlugins",
+		ft = { "markdown" },
 		init = function()
-			-- these are examples, not defaults. Please see the readme
-			vim.g.molten_image_provider = "image.nvim"
-			vim.g.molten_output_win_max_height = 20
+			require("config.molten").setup()
+		end,
+		config = function()
+			require("config.molten").setup()
+		end,
+	},
+	{
+		"jmbuhr/otter.nvim",
+		opts = {
+			buffers = {
+				set_filetype = true,
+			},
+		},
+	},
+	{
+		"hedyhli/outline.nvim",
+		config = function()
+			require("outline").setup({
+				-- Your setup opts here (leave empty to use defaults)
+			})
+		end,
+	},
+	{
+		"roobert/hoversplit.nvim",
+		config = function()
+			require("hoversplit").setup()
+		end,
+	},
+	{
+		"dnlhc/glance.nvim",
+		config = function()
+			require("glance").setup({})
+		end,
+	},
+	{
+		"amrbashir/nvim-docs-view",
+		lazy = true,
+		cmd = "DocsViewToggle",
+		opts = {
+			position = "right",
+			width = 60,
+		},
+	},
+	{
+		"zeioth/garbage-day.nvim",
+		dependencies = "neovim/nvim-lspconfig",
+		event = "VeryLazy",
+	},
+	-- {
+	-- 	"robitx/gp.nvim",
+	-- 	config = function()
+	-- 		require("gp").setup()
+	-- 	end,
+	-- },
+	{ "stevanmilic/nvim-lspimport" },
+	{
+		"quarto-dev/quarto-nvim",
+		config = function()
+			local quarto = require("quarto")
+			quarto.setup({
+				lspFeatures = {
+					-- NOTE: put whatever languages you want here:
+					languages = { "r", "python", "rust" },
+					chunks = "all",
+					diagnostics = {
+						enabled = true,
+						triggers = { "BufWritePost" },
+					},
+					completion = {
+						enabled = true,
+					},
+				},
+				keymap = {
+					-- NOTE: setup your own keymaps:
+					hover = "H",
+					definition = "gd",
+					rename = "<leader>rn",
+					references = "gr",
+					format = "<leader>gf",
+				},
+				codeRunner = {
+					enabled = true,
+					default_method = "molten",
+					ft_runners = { python = "molten" },
+				},
+			})
 		end,
 	},
 	{
@@ -60,21 +213,19 @@ require("lazy").setup({
 		"3rd/image.nvim",
 		config = function()
 			require("image").setup()
-			-- note: I removed redundant ';' from the ends of each path
 			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua"
 			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua"
 		end,
 		opts = {
 			backend = "kitty", -- whatever backend you would like to use
-			max_width = 100,
-			max_height = 12,
+			max_width = 200,
+			max_height = 24,
 			max_height_window_percentage = math.huge,
 			max_width_window_percentage = math.huge,
 			window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
 			window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
 		},
 	},
-	{ "untitled-ai/jupyter_ascending.vim" },
 	{
 		"jcdickinson/codeium.nvim",
 		dependencies = {
@@ -116,25 +267,17 @@ require("lazy").setup({
 			require("config.nvimtree").setup()
 		end,
 	},
-
+	{
+		"lukas-reineke/headlines.nvim",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+		config = true, -- or `opts = {}`
+	},
 	{
 		"goolord/alpha-nvim",
 		config = function()
 			require("config.alpha").setup()
 		end,
 	},
-
-	-- use({
-	-- 	"jinh0/eyeliner.nvim",
-	-- 	keys = { "F", "f", "T", "t" },
-	-- 	config = function()
-	-- 		require("eyeliner").setup({
-	-- 			highlight_on_key = true,
-	-- 			dim = true
-	-- 		})
-	-- 	end,
-	-- })
-
 	{
 		"echasnovski/mini.nvim",
 		event = { "BufReadPre" },
@@ -182,6 +325,26 @@ require("lazy").setup({
 		end,
 	},
 	"b0o/schemastore.nvim",
+	{ "nvim-neotest/nvim-nio" },
+	-- LazySpec (plugin specification)
+	-- return {
+	{
+		"dasupradyumna/launch.nvim",
+		-- add below plugins as per user requirement
+		dependencies = {
+			"mfussenegger/nvim-dap",
+			"rcarriga/nvim-notify",
+		},
+	},
+	{
+		"pianocomposer321/officer.nvim",
+		dependencies = "stevearc/overseer.nvim",
+		config = function()
+			require("officer").setup({
+				-- config
+			})
+		end,
+	},
 	{
 		"stevearc/overseer.nvim",
 		cmd = {
@@ -292,18 +455,7 @@ require("lazy").setup({
 		"akinsho/toggleterm.nvim",
 		version = "*",
 		config = function()
-			require("toggleterm").setup({
-				hide_numbers = false,
-				shade_terminals = true,
-				direction = "vertical",
-				size = 60,
-				winbar = {
-					enabled = false,
-					name_formatter = function(term)
-						return term.name
-					end,
-				},
-			})
+			require("config.toggleterm").setup()
 		end,
 	},
 	{
@@ -436,7 +588,7 @@ require("lazy").setup({
 		"glepnir/lspsaga.nvim",
 		cmd = { "Lspsaga" },
 		config = function()
-			require("lspsaga").init_lsp_saga()
+			require("lspsaga").setup({})
 		end,
 	},
 	{
@@ -491,6 +643,45 @@ require("lazy").setup({
 	{ "junegunn/limelight.vim", ft = { "markdown" } },
 	{ "ledger/vim-ledger", ft = { "ledger" } },
 
+	{
+		"jpalardy/vim-slime",
+		init = function()
+			vim.b["quarto_is_" .. "python" .. "_chunk"] = false
+			Quarto_is_in_python_chunk = function()
+				require("otter.tools.functions").is_otter_language_context("python")
+			end
+
+			vim.cmd([[
+                        let g:slime_dispatch_ipython_pause = 100
+                        function SlimeOverride_EscapeText_quarto(text)
+                          call v:lua.Quarto_is_in_python_chunk()
+                          if exists('g:slime_python_ipython') && len(split(a:text,"\n")) > 1 && b:quarto_is_python_chunk
+                            return ["%cpaste -q\n", g:slime_dispatch_ipython_pause, a:text, "--", "\n"]
+                          else
+                            return a:text
+                          end
+                          endfunction
+                          ]])
+
+			local function mark_terminal()
+				vim.g.slime_last_channel = vim.b.terminal_job_id
+				vim.print(vim.g.slime_last_channel)
+			end
+
+			local function set_terminal()
+				vim.b.slime_config = { jobid = vim.g.slime_last_channel }
+			end
+
+			-- slime, neovvim terminal
+			vim.g.slime_target = "neovim"
+			vim.g.slime_python_ipython = 1
+
+			require("which-key").register({
+				["<leader>cm"] = { mark_terminal, "mark terminal" },
+				["<leader>cs"] = { set_terminal, "set terminal" },
+			})
+		end,
+	},
 	-- Completion
 	{
 		"hrsh7th/nvim-cmp",
@@ -511,6 +702,7 @@ require("lazy").setup({
 			"lukas-reineke/cmp-rg",
 			"davidsierradz/cmp-conventionalcommits",
 			{ "onsails/lspkind-nvim" },
+			"jmbuhr/otter.nvim",
 			-- "hrsh7th/cmp-calc",
 			-- "f3fora/cmp-spell",
 			-- "hrsh7th/cmp-emoji",
@@ -553,9 +745,11 @@ require("lazy").setup({
 			"nvim-lua/popup.nvim",
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
+			"SalOrak/whaler",
+
 			{
 				"nvim-telescope/telescope-fzf-native.nvim",
-				build = "make",
+				build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
 			},
 			{
 				"nvim-telescope/telescope-frecency.nvim",
@@ -583,6 +777,34 @@ require("lazy").setup({
 		end,
 	},
 	{ "mrjones2014/legendary.nvim", version = "v2.2.0" },
+	{ "jubnzv/virtual-types.nvim" },
+	{
+		"ldelossa/litee.nvim",
+		event = "VeryLazy",
+		opts = {
+			notify = { enabled = false },
+			panel = {
+				orientation = "bottom",
+				panel_size = 10,
+			},
+		},
+		config = function(_, opts)
+			require("litee.lib").setup(opts)
+		end,
+	},
+
+	{
+		"ldelossa/litee-calltree.nvim",
+		dependencies = "ldelossa/litee.nvim",
+		event = "VeryLazy",
+		opts = {
+			on_open = "panel",
+			map_resize_keys = false,
+		},
+		config = function(_, opts)
+			require("litee.calltree").setup(opts)
+		end,
+	},
 	-- Debugging
 	{
 		"mfussenegger/nvim-dap",

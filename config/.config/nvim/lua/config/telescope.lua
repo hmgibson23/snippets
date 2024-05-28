@@ -19,6 +19,8 @@ function M.setup()
 				"%.mkv",
 				"%.mp4",
 				"%.zip",
+				"node_modules",
+				"data_out",
 			},
 			border = {},
 			borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
@@ -43,6 +45,7 @@ function M.setup()
 	telescope.load_extension("frecency")
 	telescope.load_extension("repo")
 	telescope.load_extension("cder")
+	telescope.load_extension("whaler")
 	-- telescope.load_extension("projects")
 	whichkey.register({
 		fl = {

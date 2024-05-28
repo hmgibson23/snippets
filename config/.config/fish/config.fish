@@ -14,3 +14,6 @@ set -gx PATH "$HOME/.pyenv/bin:$HOME/.local/share/bin:$HOME/.cask/bin:$HOME/.rbe
 alias ec "emacsclient"
 alias mail "neomutt"
 alias nv "nvim"
+
+# Created by `pipx` on 2024-02-12 09:43:57
+set PATH $PATH /Users/hugo/.local/bin

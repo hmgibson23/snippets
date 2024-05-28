@@ -3,23 +3,27 @@ local M = {}
 -- local util = require "lspconfig.util"
 
 local servers = {
-	gopls = {
-		settings = {
-			gopls = {
-				hints = {
-					assignVariableTypes = true,
-					compositeLiteralFields = true,
-					compositeLiteralTypes = true,
-					constantValues = true,
-					functionTypeParameters = true,
-					parameterNames = true,
-					rangeVariableTypes = true,
-				},
-				semanticTokens = true,
-			},
-		},
-	},
+	-- gopls = {
+	-- 	settings = {
+	-- 		gopls = {
+	-- 			hints = {
+	-- 				assignVariableTypes = true,
+	-- 				compositeLiteralFields = true,
+	-- 				compositeLiteralTypes = true,
+	-- 				constantValues = true,
+	-- 				functionTypeParameters = true,
+	-- 				parameterNames = true,
+	-- 				rangeVariableTypes = true,
+	-- 			},
+	-- 			semanticTokens = true,
+	-- 		},
+	-- 	},
+	-- },
 	html = {},
+	marksman = {
+		filetypes = { "markdown", "markdown.mdx", "pandoc" },
+	},
+	terraformls = {},
 	jsonls = {
 		settings = {
 			json = {
@@ -27,6 +31,7 @@ local servers = {
 			},
 		},
 	},
+	ruff_lsp = {},
 	pyright = {
 		settings = {
 			python = {
@@ -191,6 +196,14 @@ function M.on_attach(client, bufnr)
 		navic.attach(client, bufnr)
 	end
 
+	if client.name ~= "terraformls" then
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = { "hcl", "terraform" },
+			desc = "terraform/hcl commentstring configuration",
+			command = "setlocal commentstring=#\\ %s",
+		})
+	end
+
 	if client.name ~= "null-ls" then
 		-- inlay-hints
 		local ih = require("inlay-hints")
@@ -250,33 +263,33 @@ function M.setup()
 	require("lspconfig").clangd.setup({
 		server = {
 			--[[ 			cmd = {
-				"clangd",
-				"--background-index",
-				"--clang-tidy",
-				"--header-insertion=iwyu",
-				"--completion-style=detailed",
-				"--function-arg-placeholders",
-				"--fallback-style=llvm",
-				"--suggest-missing-includes",
-				"--compile_args_from=filesystem",
-				"--all-scopes-completion",
-				"--log=error",
-			},
-			init_options = {
-				usePlaceholders = true,
-				completeUnimported = true,
-				clangdFileStatus = true,
-			},
-			capabilities = ccapabilities, ]]
+            "clangd",
+            "--background-index",
+            "--clang-tidy",
+            "--header-insertion=iwyu",
+            "--completion-style=detailed",
+            "--function-arg-placeholders",
+            "--fallback-style=llvm",
+            "--suggest-missing-includes",
+            "--compile_args_from=filesystem",
+            "--all-scopes-completion",
+            "--log=error",
+          },
+          init_options = {
+            usePlaceholders = true,
+            completeUnimported = true,
+            clangdFileStatus = true,
+          },
+          capabilities = ccapabilities, ]]
 			--[[ root_dir = function(...)
-				return require("lspconfig.util").root_pattern(
-					"compile_commands.json",
-					"compile_flags.txt",
-					"configure.ac",
-					".git"
-				)(...)
-			end,
-	 ]]
+            return require("lspconfig.util").root_pattern(
+            "compile_commands.json",
+            "compile_flags.txt",
+            "configure.ac",
+            ".git"
+            )(...)
+          end,
+          ]]
 			-- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities), -- for nvim-cmp
 		},
 		cmd = {

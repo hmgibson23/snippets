@@ -36,13 +36,38 @@ M.setup = function()
 		r = {
 			name = "SnipRun",
 			r = { "<cmd>SnipRun<cr>", "SnipRun" },
+			f = { "<cmd>%SnipRun<cr>", "SnipRun file" },
+			j = {
+				"<cmd>lua require'sniprun'.setup({selected_interpreters = {'Python3_jupyter'}})<cr>",
+				"Enable Jupyter",
+			},
 		},
 	}, { prefix = "<leader>" })
+
+	whichkey.register({
+		y = {
+			name = "YaREPL",
+			s = { "<cmd>REPLStart<cr>", "Start Repl" },
+			l = { "<cmd>REPLSendLine<cr>", "Send Line" },
+			o = { "<cmd>REPLSendOperator<cr>", "Send Operator" },
+			t = { "<cmd>REPLHideOrFocus<cr>", "Toggle" },
+		},
+	}, { prefix = "<leader>" })
+
+	whichkey.register({
+		y = {
+			name = "YaREPL",
+			s = { "<cmd>REPLSendVisual<cr>", "Send visual" },
+		},
+	}, { mode = "v", prefix = ":" })
 
 	whichkey.register({
 		r = {
 			name = "SnipRun",
 			r = { "<cmd>SnipRun<cr>", "SnipRun" },
+		},
+		b = {
+			v = { "<cmd>MoltenEvaluateVisual<CR>gv", "Molten visual" },
 		},
 	}, { mode = "v", prefix = "<leader>" })
 
@@ -81,8 +106,32 @@ M.setup = function()
 			g = { "<cmd>Telescope live_grep<cr>", "Grep" },
 			r = { "<cmd>Telescope registers<cr>", "Registers" },
 			t = { "<cmd>Telescope treesitter<cr>", "Treesitter" },
-			o = { "<cmd>Telescope treesitter<cr>", "Old Files" },
+			o = { "<cmd>Telescope oldfiles<cr>", "Old Files" },
 			m = { "<cmd>Telescope man_pages<cr>", "Man Pages" },
+			w = { "<cmd>Telescope whaler<cr>", "Whaler" },
+		},
+
+		b = {
+			name = "Molten",
+			i = { "<cmd>MoltenInit<cr>", "Init" },
+			l = { "<cmd>MoltenEvaluateLine<cr>", "Molten eval line" },
+			a = { "<cmd>MoltenReevaluateAll<cr>", "Molten eval all" },
+			o = { "<cmd>MoltenEvaluateOperator<cr>", "Molten eval operator" },
+			c = { "<cmd>MoltenReevaluateCell<cr>", "Molten eval cell" },
+			d = { "<cmd>MoltenInterrupt<cr>", "Molten interrupt" },
+			s = { "<cmd>MoltenSave<cr>", "Molten save" },
+			h = { "<cmd>MoltenHideOutput<cr>", "Molten hide output" },
+			g = { "<cmd>MoltenShowOutput<cr>", "Molten show output" },
+			n = { "<cmd>MoltenNext<cr>", "Molten next" },
+			p = { "<cmd>MoltenPrev<cr>", "Molten prev" },
+			e = { "<cmd>noautocmd MoltenEnterOutput<cr>", "Molten show output" },
+		},
+		q = {
+			name = "Quarto",
+			c = { "<cmd>lua require('quarto.runner').run_cell()<cr>", "Run cell" },
+			s = { "<cmd>QuartoActivate<cr>", "Activate" },
+			a = { "<cmd>lua require('quarto.runner').run_above()<cr>", "Run cell and above" },
+			A = { "<cmd>lua require('quarto.runner').run_all()<cr>", "Run all" },
 		},
 	}, { prefix = "<leader>", silent = true, noremap = true })
 

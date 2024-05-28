@@ -35,6 +35,8 @@ function M.setup()
 	vim.cmd([[command! LuaSnipEdit :lua require("luasnip.loaders.from_lua").edit_snippet_files()]])
 
 	ls.filetype_extend("all", { "_" })
+
+	require("config.snippets.quarto")
 end
 
 return M

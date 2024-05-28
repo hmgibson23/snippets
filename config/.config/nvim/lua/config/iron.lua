@@ -14,6 +14,12 @@ function M.setup()
 					command = { "ipython" },
 					format = require("iron.fts.common").bracketed_paste,
 				},
+				sql = {
+					command = function(meta)
+						local db_name = vim.fn.input("Db: ", "", "file")
+						return { "sqlite3", db_name }
+					end,
+				},
 				java = {
 					command = function(meta)
 						--        local bufnr = api.nvim_get_current_buf()
@@ -38,9 +44,10 @@ function M.setup()
 					command = { "clang-repl" },
 				},
 			},
+			repl_open_cmd = require("iron.view").split.vertical.botright(0.5),
 		},
 
-		repl_open_cmd = view.right(40),
+		-- repl_open_cmd = view.right(40),
 		keymaps = {
 			send_motion = "<space>sc",
 			visual_send = "<space>sc",

@@ -14,4 +14,4 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("plugins")
 vim.opt.termguicolors = true
-vim.cmd.colorscheme("melange")
+vim.cmd.colorscheme("nord")

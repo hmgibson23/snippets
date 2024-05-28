@@ -17,6 +17,7 @@ local source_mapping = {
 	path = "[Path]",
 	rg = "[Rg]",
 	nvim_lsp_signature_help = "[Sig]",
+	codeium = "[Codeium]",
 	-- cmp_tabnine = "[TNine]",
 }
 
@@ -59,6 +60,7 @@ function M.setup()
 			format = lspkind.cmp_format({
 				mode = "symbol_text",
 				maxwidth = 40,
+				symbol_map = { codeium = "" },
 
 				before = function(entry, vim_item)
 					vim_item.kind = lspkind.presets.default[vim_item.kind]
@@ -189,6 +191,7 @@ function M.setup()
 			{ name = "nvim_lsp_signature_help" },
 			{ name = "luasnip" },
 			{ name = "codeium" },
+			{ name = "otter" },
 			-- { name = "cmp_tabnine" },
 			{ name = "treesitter" },
 			{ name = "rg", max_item_count = 8 },

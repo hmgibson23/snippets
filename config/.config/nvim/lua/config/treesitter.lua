@@ -2,6 +2,7 @@ local M = {}
 
 function M.setup()
 	require("ts_context_commentstring").setup({})
+  -- require("ts")
 	local swap_next, swap_prev = (function()
 		local swap_objects = {
 			p = "@parameter.inner",
@@ -78,6 +79,8 @@ function M.setup()
 					["if"] = "@function.inner",
 					["ac"] = "@class.outer",
 					["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+					["ib"] = { query = "@code_cell.inner", desc = "in block" },
+					["ab"] = { query = "@code_cell.outer", desc = "around block" },
 				},
 				selection_modes = {
 					["@parameter.outer"] = "v", -- charwise
@@ -94,7 +97,14 @@ function M.setup()
 				-- },
 				-- swap_previous = {
 				--   ["<leader>cX"] = "@parameter.inner",
-				-- },
+				swap_next = {
+					--- ... other keymap
+					["<leader>sbl"] = "@code_cell.outer",
+					swap_previous = {
+						--- ... other keymap
+						["<leader>sbh"] = "@code_cell.outer",
+					},
+				}, -- },
 			},
 
 			move = {
@@ -134,9 +144,9 @@ function M.setup()
 		-- },
 
 		-- autotag
-		autotag = {
-			enable = true,
-		},
+		-- autotag = {
+		-- 	enable = true,
+		-- },
 
 		-- indent
 		-- yati = { enable = true },

@@ -41,6 +41,7 @@ local servers = {
 					useLibraryCodeForTypes = true,
 					diagnosticMode = "workspace",
 				},
+				inlay_hints = true,
 			},
 		},
 	},
@@ -81,7 +82,7 @@ local servers = {
 			},
 		},
 	},
-	tsserver = {
+	ts_ls = {
 		disable_formatting = true,
 		settings = {
 			javascript = {
@@ -158,7 +159,7 @@ function M.on_attach(client, bufnr)
 	end
 
 	-- Use LSP as the handler for formatexpr.
-	-- See `:help formatexpr` for more information.
+	-- help formatexpr` for more information.
 	if caps.documentFormattingProvider then
 		vim.bo[bufnr].formatexpr = "v:lua.vim.lsp.formatexpr()"
 	end
@@ -254,6 +255,8 @@ require("config.lsp.handlers").setup()
 function M.setup()
 	-- null-ls
 	require("config.lsp.null-ls").setup(opts)
+	require("lsp_signature").setup()
+	require("lsp-lens").setup()
 
 	-- Installer
 	require("config.lsp.installer").setup(servers, opts)
@@ -308,7 +311,7 @@ function M.setup()
 
 		extensions = {
 			inlay_hints = {
-				inline = false,
+				inline = true,
 			},
 			ast = {
 				role_icons = {

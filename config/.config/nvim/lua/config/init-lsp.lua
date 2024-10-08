@@ -50,7 +50,7 @@ local servers = {
 			},
 		},
 	},
-	tsserver = { disable_formatting = true },
+	ts_ls = { disable_formatting = true },
 	vimls = {},
 	solang = {},
 	yamlls = {},
@@ -118,44 +118,50 @@ end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.resolveSupport = {
+  properties = {
+    "documentation",
+    "detail",
+    "additionalTextEdits",
+  },
 
-local opts = {
-	on_attach = M.on_attach,
-	capabilities = M.capabilities,
-	flags = {
-		debounce_text_changes = 150,
-	},
-}
+  local opts = {
+    on_attach = M.on_attach,
+    capabilities = M.capabilities,
+    flags = {
+      debounce_text_changes = 150,
+    },
+  }
 
--- Setup LSP handlers
--- require("config.lsp.handlers").setup()
+  -- Setup LSP handlers
+  -- require("config.lsp.handlers").setup()
 
--- null-ls
--- require("config.lsp.null-ls").setup(opts)
+  -- null-ls
+  -- require("config.lsp.null-ls").setup(opts)
 
-local diagnostics_active = true
+  local diagnostics_active = true
 
-function M.toggle_diagnostics()
-	diagnostics_active = not diagnostics_active
-	if diagnostics_active then
-		vim.diagnostic.show()
-	else
-		vim.diagnostic.hide()
-	end
-end
+  function M.toggle_diagnostics()
+    diagnostics_active = not diagnostics_active
+    if diagnostics_active then
+      vim.diagnostic.show()
+    else
+      vim.diagnostic.hide()
+    end
+  end
 
-function M.remove_unused_imports()
-	vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.WARN })
-	vim.cmd("packadd cfilter")
-	vim.cmd("Cfilter /main/")
-	vim.cmd("Cfilter /The import/")
-	vim.cmd("cdo normal dd")
-	vim.cmd("cclose")
-	vim.cmd("wa")
-end
+  function M.remove_unused_imports()
+    vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.WARN })
+    vim.cmd("packadd cfilter")
+    vim.cmd("Cfilter /main/")
+    vim.cmd("Cfilter /The import/")
+    vim.cmd("cdo normal dd")
+    vim.cmd("cclose")
+    vim.cmd("wa")
+  end
 
-function M.setup()
-	require("config.lsp.installer").setup(servers, opts)
-end
+  function M.setup()
+    require("config.lsp.installer").setup(servers, opts)
+  end
 
-return M
+  return M

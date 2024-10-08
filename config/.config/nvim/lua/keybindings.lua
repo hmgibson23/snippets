@@ -3,8 +3,6 @@ local opts = { noremap = true, silent = true }
 
 vim.g.mapleader = ","
 
-map("n", "<leader>tt", ":ToggleTerm<cr>", opts)
-map("n", "<leader>tp", "<cmd>TSPlay<cr>", opts)
 vim.cmd([[inoremap uu <Esc>|tnoremap uu <C-\><C-n>]])
 vim.g.anzu_status_format = "%p(%i/%l) %w"
 -- Colemak Keybindings {{

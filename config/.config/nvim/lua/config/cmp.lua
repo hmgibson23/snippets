@@ -18,10 +18,14 @@ local source_mapping = {
 	rg = "[Rg]",
 	nvim_lsp_signature_help = "[Sig]",
 	codeium = "[Codeium]",
-	-- cmp_tabnine = "[TNine]",
+	cmp_ai = "[CmpAI]",
+	minuet = "[MinuetAI]",
+	cmp_tabnine = "[TNine]",
 }
 
 function M.setup()
+	-- some issue with codieum
+	vim.fn.setenv("no_proxy", "127.0.0.1")
 	local has_words_before = function()
 		local line, col = unpack(vim.api.nvim_win_get_cursor(0))
 		return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
@@ -151,7 +155,7 @@ function M.setup()
 					cmp.select_prev_item()
 				elseif luasnip.jumpable(-1) then
 					luasnip.jump(-1)
-				elseif neogen.jumpable(true) then
+				elseif neogen.jumpable(1) then
 					neogen.jump_prev()
 				else
 					fallback()
@@ -191,6 +195,7 @@ function M.setup()
 			{ name = "nvim_lsp_signature_help" },
 			{ name = "luasnip" },
 			{ name = "codeium" },
+			{ name = "cmp_ai" },
 			{ name = "otter" },
 			-- { name = "cmp_tabnine" },
 			{ name = "treesitter" },
@@ -199,9 +204,13 @@ function M.setup()
 			{ name = "nvim_lua" },
 			{ name = "path" },
 			{ name = "crates" },
+			{ name = "minuet" },
 			-- { name = "spell" },
 			-- { name = "emoji" },
 			-- { name = "calc" },
+		},
+		performance = {
+			fetching_timeout = 2000,
 		},
 		window = {
 			documentation = {
@@ -213,12 +222,12 @@ function M.setup()
 
 	-- Use buffer source for `/`
 	-- cmp.setup.cmdline("/", {
-	--   sources = {
-	--     { name = "buffer" },
-	--   },
+	-- 	sources = {
+	-- 		{ name = "buffer" },
+	-- 	},
 	-- })
 
-	-- -- Use cmdline & path source for ':'
+	-- Use cmdline & path source for ':'
 	-- cmp.setup.cmdline(":", {
 	--   sources = cmp.config.sources({
 	--     { name = "path" },
@@ -228,8 +237,8 @@ function M.setup()
 	-- })
 
 	-- Auto pairs
-	-- local cmp_autopairs = require "nvim-autopairs.completion.cmp"
-	-- cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
+	local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+	cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done({ map_char = { tex = "" } }))
 end
 
 return M

@@ -87,7 +87,7 @@ function M.setup(servers, server_options)
 						ih.set_all()
 					end,
 					inlay_hints = {
-						auto = false,
+						auto = true,
 					},
 				},
 				server = opts,
@@ -96,8 +96,8 @@ function M.setup(servers, server_options)
 				},
 			})
 		end,
-		["tsserver"] = function()
-			local opts = vim.tbl_deep_extend("force", server_options, servers["tsserver"] or {})
+		["ts_ls"] = function()
+			local opts = vim.tbl_deep_extend("force", server_options, servers["ts_ls"] or {})
 			require("typescript").setup({
 				disable_commands = false,
 				debug = false,

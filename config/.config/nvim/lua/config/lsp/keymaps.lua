@@ -23,64 +23,65 @@ local function keymappings(client, bufnr)
 
 	-- Whichkey
 	local keymap_l = {
-		l = {
-			name = "LSP",
-			R = { "<cmd>Trouble lsp_references<cr>", "Trouble References" },
-      D = { "<cmd>DocsViewToggle<CR>", "Toggle Docs View"},
-			a = { "<cmd>Lspsaga code_action<CR>", "Code Action" },
-			T = { "<cmd>Lspsaga term_toggle<CR>", "Term toggle" },
-			F = { "<cmd>Lspsaga hover_doc<CR>", "Hover doc" },
-			O = { "<cmd>Outline<CR>", "Outline" },
-			gd = { "<cmd>Glance definitions<CR>", "Glance Definitions" },
-			gr = { "<cmd>Glance references<CR>", "Glance References" },
-			gy = { "<cmd>Glance type_definitions<CR>", "Glance Types" },
-			gm = { "<cmd>Glance implementations<CR>", "Glance Implementations" },
-			d = { "<cmd>lua require('telescope.builtin').diagnostics()<CR>", "Diagnostics" },
-			f = { "<cmd>Lspsaga finder<CR>", "Finder" },
-			i = { "<cmd>LspInfo<CR>", "Lsp Info" },
-			n = { "<cmd>Lspsaga rename<CR>", "Rename" },
-			o = { "<cmd>Lspsaga outgoing_calls<CR>", "Outgoing Class" },
-			r = { "<cmd>lua require('telescope.builtin').lsp_references()<CR>", "References" },
-			s = { "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", "Document Symbols" },
-			t = { "<cmd>TroubleToggle document_diagnostics<CR>", "Trouble" },
-			L = { "<cmd>lua vim.lsp.codelens.refresh()<CR>", "Refresh CodeLens" },
-			l = { "<cmd>lua vim.lsp.codelens.run()<CR>", "Run CodeLens" },
-			D = { "<cmd>lua require('config.lsp').toggle_diagnostics()<CR>", "Toggle Inline Diagnostics" },
-			e = { "<cmd>lua require('aerial').toggle()<CR>", "Toggle Aerial" },
-		},
+		{ "<leader>l", group = "Lsp" },
+		{ "<leader>lR", "<cmd>Trouble lsp_references<cr>", desc = "Trouble References" },
+		{ "<leader>lw", "<cmd>DocsViewToggle<CR>", desc = "Toggle Docs View" },
+		{ "<leader>la", "<cmd>Lspsaga code_action<CR>", desc = "Code Action" },
+		{ "<leader>lT", "<cmd>Lspsaga term_toggle<CR>", desc = "Term toggle" },
+		{ "<leader>lF", "<cmd>Lspsaga hover_doc<CR>", desc = "Hover doc" },
+		{ "<leader>lO", "<cmd>Outline<CR>", desc = "Outline" },
+		{ "<leader>lc", "<cmd>lua vim.lsp.codelens.run()", desc = "CodeLens" },
+		{ "<leader>lgd", "<cmd>Glance definitions<CR>", desc = "Glance Definitions" },
+		{ "<leader>lgr", "<cmd>Glance references<CR>", desc = "Glance References" },
+		{ "<leader>lgy", "<cmd>Glance type_definitions<CR>", desc = "Glance Types" },
+		{ "<leader>lgm", "<cmd>Glance implementations<CR>", desc = "Glance Implementations" },
+		{ "<leader>ld", "<cmd>lua require('telescope.builtin').diagnostics()<CR>", desc = "Diagnostics" },
+		{ "<leader>lf", "<cmd>Lspsaga finder<CR>", desc = "Finder" },
+		{ "<leader>li", "<cmd>LspInfo<CR>", desc = "Lsp Info" },
+		{ "<leader>ln", "<cmd>Lspsaga rename<CR>", desc = "Rename" },
+		{ "<leader>lo", "<cmd>Lspsaga outgoing_calls<CR>", desc = "Outgoing Calls" },
+		{ "<leader>lr", "<cmd>lua require('telescope.builtin').lsp_references()<CR>", desc = "References" },
+		{ "<leader>ls", "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", desc = "Document Symbols" },
+		{ "<leader>lt", "<cmd>TroubleToggle document_diagnostics<CR>", desc = "Trouble" },
+		{ "<leader>lL", "<cmd>lua vim.lsp.codelens.refresh()<CR>", desc = "Refresh CodeLens" },
+		{ "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<CR>", desc = "Run CodeLens" },
+		{ "<leader>lD", "<cmd>lua require('config.lsp').toggle_diagnostics()<CR>", desc = "Toggle Inline Diagnostics" },
+		{ "<leader>le", "<cmd>lua require('aerial').toggle()<CR>", desc = "Toggle Aerial" },
+		{ "<leader>lb", name = "Boo" },
+		{ "<leader>lbo", "<cmd>lua require('boo').boo()<CR>", desc = "Show boo" },
+		{ "<leader>lbh", "<cmd>lua require('boo').close()<CR>", desc = "Close boo" },
 	}
+
 	if client.server_capabilities.documentFormattingProvider then
-		keymap_l.l.F = { "<cmd>lua vim.lsp.buf.format({async = true})<CR>", "Format Document" }
+		table.insert(
+			keymap_l,
+			{ "<leader>lF", "<cmd>lua vim.lsp.buf.format({async = true})<CR>", desc = "Format Document" }
+		)
 	end
 
 	local keymap_g = {
-		name = "Goto",
-		d = { "<Cmd>lua vim.lsp.buf.definition()<CR>", "Definition" },
-		-- d = { "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", "Definition" },
-		D = { "<Cmd>lua vim.lsp.buf.declaration()<CR>", "Declaration" },
-		h = { "<cmd>lua vim.lsp.buf.signature_help()<CR>", "Signature Help" },
-		I = { "<cmd>Telescope lsp_implementations<CR>", "Goto Implementation" },
-		b = { "<cmd>lua vim.lsp.buf.type_definition()<CR>", "Goto Type Definition" },
-		-- b = { "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", "Goto Type Definition" },
+		{ "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", desc = "Definition" },
+		{ "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", desc = "Declaration" },
+		{ "gh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", desc = "Signature Help" },
+		{ "gI", "<cmd>Telescope lsp_implementations<CR>", desc = "Goto Implementation" },
+		{ "gb", "<cmd>lua vim.lsp.buf.type_definition()<CR>", desc = "Goto Type Definition" },
 	}
 
 	local keymap_v_l = {
-		l = {
-			name = "LSP",
-			a = { "<cmd>'<,'>lua vim.lsp.buf.range_code_action()<CR>", "Code Action" },
-		},
+		{ "<leader>l", mode = "v" },
+		{ "<leader>la", "<cmd>'<,'>lua vim.lsp.buf.range_code_action()<CR>", desc = "Code Action", mode = "v" },
 	}
 
 	local o = { buffer = bufnr, prefix = "<leader>" }
-	whichkey.register(keymap_l, o)
+	whichkey.add(keymap_l)
 	l.bind_whichkey(keymap_l, o, false)
 
 	o = { mode = "v", buffer = bufnr, prefix = "<leader>" }
-	whichkey.register(keymap_v_l, o)
+	whichkey.add(keymap_v_l)
 	l.bind_whichkey(keymap_v_l, o, false)
 
 	o = { buffer = bufnr, prefix = "g" }
-	whichkey.register(keymap_g, o)
+	whichkey.add(keymap_g)
 	l.bind_whichkey(keymap_g, o, false)
 end
 

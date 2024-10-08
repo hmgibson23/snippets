@@ -2,6 +2,26 @@
 ---@author Hugo Gibson
 require("lazy").setup({
 	{
+		"romgrk/barbar.nvim",
+		dependencies = {
+			"lewis6991/gitsigns.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		init = function()
+			vim.g.barbar_auto_setup = false
+		end,
+		version = "^1.0.0", -- optional: only update when a new 1.x version is released
+	},
+	{
+		"https://codeberg.org/esensar/nvim-dev-container",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+		config = function()
+			require("devcontainer").setup({})
+		end,
+	},
+	{ "CRAG666/code_runner.nvim", config = true },
+	"gelguy/wilder.nvim",
+	{
 		"romgrk/kirby.nvim",
 		dependencies = {
 			{ "romgrk/fzy-lua-native", build = "make install" },
@@ -10,55 +30,94 @@ require("lazy").setup({
 			{ "nvim-lua/plenary.nvim" },
 		},
 	},
-	-- {
-	-- 	"nvim-neorg/neorg",
-	-- 	-- build = ":Neorg sync-parsers",
-	-- 	lazy = false, -- specify lazy = false because some lazy.nvim distributions set lazy = true by default
-	-- 	ft = "norg",
-	-- 	-- tag = "*",
-	-- 	dependencies = { "nvim-lua/plenary.nvim", { "nvim-neorg/neorg-telescope" } },
-	-- 	config = function()
-	-- 		require("neorg").setup({
-	-- 			load = {
-	-- 				["core.defaults"] = {}, -- Loads default behaviour
-	-- 				["core.completion"] = { config = { engine = "nvim-cmp", name = "[Norg]" } },
-	-- 				["core.integrations.nvim-cmp"] = {},
-	-- 				["core.integrations.telescope"] = {},
-	-- 				["core.concealer"] = { config = { icon_preset = "diamond" } },
-	-- 				["core.keybinds"] = {
-	-- 					config = {
-	-- 						default_keybinds = true,
-	-- 						neorg_leader = "<Leader><Leader>",
-	-- 					},
-	-- 				},
-	-- 				["core.esupports.metagen"] = { config = { type = "auto", update_date = true } },
-	-- 				["core.qol.toc"] = {},
-	-- 				["core.qol.todo_items"] = {},
-	-- 				["core.looking-glass"] = {},
-	-- 				["core.presenter"] = { config = { zen_mode = "zen-mode" } },
-	-- 				["core.export"] = {},
-	-- 				["core.export.markdown"] = { config = { extensions = "all" } },
-	-- 				["core.summary"] = {},
-	-- 				["core.tangle"] = { config = { report_on_empty = false } },
-	-- 				-- ["core.ui.calendar"] = {},
-	-- 				-- ["external.context"] = {},
-	-- 				["core.journal"] = {
-	-- 					config = {
-	-- 						strategy = "flat",
-	-- 						workspace = "Notes",
-	-- 					},
-	-- 				},
-	-- 				["core.dirman"] = { -- Manages Neorg workspaces
-	-- 					config = {
-	-- 						workspaces = {
-	-- 							notes = "~/notes",
-	-- 						},
-	-- 					},
-	-- 				},
-	-- 			},
-	-- 		})
-	-- 	end,
-	-- },
+	"Pocco81/DAPInstall.nvim",
+	{
+		"linux-cultist/venv-selector.nvim",
+		branch = "regexp",
+		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
+		opts = {
+			-- Your options go here
+			-- name = "venv",
+			-- auto_refresh = false
+		},
+		event = "VeryLazy",
+	},
+	{
+		"frankroeder/parrot.nvim",
+		dependencies = { "ibhagwan/fzf-lua", "nvim-lua/plenary.nvim", "rcarriga/nvim-notify" },
+		config = function()
+			require("config.parrot").setup()
+		end,
+	},
+	{
+		"milanglacier/minuet-ai.nvim",
+		enabled = false,
+		config = function()
+			require("minuet").setup({
+				provider = "openai_compatible",
+				notify = "error",
+				provider_options = {
+					openai_compatible = {
+						model = "llama-3.1-70b-versatile",
+						end_point = "https://api.groq.com/openai/v1/chat/completions",
+						api_key = "GROQ_API_KEY",
+						name = "Groq",
+						stream = false,
+						optional = {
+							stop = nil,
+							max_tokens = nil,
+						},
+					},
+				},
+			})
+		end,
+	},
+	{
+		"ahmedkhalf/project.nvim",
+		config = function()
+			require("project_nvim").setup({
+				-- your configuration comes here
+				-- or leave it empty to use the default settings
+				-- refer to the configuration section below
+			})
+		end,
+	},
+	{
+		"folke/twilight.nvim",
+	},
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			require("config.harpoon").setup()
+		end,
+	},
+	{
+		"Aaronik/GPTModels.nvim",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+	},
+	{ "LukasPietzschmann/boo.nvim" },
+	{ "codota/tabnine-nvim", build = "./dl_binaries.sh" },
+	{
+		"linrongbin16/lsp-progress.nvim",
+		config = function()
+			require("lsp-progress").setup()
+		end,
+	},
+	{
+		"amitds1997/remote-nvim.nvim",
+		version = "*", -- Pin to GitHub releases
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- For standard functions
+			"MunifTanjim/nui.nvim", -- To build the plugin UI
+			"nvim-telescope/telescope.nvim", -- For picking b/w different remote methods
+		},
+		config = true,
+	},
 	{
 		"mrjones2014/legendary.nvim",
 		priority = 10000,
@@ -95,7 +154,13 @@ require("lazy").setup({
 		end,
 	},
 	-- { "indrets/diffview.nvim" },
-	{ "shaunsingh/nord.nvim" },
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {},
+	},
+{ "EdenEast/nightfox.nvim" },
 	{
 		"anuvyklack/hydra.nvim",
 		config = function()
@@ -118,6 +183,7 @@ require("lazy").setup({
 	{
 		"benlubas/molten-nvim",
 		build = ":UpdateRemotePlugins",
+		enabled = false,
 		ft = { "markdown" },
 		init = function()
 			require("config.molten").setup()
@@ -148,10 +214,21 @@ require("lazy").setup({
 			require("hoversplit").setup()
 		end,
 	},
+	{ "chrisgrieser/nvim-dr-lsp" },
+	{
+		"Wansmer/symbol-usage.nvim",
+		event = "BufReadPre", -- need run before LspAttach if you use nvim 0.9. On 0.10 use 'LspAttach'
+		config = function()
+			require("symbol-usage").setup()
+		end,
+	},
+	{
+		"VidocqH/lsp-lens.nvim",
+	},
 	{
 		"dnlhc/glance.nvim",
 		config = function()
-			require("glance").setup({})
+			require("glance").setup()
 		end,
 	},
 	{
@@ -268,9 +345,11 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"lukas-reineke/headlines.nvim",
-		dependencies = "nvim-treesitter/nvim-treesitter",
-		config = true, -- or `opts = {}`
+		"MeanderingProgrammer/render-markdown.nvim",
+		opts = {},
+		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
+		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
 	},
 	{
 		"goolord/alpha-nvim",
@@ -282,6 +361,7 @@ require("lazy").setup({
 		"echasnovski/mini.nvim",
 		event = { "BufReadPre" },
 		config = function()
+			require("mini.icons").setup()
 			require("mini.align").setup()
 			require("mini.test").setup()
 			require("mini.doc").setup()
@@ -347,6 +427,7 @@ require("lazy").setup({
 	},
 	{
 		"stevearc/overseer.nvim",
+		-- after
 		cmd = {
 			"OverseerToggle",
 			"OverseerOpen",
@@ -458,6 +539,14 @@ require("lazy").setup({
 			require("config.toggleterm").setup()
 		end,
 	},
+	-- {
+	-- 	"tzachar/cmp-ai",
+	-- 	dependencies = "nvim-lua/plenary.nvim",
+	-- 	enable = false,
+	-- 	config = function()
+	-- 		require("config.cmp_ai").setup()
+	-- 	end,
+	-- },
 	{
 		"abecodes/tabout.nvim",
 		dependencies = "nvim-treesitter/nvim-treesitter",
@@ -561,7 +650,13 @@ require("lazy").setup({
 	"bronson/vim-trailing-whitespace",
 	"osyo-manga/vim-anzu",
 	"haya14busa/vim-asterisk",
-	"itchyny/lightline.vim",
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			require("config.lualine").setup()
+		end,
+	},
 	"nvim-lua/plenary.nvim",
 
 	{
@@ -576,9 +671,9 @@ require("lazy").setup({
 					normal_cur_line = "gYY",
 					visual = "gy",
 					visual_line = "gY",
-					delete = "dy",
-					change = "cy",
-					change_line = "cY",
+					delete = "gDy",
+					change = "cY",
+					change_line = "gU",
 				},
 			})
 		end,
@@ -652,16 +747,16 @@ require("lazy").setup({
 			end
 
 			vim.cmd([[
-                        let g:slime_dispatch_ipython_pause = 100
-                        function SlimeOverride_EscapeText_quarto(text)
-                          call v:lua.Quarto_is_in_python_chunk()
-                          if exists('g:slime_python_ipython') && len(split(a:text,"\n")) > 1 && b:quarto_is_python_chunk
-                            return ["%cpaste -q\n", g:slime_dispatch_ipython_pause, a:text, "--", "\n"]
-                          else
-                            return a:text
-                          end
-                          endfunction
-                          ]])
+                                let g:slime_dispatch_ipython_pause = 100
+                                function SlimeOverride_EscapeText_quarto(text)
+                                  call v:lua.Quarto_is_in_python_chunk()
+                                  if exists('g:slime_python_ipython') && len(split(a:text,"\n")) > 1 && b:quarto_is_python_chunk
+                                    return ["%cpaste -q\n", g:slime_dispatch_ipython_pause, a:text, "--", "\n"]
+                                  else
+                                    return a:text
+                                  end
+                                  endfunction
+                                  ]])
 
 			local function mark_terminal()
 				vim.g.slime_last_channel = vim.b.terminal_job_id
@@ -675,11 +770,6 @@ require("lazy").setup({
 			-- slime, neovvim terminal
 			vim.g.slime_target = "neovim"
 			vim.g.slime_python_ipython = 1
-
-			require("which-key").register({
-				["<leader>cm"] = { mark_terminal, "mark terminal" },
-				["<leader>cs"] = { set_terminal, "set terminal" },
-			})
 		end,
 	},
 	-- Completion
@@ -693,6 +783,7 @@ require("lazy").setup({
 		dependencies = {
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
+			-- "tzachar/cmp-ai",
 			"hrsh7th/cmp-nvim-lua",
 			"ray-x/cmp-treesitter",
 			"hrsh7th/cmp-cmdline",
@@ -719,7 +810,26 @@ require("lazy").setup({
 			-- { "tzachar/cmp-tabnine", build = "./install.sh" },
 		},
 	},
-
+	{ "code-biscuits/nvim-biscuits" },
+	-- {
+	-- 	"folke/noice.nvim",
+	-- 	event = "VeryLazy",
+	-- 	opts = {
+	-- 		-- add any options here
+	-- 	},
+	-- 	dependencies = {
+	-- 		-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+	-- 		"MunifTanjim/nui.nvim",
+	-- 		-- OPTIONAL:
+	-- 		--   `nvim-notify` is only needed, if you want to use the notification view.
+	-- 		--   If not available, we use `mini` as the fallback
+	-- 		"rcarriga/nvim-notify",
+	-- 	},
+	-- },
+	{
+		"LintaoAmons/scratch.nvim",
+		event = "VeryLazy",
+	},
 	{
 		"michaelb/sniprun",
 		build = "bash ./install.sh",
@@ -737,6 +847,15 @@ require("lazy").setup({
 			require("config.notify").setup()
 		end,
 		-- disable = false,
+	},
+	{ "nanotee/zoxide.vim" },
+	{
+		"cbochs/grapple.nvim",
+		opts = {
+			scope = "git", -- also try out "git_branch"
+		},
+		event = { "BufReadPost", "BufNewFile" },
+		cmd = "Grapple",
 	},
 
 	{
@@ -838,16 +957,34 @@ require("lazy").setup({
 			})
 		end,
 	},
-
 	{
 		"gnikdroy/projections.nvim",
-		dependencies = { "nvim-telescope/telescope.nvim" },
 		branch = "pre_release",
 		config = function()
 			require("config.projections").setup()
 		end,
 	},
-
+	{
+		"tris203/precognition.nvim",
+	},
+	{
+		"mistweaverco/kulala.nvim",
+		config = function()
+			-- Setup is required, even if you don't pass any options
+			require("kulala").setup()
+		end,
+	},
+	{ "kevinhwang91/nvim-bqf", ft = "qf" },
+	{
+		"pluffie/neoproj",
+		cmd = { "ProjectOpen", "ProjectNew" },
+		config = function()
+			require("neoproj").setup({
+				-- Directory which contains all of your projects
+				project_path = "~/git",
+			})
+		end,
+	},
 	{
 		"chentoast/marks.nvim",
 		config = function()
@@ -871,6 +1008,4 @@ require("lazy").setup({
 			require("config.hslens").setup()
 		end,
 	},
-}, {
-	concurrency = 2,
 })

@@ -20,6 +20,7 @@ function M.format()
 			filter = function(client)
 				return client.name ~= "ts_ls"
 					and client.name ~= "jsonls"
+					and client.name ~= "tsserver"
 					and client.name ~= "html"
 					and client.name ~= "lua_ls"
 					and client.name ~= "jdt.ls"

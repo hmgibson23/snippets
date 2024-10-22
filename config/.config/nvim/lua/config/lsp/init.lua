@@ -152,6 +152,7 @@ local servers = {
 function M.on_attach(client, bufnr)
 	local caps = client.server_capabilities
 
+	vim.lsp.codelens.refresh()
 	-- Enable completion triggered by <C-X><C-O>
 	-- See `:help omnifunc` and `:help ins-completion` for more information.
 	if caps.completionProvider then

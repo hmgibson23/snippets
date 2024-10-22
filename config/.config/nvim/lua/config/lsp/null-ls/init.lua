@@ -32,7 +32,7 @@ local sources = {
 	b.diagnostics.checkmake,
 	b.diagnostics.hadolint,
 	b.diagnostics.markdownlint_cli2,
-	b.diagnostics.mypy,
+	-- b.diagnostics.mypy,
 	b.diagnostics.pylint,
 	-- b.formatting.uncrustify,
 	-- b.formatting.zigfmt,

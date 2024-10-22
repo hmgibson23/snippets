@@ -1,6 +1,17 @@
 ---@module Plugins
 ---@author Hugo Gibson
 require("lazy").setup({
+	{ "codota/tabnine-nvim", build = "./dl_binaries.sh" },
+	{ "ms-jpq/coq_nvim" },
+	{
+		"akinsho/bufferline.nvim",
+		version = "*",
+		dependencies = "nvim-tree/nvim-web-devicons",
+		config = function()
+			-- vim.opt.termguicolors = true
+			-- require("bufferline").setup({})
+		end,
+	},
 	{
 		"romgrk/barbar.nvim",
 		dependencies = {
@@ -160,7 +171,7 @@ require("lazy").setup({
 		priority = 1000,
 		opts = {},
 	},
-{ "EdenEast/nightfox.nvim" },
+	{ "EdenEast/nightfox.nvim" },
 	{
 		"anuvyklack/hydra.nvim",
 		config = function()

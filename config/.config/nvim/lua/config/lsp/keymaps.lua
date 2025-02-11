@@ -44,7 +44,7 @@ local function keymappings(client, bufnr)
 		{ "<leader>ls", "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", desc = "Document Symbols" },
 		{ "<leader>lt", "<cmd>Trouble diagnostics toggle<CR>", desc = "Trouble" },
 		{ "<leader>lq", "<cmd>Trouble qflist toggle<CR>", desc = "Trouble QuickFix" },
-		{ "<leader>lI", "<cmd>Trouble implementations toggle<CR>", desc = "Trouble Implementations" },
+		{ "<leader>lI", "<cmd>Trouble implementations toggle<CR>", desc = "Trouble QuickFix" },
 		{ "<leader>lL", "<cmd>lua vim.lsp.codelens.refresh()<CR>", desc = "Refresh CodeLens" },
 		{ "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<CR>", desc = "Run CodeLens" },
 		{ "<leader>lD", "<cmd>lua require('config.lsp').toggle_diagnostics()<CR>", desc = "Toggle Inline Diagnostics" },

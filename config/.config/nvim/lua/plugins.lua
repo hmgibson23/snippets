@@ -1,56 +1,74 @@
 ---@module Plugins
 ---@author Hugo Gibson
 require("lazy").setup({
-	{ "codota/tabnine-nvim", build = "./dl_binaries.sh" },
-	{ "ms-jpq/coq_nvim" },
+	{ "folke/neodev.nvim", enabled = false }, -- make sure to uninstall or disable neodev.nvim
+	{
+		"ryanmsnyder/toggleterm-manager.nvim",
+		dependencies = {
+			"akinsho/nvim-toggleterm.lua",
+			"nvim-telescope/telescope.nvim",
+			"nvim-lua/plenary.nvim", -- only needed because it's a dependency of telescope
+		},
+		config = true,
+	},
+	{
+		"jpalardy/vim-slime",
+		config = function()
+			-- vim-slime settings for Python (IPython)
+			vim.g.slime_config_defaults = vim.g.slime_config_defaults or {}
+			vim.g.slime_config_defaults["python_ipython"] = 1 -- Enable IPython for Python
+			vim.g.slime_config_defaults["dispatch_ipython_pause"] = 100 -- Set pause for IPython dispatch
+			-- vim.cmd("autocmd VimEnter * :vsplit | term ipython") -- Horizontal split
+
+			-- vim-slime settings for IPython integration
+			vim.g.slime_default_mapping = 1 -- Enable default key mappings
+			vim.g.slime_target = "neovim" -- Use Neovim as the target terminal
+			vim.g.slime_python_ipython = 1 -- Enable IPython for Python
+
+			-- Escape function for Python (IPython)
+			vim.api.nvim_exec(
+				[[
+        function! _EscapeText_python(text)
+          if slime#config#resolve("python_ipython") && len(split(a:text,"\n")) > 1
+            return ["%cpaste -q\n", slime#config#resolve("dispatch_ipython_pause"), a:text, "--\n"]
+          else
+            let empty_lines_pat = '\(^\|\n\)\zs\(\s*\n\+\)\+'
+            let no_empty_lines = substitute(a:text, empty_lines_pat, "", "g")
+            let dedent_pat = '\(^\|\n\)\zs'.matchstr(no_empty_lines, '^\s*')
+            let dedented_lines = substitute(no_empty_lines, dedent_pat, "", "g")
+            let except_pat = '\(elif\|else\|except\|finally\)\@!'
+            let add_eol_pat = '\n\s[^\n]\+\n\zs\ze\('.except_pat.'\S\|$\)'
+            return substitute(dedented_lines, add_eol_pat, "\n", "g")
+          end
+        endfunction
+      ]],
+				false
+			)
+		end,
+	},
 	{
 		"akinsho/bufferline.nvim",
 		version = "*",
 		dependencies = "nvim-tree/nvim-web-devicons",
 		config = function()
-			-- vim.opt.termguicolors = true
-			-- require("bufferline").setup({})
+			require("config.bufferline").setup()
 		end,
-	},
-	{
-		"romgrk/barbar.nvim",
-		dependencies = {
-			"lewis6991/gitsigns.nvim",
-			"nvim-tree/nvim-web-devicons",
-		},
-		init = function()
-			vim.g.barbar_auto_setup = false
-		end,
-		version = "^1.0.0", -- optional: only update when a new 1.x version is released
 	},
 	{
 		"https://codeberg.org/esensar/nvim-dev-container",
 		dependencies = "nvim-treesitter/nvim-treesitter",
 		config = function()
-			require("devcontainer").setup({})
+			require("config.devcontainers").setup()
 		end,
 	},
-	{ "CRAG666/code_runner.nvim", config = true },
-	"gelguy/wilder.nvim",
-	{
-		"romgrk/kirby.nvim",
-		dependencies = {
-			{ "romgrk/fzy-lua-native", build = "make install" },
-			{ "romgrk/kui.nvim" },
-			{ "nvim-tree/nvim-web-devicons" },
-			{ "nvim-lua/plenary.nvim" },
-		},
-	},
-	"Pocco81/DAPInstall.nvim",
 	{
 		"linux-cultist/venv-selector.nvim",
 		branch = "regexp",
-		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
 		opts = {
-			-- Your options go here
 			-- name = "venv",
-			-- auto_refresh = false
+			auto_refresh = true,
 		},
+		dependencies = { "neovim/nvim-lspconfig", "nvim-telescope/telescope.nvim", "mfussenegger/nvim-dap-python" },
 		event = "VeryLazy",
 	},
 	{
@@ -61,55 +79,7 @@ require("lazy").setup({
 		end,
 	},
 	{
-		"milanglacier/minuet-ai.nvim",
-		enabled = false,
-		config = function()
-			require("minuet").setup({
-				provider = "openai_compatible",
-				notify = "error",
-				provider_options = {
-					openai_compatible = {
-						model = "llama-3.1-70b-versatile",
-						end_point = "https://api.groq.com/openai/v1/chat/completions",
-						api_key = "GROQ_API_KEY",
-						name = "Groq",
-						stream = false,
-						optional = {
-							stop = nil,
-							max_tokens = nil,
-						},
-					},
-				},
-			})
-		end,
-	},
-	{
-		"ahmedkhalf/project.nvim",
-		config = function()
-			require("project_nvim").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
-			})
-		end,
-	},
-	{
 		"folke/twilight.nvim",
-	},
-	{
-		"ThePrimeagen/harpoon",
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		config = function()
-			require("config.harpoon").setup()
-		end,
-	},
-	{
-		"Aaronik/GPTModels.nvim",
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
 	},
 	{ "LukasPietzschmann/boo.nvim" },
 	{ "codota/tabnine-nvim", build = "./dl_binaries.sh" },
@@ -139,24 +109,16 @@ require("lazy").setup({
 	},
 	{
 		"tadmccorkle/markdown.nvim",
-		ft = "markdown", -- or 'event = "VeryLazy"'
-		opts = {
-			-- configuration here or empty for defaults
-		},
+		ft = "markdown",
 		config = function(_, opts)
 			require("markdown").setup(opts)
 		end,
 	},
 	{
 		"GCBallesteros/jupytext.nvim",
-		config = function()
-			require("jupytext").setup({
-				style = "markdown",
-				output_extension = "md",
-				force_ft = "markdown",
-				fmt = "py",
-			})
-		end,
+		config = true,
+		-- Depending on your nvim distro or config you may need to make the loading not lazy
+		-- lazy=false,
 	},
 	{
 		"Civitasv/cmake-tools.nvim",
@@ -164,7 +126,6 @@ require("lazy").setup({
 			require("config.cmake").setup()
 		end,
 	},
-	-- { "indrets/diffview.nvim" },
 	{
 		"folke/tokyonight.nvim",
 		lazy = false,
@@ -187,22 +148,57 @@ require("lazy").setup({
 			require("config.clangd").setup()
 		end,
 	},
-	{ "lewis6991/impatient.nvim" },
 	{ "folke/neoconf.nvim", cmd = "Neoconf" },
-	-- { "dccsillag/magma-nvim", build = ":UpdateRemotePlugins" },
-	-- { "luk400/vim-jukit" },
 	{
-		"benlubas/molten-nvim",
-		build = ":UpdateRemotePlugins",
-		enabled = false,
-		ft = { "markdown" },
-		init = function()
-			require("config.molten").setup()
-		end,
+		"GCBallesteros/NotebookNavigator.nvim",
+		keys = {
+			{
+				"]h",
+				function()
+					require("notebook-navigator").move_cell("d")
+				end,
+			},
+			{
+				"[h",
+				function()
+					require("notebook-navigator").move_cell("u")
+				end,
+			},
+			{ "<leader>X", "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
+			{ "<leader>xr", "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
+		},
+		dependencies = {
+			"echasnovski/mini.comment",
+			"hkupty/iron.nvim", -- repl provider
+			"benlubas/molten-nvim", -- alternative repl provider
+			"anuvyklack/hydra.nvim",
+		},
+		event = "VeryLazy",
 		config = function()
-			require("config.molten").setup()
+			local nn = require("notebook-navigator")
+			nn.setup({ activate_hydra_keys = "<leader>h" })
 		end,
 	},
+  {
+    "benlubas/molten-nvim",
+    version = "^1.0.0", -- use version <2.0.0 to avoid breaking changes
+    build = ":UpdateRemotePlugins",
+    init = function()
+        -- this is an example, not a default. Please see the readme for more configuration options
+        vim.g.molten_output_win_max_height = 12
+    end,
+},
+	-- {
+	-- 	"benlubas/molten-nvim",
+	-- 	build = ":UpdateRemotePlugins",
+	-- 	ft = { "markdown", "qmd" },
+	-- 	init = function()
+	-- 		require("config.molten").setup()
+	-- 	end,
+	-- 	config = function()
+	-- 		require("config.molten").setup()
+	-- 	end,
+	-- },
 	{
 		"jmbuhr/otter.nvim",
 		opts = {
@@ -214,9 +210,7 @@ require("lazy").setup({
 	{
 		"hedyhli/outline.nvim",
 		config = function()
-			require("outline").setup({
-				-- Your setup opts here (leave empty to use defaults)
-			})
+			require("outline").setup({})
 		end,
 	},
 	{
@@ -256,56 +250,24 @@ require("lazy").setup({
 		dependencies = "neovim/nvim-lspconfig",
 		event = "VeryLazy",
 	},
-	-- {
-	-- 	"robitx/gp.nvim",
-	-- 	config = function()
-	-- 		require("gp").setup()
-	-- 	end,
-	-- },
-	{ "stevanmilic/nvim-lspimport" },
+	-- 	{ "stevanmilic/nvim-lspimport" },
 	{
 		"quarto-dev/quarto-nvim",
 		config = function()
-			local quarto = require("quarto")
-			quarto.setup({
-				lspFeatures = {
-					-- NOTE: put whatever languages you want here:
-					languages = { "r", "python", "rust" },
-					chunks = "all",
-					diagnostics = {
-						enabled = true,
-						triggers = { "BufWritePost" },
-					},
-					completion = {
-						enabled = true,
-					},
-				},
-				keymap = {
-					-- NOTE: setup your own keymaps:
-					hover = "H",
-					definition = "gd",
-					rename = "<leader>rn",
-					references = "gr",
-					format = "<leader>gf",
-				},
-				codeRunner = {
-					enabled = true,
-					default_method = "molten",
-					ft_runners = { python = "molten" },
-				},
-			})
+			require("config.quarto").setup()
 		end,
 	},
 	{
 		-- see the image.nvim readme for more information about configuring this plugin
 		"3rd/image.nvim",
-		config = function()
-			require("image").setup()
-			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua"
-			package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua"
-		end,
+		build = false,
+		-- config = function()
+		-- 	require("image").setup()
+		-- 	package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua"
+		-- 	package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua"
+		-- end,
 		opts = {
-			backend = "kitty", -- whatever backend you would like to use
+			backend = "ueberzug",
 			max_width = 200,
 			max_height = 24,
 			max_height_window_percentage = math.huge,
@@ -321,7 +283,27 @@ require("lazy").setup({
 			"hrsh7th/nvim-cmp",
 		},
 		config = function()
-			require("codeium").setup({})
+			require("codeium").setup({
+				enable_chat = true,
+				virtual_text = {
+					enabled = false,
+					manual = false,
+					filetypes = {},
+					default_filetype_enabled = true,
+					idle_delay = 75,
+					virtual_text_priority = 65535,
+					map_keys = true,
+					accept_fallback = nil,
+					key_bindings = {
+						accept = "<M-Tab>",
+						accept_word = false,
+						accept_line = false,
+						clear = false,
+						next = "<M-]>",
+						prev = "<M-[>",
+					},
+				},
+			})
 		end,
 	},
 	{
@@ -359,8 +341,6 @@ require("lazy").setup({
 		"MeanderingProgrammer/render-markdown.nvim",
 		opts = {},
 		dependencies = { "nvim-treesitter/nvim-treesitter", "echasnovski/mini.nvim" }, -- if you use the mini.nvim suite
-		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
 	},
 	{
 		"goolord/alpha-nvim",
@@ -417,11 +397,8 @@ require("lazy").setup({
 	},
 	"b0o/schemastore.nvim",
 	{ "nvim-neotest/nvim-nio" },
-	-- LazySpec (plugin specification)
-	-- return {
 	{
 		"dasupradyumna/launch.nvim",
-		-- add below plugins as per user requirement
 		dependencies = {
 			"mfussenegger/nvim-dap",
 			"rcarriga/nvim-notify",
@@ -431,9 +408,7 @@ require("lazy").setup({
 		"pianocomposer321/officer.nvim",
 		dependencies = "stevearc/overseer.nvim",
 		config = function()
-			require("officer").setup({
-				-- config
-			})
+			require("officer").setup({})
 		end,
 	},
 	{
@@ -468,21 +443,6 @@ require("lazy").setup({
 			require("gitsigns").setup()
 		end,
 	},
-	-- use({
-	-- 	"is0n/jaq-nvim",
-	-- 	config = function()
-	-- 		-- require("config.jaq").setup()
-	-- 	end,
-	-- })
-	--
-	{
-		"ray-x/sad.nvim",
-		dependencies = { "ray-x/guihua.lua", build = "cd lua/fzy && make" },
-		config = function()
-			require("sad").setup({})
-		end,
-	},
-	-- Rust
 	{
 		"simrat39/rust-tools.nvim",
 		dependencies = { "nvim-lua/plenary.nvim", "rust-lang/rust.vim" },
@@ -498,7 +458,6 @@ require("lazy").setup({
 		event = { "BufRead Cargo.toml" },
 		dependencies = { { "nvim-lua/plenary.nvim" } },
 		config = function()
-			-- local null_ls = require "null-ls"
 			require("crates").setup({
 				null_ls = {
 					enabled = true,
@@ -506,7 +465,6 @@ require("lazy").setup({
 				},
 			})
 		end,
-		-- disable = false,
 	},
 
 	{
@@ -515,8 +473,6 @@ require("lazy").setup({
 			require("neogen").setup({})
 		end,
 		dependencies = "nvim-treesitter/nvim-treesitter",
-		-- Uncomment next line if you want to follow only stable versions
-		-- version = "*"
 	},
 	{
 		"windwp/nvim-autopairs",
@@ -550,21 +506,13 @@ require("lazy").setup({
 			require("config.toggleterm").setup()
 		end,
 	},
-	-- {
-	-- 	"tzachar/cmp-ai",
-	-- 	dependencies = "nvim-lua/plenary.nvim",
-	-- 	enable = false,
-	-- 	config = function()
-	-- 		require("config.cmp_ai").setup()
-	-- 	end,
-	-- },
 	{
 		"abecodes/tabout.nvim",
 		dependencies = "nvim-treesitter/nvim-treesitter",
-		-- after = { "nvim-cmp", "nvim-treesitter" },
 		config = function()
 			require("tabout").setup({
-				completion = false,
+				tabkey = "<Tab>",
+				completion = true,
 				ignore_beginning = true,
 			})
 		end,
@@ -581,10 +529,8 @@ require("lazy").setup({
 				},
 			})
 		end,
-		-- disable = false,
 	},
 
-	-- Auto tag
 	{
 		"windwp/nvim-ts-autotag",
 		lazy = true,
@@ -607,12 +553,6 @@ require("lazy").setup({
 			{ "p00f/nvim-ts-rainbow", event = "BufReadPre", enabled = false },
 			{ "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre" },
 			{ "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
-			-- {
-			--   "lewis6991/spellsitter.nvim",
-			--   config = function()
-			--     require("spellsitter").setup()
-			--   end,
-			-- },
 			{ "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", enabled = false },
 			{ "mfussenegger/nvim-treehopper", enabled = false },
 			{
@@ -620,7 +560,6 @@ require("lazy").setup({
 				config = function()
 					require("config.hlargs").setup()
 				end,
-				-- disable = false,
 			},
 			{
 				"AckslD/nvim-FeMaco.lua",
@@ -631,7 +570,6 @@ require("lazy").setup({
 				cmd = { "Femaco" },
 				enabled = false,
 			},
-			-- { "yioneko/nvim-yati", event = "BufReadPre" },
 		},
 	},
 
@@ -639,7 +577,6 @@ require("lazy").setup({
 		"ggandor/leap.nvim",
 		config = function()
 			require("leap").add_default_mappings()
-			-- require("config.leap").setup()
 		end,
 	},
 
@@ -726,15 +663,6 @@ require("lazy").setup({
 			config = function()
 				require("nvim-navic").setup({})
 			end,
-			-- {
-			-- 	"j-hui/fidget.nvim",
-			-- 	tag = "legacy",
-			-- 	config = function()
-			-- 		require("fidget").setup({
-			-- 			ignore = { "code_action", "null-ls" },
-			-- 		})
-			-- 	end,
-			-- },
 			{
 				"simrat39/inlay-hints.nvim",
 				config = function()
@@ -748,42 +676,6 @@ require("lazy").setup({
 	{ "junegunn/goyo.vim", ft = { "markdown" } },
 	{ "junegunn/limelight.vim", ft = { "markdown" } },
 	{ "ledger/vim-ledger", ft = { "ledger" } },
-
-	{
-		"jpalardy/vim-slime",
-		init = function()
-			vim.b["quarto_is_" .. "python" .. "_chunk"] = false
-			Quarto_is_in_python_chunk = function()
-				require("otter.tools.functions").is_otter_language_context("python")
-			end
-
-			vim.cmd([[
-                                let g:slime_dispatch_ipython_pause = 100
-                                function SlimeOverride_EscapeText_quarto(text)
-                                  call v:lua.Quarto_is_in_python_chunk()
-                                  if exists('g:slime_python_ipython') && len(split(a:text,"\n")) > 1 && b:quarto_is_python_chunk
-                                    return ["%cpaste -q\n", g:slime_dispatch_ipython_pause, a:text, "--", "\n"]
-                                  else
-                                    return a:text
-                                  end
-                                  endfunction
-                                  ]])
-
-			local function mark_terminal()
-				vim.g.slime_last_channel = vim.b.terminal_job_id
-				vim.print(vim.g.slime_last_channel)
-			end
-
-			local function set_terminal()
-				vim.b.slime_config = { jobid = vim.g.slime_last_channel }
-			end
-
-			-- slime, neovvim terminal
-			vim.g.slime_target = "neovim"
-			vim.g.slime_python_ipython = 1
-		end,
-	},
-	-- Completion
 	{
 		"hrsh7th/nvim-cmp",
 		event = "InsertEnter",
@@ -794,7 +686,6 @@ require("lazy").setup({
 		dependencies = {
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
-			-- "tzachar/cmp-ai",
 			"hrsh7th/cmp-nvim-lua",
 			"ray-x/cmp-treesitter",
 			"hrsh7th/cmp-cmdline",
@@ -805,9 +696,9 @@ require("lazy").setup({
 			"davidsierradz/cmp-conventionalcommits",
 			{ "onsails/lspkind-nvim" },
 			"jmbuhr/otter.nvim",
-			-- "hrsh7th/cmp-calc",
-			-- "f3fora/cmp-spell",
-			-- "hrsh7th/cmp-emoji",
+			"hrsh7th/cmp-calc",
+			"f3fora/cmp-spell",
+			"hrsh7th/cmp-emoji",
 			{
 				"L3MON4D3/LuaSnip",
 				config = function()
@@ -822,21 +713,6 @@ require("lazy").setup({
 		},
 	},
 	{ "code-biscuits/nvim-biscuits" },
-	-- {
-	-- 	"folke/noice.nvim",
-	-- 	event = "VeryLazy",
-	-- 	opts = {
-	-- 		-- add any options here
-	-- 	},
-	-- 	dependencies = {
-	-- 		-- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-	-- 		"MunifTanjim/nui.nvim",
-	-- 		-- OPTIONAL:
-	-- 		--   `nvim-notify` is only needed, if you want to use the notification view.
-	-- 		--   If not available, we use `mini` as the fallback
-	-- 		"rcarriga/nvim-notify",
-	-- 	},
-	-- },
 	{
 		"LintaoAmons/scratch.nvim",
 		event = "VeryLazy",
@@ -857,7 +733,6 @@ require("lazy").setup({
 		config = function()
 			require("config.notify").setup()
 		end,
-		-- disable = false,
 	},
 	{ "nanotee/zoxide.vim" },
 	{
@@ -889,11 +764,17 @@ require("lazy").setup({
 			{ "cljoly/telescope-repo.nvim" },
 			{ "Zane-/cder.nvim" },
 		},
+
 		config = function()
 			require("config.telescope").setup()
 		end,
 	},
-
+	{
+		"supermaven-inc/supermaven-nvim",
+		config = function()
+			require("supermaven-nvim").setup({})
+		end,
+	},
 	{
 		"folke/which-key.nvim",
 		config = function()
@@ -943,6 +824,7 @@ require("lazy").setup({
 		keys = { [[<leader>d]] },
 		dependencies = {
 			"theHamsta/nvim-dap-virtual-text",
+			"jay-babu/mason-nvim-dap.nvim",
 			"rcarriga/nvim-dap-ui",
 			"mfussenegger/nvim-dap-python",
 			"nvim-telescope/telescope-dap.nvim",
@@ -981,36 +863,15 @@ require("lazy").setup({
 	{
 		"mistweaverco/kulala.nvim",
 		config = function()
-			-- Setup is required, even if you don't pass any options
 			require("kulala").setup()
 		end,
 	},
 	{ "kevinhwang91/nvim-bqf", ft = "qf" },
 	{
-		"pluffie/neoproj",
-		cmd = { "ProjectOpen", "ProjectNew" },
-		config = function()
-			require("neoproj").setup({
-				-- Directory which contains all of your projects
-				project_path = "~/git",
-			})
-		end,
-	},
-	{
 		"chentoast/marks.nvim",
 		config = function()
 			require("config.marks").setup()
 		end,
-	},
-	{
-		"bennypowers/nvim-regexplainer",
-		config = function()
-			require("regexplainer").setup()
-		end,
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"MunifTanjim/nui.nvim",
-		},
 	},
 	{
 		"kevinhwang91/nvim-hlslens",

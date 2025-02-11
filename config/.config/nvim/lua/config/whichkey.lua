@@ -23,14 +23,16 @@ M.setup = function()
 	})
 
 	whichkey.add({
+		-- Bufferline
+		{ "gt", "<cmd>BufferLineCycleNext<cr>", desc = "Next buffer" },
+		{ "gp", "<cmd>BufferLinePick<cr>", desc = "Pick buffer" },
 		-- Venv
-		{ "<leader>v", group = "Venv" },
-		{ "<leader>vs", "<cmd>VenvSelect<cr>", desc = "Select" },
+		{ "<leader>lv", group = "Venv" },
+		{ "<leader>lvs", "<cmd>VenvSelect<cr>", desc = "Select" },
 
 		-- General key mappings for Neotest
 		{ "<leader>k", group = "Neotest" },
 
-		{ "<leader>tt", ":ToggleTerm<cr>", desc = "Toggle Terminal" },
 		{ "<leader>tp", "<cmd>TSPlay<cr>", desc = "TSPlay" },
 		{ "<leader>kt", group = "Test Commands" },
 		{ "<leader>ka", "<cmd>lua require('neotest').run.attach()<cr>", desc = "Attach" },
@@ -65,11 +67,14 @@ M.setup = function()
 		{ "<leader>r", group = "SnipRun" },
 		{ "<leader>rr", "<cmd>SnipRun<cr>", desc = "Run" },
 		{ "<leader>rf", "<cmd>%SnipRun<cr>", desc = "File" },
+		{ "<leader>rf", "<cmd>Run<cr>", desc = "Officer" },
 		{
 			"<leader>rj",
 			"<cmd>lua require'sniprun'.setup({selected_interpreters = {'Python3_jupyter'}})<cr>",
 			desc = "Jupyter",
 		},
+
+		{ "<leader>S", group = "Scratch" },
 
 		-- Parrot
 		{ "<leader>w", group = "Parrot", icon = "", mode = { "n", "v" } },
@@ -158,6 +163,9 @@ M.setup = function()
 		{ "<leader>pf", "<cmd>Telescope projections<cr>", desc = "Find Project File" },
 		{ "<leader>pap", "<cmd>lua require('projections.path').project_from_path()<cr>", desc = "Add project" },
 
+		{ "gbp", "previous buffer" },
+		{ "gbn", "next buffer" },
+
 		-- Grapple
 		{ "<leader>g", group = "Grapple" },
 		{ "<leader>gm", "<cmd>Grapple toggle<cr>", desc = "Grapple toggle tag" },
@@ -170,6 +178,7 @@ M.setup = function()
 		{ "<leader>qs", "<cmd>QuartoActivate<cr>", desc = "Activate Quarto" },
 		{ "<leader>qa", "<cmd>lua require('quarto.runner').run_above()<cr>", desc = "Run Cell and Above" },
 		{ "<leader>qA", "<cmd>lua require('quarto.runner').run_all()<cr>", desc = "Run All Cells" },
+		{ "<leader>qp", "<cmd>QuartoPreview<cr>", desc = "Preview Quarto" },
 
 		-- YaREPL (Visual)
 		{ ":y", group = "YaREPL (Visual)", mode = "v" },

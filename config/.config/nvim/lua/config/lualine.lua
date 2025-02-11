@@ -64,6 +64,24 @@ function M.setup()
 		return string.format("%s(%s)", status, status_info.model)
 	end
 
+	function codeium_status()
+		local status = require("codeium.virtual_text").status()
+
+		if status.state == "idle" then
+			return " "
+		end
+
+		if status.state == "waiting" then
+			return "Waiting..."
+		end
+
+		if status.state == "completions" and status.total > 0 then
+			return string.format("%d/%d", status.current, status.total)
+		end
+
+		return " 0 "
+	end
+
 	line.setup({
 		options = {
 			theme = bubbles_theme,
@@ -81,7 +99,8 @@ function M.setup()
 			lualine_d = {
 				{ require("dr-lsp").lspCount },
 			},
-      lualine_v = { parrot_status },
+			lualine_u = { codeium_status },
+			lualine_v = { parrot_status },
 			lualine_w = { { project_name_display } },
 			lualine_x = {
 				{

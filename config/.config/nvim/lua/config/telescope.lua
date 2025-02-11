@@ -4,6 +4,42 @@ local icons = require("config.icons")
 local whichkey = require("which-key")
 local telescope = require("telescope")
 
+local function buffers_with_recent_files()
+	local pickers = require("telescope.pickers")
+	local finders = require("telescope.finders")
+	local actions = require("telescope.actions")
+	local action_state = require("telescope.actions.state")
+
+	-- Get open buffers and recent files
+	local buffers = require("telescope.builtin").buffers
+	local frecency = require("telescope").extensions.frecency.frecency
+
+	-- Run both pickers and show them in a single list
+	pickers
+		.new({}, {
+			prompt_title = "Buffers and Recent Files",
+			finder = finders.new_table({
+				results = vim.tbl_extend("keep", buffers(), frecency()),
+				entry_maker = function(entry)
+					return {
+						display = entry[1],
+						value = entry[2],
+						ordinal = entry[1],
+					}
+				end,
+			}),
+			attach_mappings = function(_, map)
+				map("i", "<CR>", function(prompt_bufnr)
+					local selection = action_state.get_selected_entry()
+					actions.close(prompt_bufnr)
+					vim.cmd("edit " .. selection.value)
+				end)
+				return true
+			end,
+		})
+		:find()
+end
+
 function M.setup()
 	telescope.setup({
 		defaults = {
@@ -11,7 +47,7 @@ function M.setup()
 			selection_caret = " ",
 			file_ignore_patterns = {
 				-- ".git/",
-				"^./.git/",
+				"^.git/",
 				".cache",
 				"%.o",
 				"%.a",
@@ -71,7 +107,6 @@ function M.setup()
 	telescope.load_extension("cder")
 	telescope.load_extension("whaler")
 	telescope.load_extension("projections")
-	telescope.load_extension("projects")
 
 	-- Define key mappings for Telescope commands
 	-- c = {
@@ -108,11 +143,12 @@ function M.setup()
 		{ "<leader>fxc", "<cmd>Telescope cder<cr>", desc = "Telescope X cder", mode = "n" },
 		{ "<leader>fxr", "<cmd>Telescope repo<cr>", desc = "Telescope X repo", mode = "n" },
 		{ "<leader>fxf", "<cmd>Telescope frecency<cr>", desc = "Telescope X Recent Files", mode = "n" },
+		{ "<leader>fxb", buffers_with_recent_files, desc = "Find buffers", mode = "n" },
 
 		{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find File", mode = "n" },
 		{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Find Text", mode = "n" },
 		{ "<leader>fr", "<cmd>Telescope registers<cr>", desc = "Registers", mode = "n" },
-		{ "<leader>ft", "<cmd>Telescope treesitter<cr>", desc = "Treesitter", mode = "n" },
+		{ "<leader>ft", "<cmd>Telescope toggleterm_manager<cr>", desc = "Terminals", mode = "n" },
 		{ "<leader>fo", "<cmd>Telescope oldfiles<cr>", desc = "Old Files", mode = "n" },
 		{ "<leader>fm", "<cmd>Telescope man_pages<cr>", desc = "Man pages", mode = "n" },
 		{ "<leader>fw", "<cmd>Telescope whaler<cr>", desc = "Whaler", mode = "n" },

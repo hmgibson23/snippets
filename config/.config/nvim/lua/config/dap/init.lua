@@ -1,29 +1,25 @@
 local M = {}
 
+-- Configure DAP breakpoints and signs
 local function configure()
-	-- local dap_install = require "dap-install"
-	-- dap_install.setup {
-	--   installation_path = vim.fn.stdpath "data" .. "/dapinstall/",
-	-- }
-
 	local dap_breakpoint = {
 		error = {
 			text = "🟥",
-			texthl = "LspDiagnosticsSignError",
+			texthl = "DiagnosticError",
 			linehl = "",
 			numhl = "",
 		},
 		rejected = {
 			text = "",
-			texthl = "LspDiagnosticsSignHint",
+			texthl = "DiagnosticHint",
 			linehl = "",
 			numhl = "",
 		},
 		stopped = {
 			text = "⭐️",
-			texthl = "LspDiagnosticsSignInformation",
+			texthl = "DiagnosticInfo",
 			linehl = "DiagnosticUnderlineInfo",
-			numhl = "LspDiagnosticsSignInformation",
+			numhl = "DiagnosticInfo",
 		},
 	}
 
@@ -32,14 +28,18 @@ local function configure()
 	vim.fn.sign_define("DapBreakpointRejected", dap_breakpoint.rejected)
 end
 
+-- Configure extensions
 local function configure_exts()
+	-- Setup virtual text for nvim-dap
 	require("nvim-dap-virtual-text").setup({
-		commented = true,
+		commented = true, -- Display virtual text with comments
 	})
 
+	-- Setup DAP UI
 	local dap, dapui = require("dap"), require("dapui")
-	-- dap.set_log_file('~/.local/share/nvim/dap.log')
-	dapui.setup({}) -- use default
+	dapui.setup({}) -- Default configuration
+
+	-- Automatically open/close DAP UI on debug events
 	-- dap.listeners.after.event_initialized["dapui_config"] = function()
 	-- 	dapui.open()
 	-- end
@@ -51,20 +51,49 @@ local function configure_exts()
 	-- end
 end
 
+-- Configure individual debuggers
 local function configure_debuggers()
-	require("config.dap.lua").setup()
+	-- Load specific debugger configurations
 	require("config.dap.python").setup()
 	require("config.dap.rust").setup()
-	-- require("config.dap.typescript").setup()
+	-- Add other debuggers as needed, e.g., TypeScript, Lua
+end
+
+-- Setup Mason integration for managing DAP installations
+local function configure_mason_dap()
+	require("mason-nvim-dap").setup({
+		ensure_installed = { "debugpy", "cpptools" }, -- Add adapters you want pre-installed
+		handlers = {
+			-- General handler for uncustomized adapters
+			function(config)
+				require("mason-nvim-dap").default_setup(config)
+			end,
+			-- Python-specific configuration
+			python = function(config)
+				config.adapters = {
+					type = "executable",
+					command = "/usr/bin/python3",
+					args = { "-m", "debugpy.adapter" },
+				}
+				require("mason-nvim-dap").default_setup(config)
+			end,
+		},
+	})
 end
 
 function M.setup()
-	configure() -- Configuration
-	configure_exts() -- Extensions
-	configure_debuggers() -- Debugger
-	require("config.dap.keymaps").setup() -- Keymaps
-end
+	-- Core configuration
+	configure()
 
-configure_debuggers()
+	-- Extensions and keymaps
+	configure_exts()
+	require("config.dap.keymaps").setup()
+
+	-- Mason DAP setup
+	configure_mason_dap()
+
+	-- Debugger-specific configurations
+	configure_debuggers()
+end
 
 return M

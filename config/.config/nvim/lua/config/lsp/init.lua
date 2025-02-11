@@ -31,7 +31,7 @@ local servers = {
 			},
 		},
 	},
-	ruff_lsp = {},
+	ruff = {},
 	pyright = {
 		settings = {
 			python = {

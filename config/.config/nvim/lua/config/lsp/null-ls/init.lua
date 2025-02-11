@@ -27,7 +27,6 @@ local sources = {
 	-- b.formatting.fixjson,
 	b.formatting.black.with({ extra_args = { "--fast" } }),
 	b.formatting.isort,
-	b.formatting.black,
 	b.formatting.stylua,
 	b.diagnostics.checkmake,
 	b.diagnostics.hadolint,

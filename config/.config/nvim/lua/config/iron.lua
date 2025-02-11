@@ -34,6 +34,10 @@ function M.setup()
 					command = { "ipython" },
 					format = require("iron.fts.common").bracketed_paste,
 				},
+				quarto = {
+					command = { "ipython" },
+					format = require("iron.fts.common").bracketed_paste,
+				},
 				sql = {
 					command = get_db_command,
 				},

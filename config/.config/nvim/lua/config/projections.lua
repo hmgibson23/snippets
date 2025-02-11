@@ -13,8 +13,9 @@ function M.setup()
 	-- Configure projections
 	projections.setup({
 		workspaces = {
-			"~/git", -- Searches for .git directories under ~/git
+			"~/git",
 			"~/git/tulip",
+			"~/git/newsuk",
 		},
 		patterns = { ".git", ".svn", ".hg" },
 		workspaces_file = "~/.local/share/nvim/projections_workspaces.json",

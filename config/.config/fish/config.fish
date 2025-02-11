@@ -17,3 +17,4 @@ alias nv "nvim"
 
 # Created by `pipx` on 2024-02-12 09:43:57
 set PATH $PATH /Users/hugo/.local/bin
+set -x MPLBACKEND "module://itermplot"

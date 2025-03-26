@@ -1,0 +1,197 @@
+return {
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    lazy = true,
+    config = function()
+      vim.o.completeopt = "menu,menuone,noselect"
+
+      local cmp = require("cmp")
+      local types = require("cmp.types")
+      local compare = require("cmp.config.compare")
+      local lspkind = require("lspkind")
+
+      local source_mapping = {
+        nvim_lsp = "[Lsp]",
+        luasnip = "[Snip]",
+        buffer = "[Buffer]",
+        nvim_lua = "[Lua]",
+        treesitter = "[Tree]",
+        path = "[Path]",
+        rg = "[Rg]",
+        nvim_lsp_signature_help = "[Sig]",
+        codeium = "[Codeium]",
+        cmp_ai = "[CmpAI]",
+        supermaven = "[Supermaven]",
+        minuet = "[MinuetAI]",
+        cmp_tabnine = "[TNine]",
+      }
+
+      -- Fix for Codeium issues
+      vim.fn.setenv("no_proxy", "127.0.0.1")
+
+      local has_words_before = function()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        if col == 0 then
+          return false
+        end
+        local current_line = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+        return current_line:sub(col, col):match("%s") == nil
+      end
+
+      local luasnip = require("luasnip")
+      local neogen = require("neogen")
+
+      cmp.setup({
+        completion = {
+          completeopt = "menu,menuone,noinsert",
+          keyword_length = 1,
+        },
+        sorting = {
+          priority_weight = 2,
+          comparators = {
+            compare.score,
+            compare.recently_used,
+            compare.offset,
+            compare.exact,
+            compare.kind,
+            compare.sort_text,
+            compare.length,
+            compare.order,
+          },
+        },
+        snippet = {
+          expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+          end,
+        },
+        formatting = {
+          format = lspkind.cmp_format({
+            mode = "symbol_text",
+            maxwidth = 40,
+            symbol_map = { codeium = "", Supermaven = "" },
+            before = function(entry, vim_item)
+              vim_item.kind = lspkind.presets.default[vim_item.kind]
+              local menu = source_mapping[entry.source.name]
+              vim_item.menu = menu
+              return vim_item
+            end,
+          }),
+        },
+        mapping = {
+          ["<C-u>"] = cmp.mapping(function(fallback)
+            if luasnip.choice_active() then
+              luasnip.change_choice(1)
+            else
+              fallback()
+            end
+          end, { "i" }),
+          ["<C-l>"] = cmp.mapping(function(fallback)
+            if luasnip.choice_active() then
+              require("luasnip.extras.select_choice")()
+            else
+              fallback()
+            end
+          end, { "i" }),
+          ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
+          ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+          ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+          ["<C-e>"] = cmp.mapping({ i = cmp.mapping.close(), c = cmp.mapping.close() }),
+          ["<CR>"] = cmp.mapping({
+            i = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+            c = function(fallback)
+              if cmp.visible() then
+                cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+              else
+                fallback()
+              end
+            end,
+          }),
+          ["<C-j>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            elseif neogen.jumpable() then
+              neogen.jump_next()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s", "c" }),
+          ["<C-k>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            elseif neogen.jumpable(1) then
+              neogen.jump_prev()
+            else
+              fallback()
+            end
+          end, { "i", "s", "c" }),
+          ["<C-y>"] = { i = cmp.mapping.confirm({ select = false }) },
+          ["<C-n>"] = { i = cmp.mapping.select_next_item({ behavior = types.cmp.SelectBehavior.Insert }) },
+          ["<C-p>"] = { i = cmp.mapping.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert }) },
+        },
+        sources = {
+          { name = "nvim_lsp", max_item_count = 15 },
+          { name = "nvim_lsp_signature_help" },
+          { name = "luasnip" },
+          { name = "codeium" },
+          { name = "supermaven" },
+          { name = "cmp_ai" },
+          { name = "otter" },
+          { name = "treesitter" },
+          { name = "rg", max_item_count = 8 },
+          { name = "buffer", max_item_count = 5 },
+          { name = "nvim_lua" },
+          { name = "path" },
+          { name = "crates" },
+          { name = "minuet" },
+          { name = "spell" },
+          { name = "calc" },
+        },
+        performance = {
+          fetching_timeout = 2000,
+        },
+        window = {
+          documentation = {
+            border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+            winhighlight = "NormalFloat:NormalFloat,FloatBorder:TelescopeBorder",
+          },
+        },
+      })
+
+    end,
+    dependencies = {
+      "hrsh7th/cmp-buffer",
+  { 
+    "danymat/neogen", 
+    config = true,
+  },
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-nvim-lua",
+      "ray-x/cmp-treesitter",
+      "hrsh7th/cmp-cmdline",
+      "saadparwaiz1/cmp_luasnip",
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-nvim-lsp-signature-help",
+      "lukas-reineke/cmp-rg",
+      "davidsierradz/cmp-conventionalcommits",
+      { "onsails/lspkind-nvim" },
+      "jmbuhr/otter.nvim",
+      "hrsh7th/cmp-calc",
+      "f3fora/cmp-spell",
+      "hrsh7th/cmp-emoji",
+      {
+        "L3MON4D3/LuaSnip",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        build = "make install_jsregexp",
+      },
+      "rafamadriz/friendly-snippets",
+      "honza/vim-snippets",
+    },
+  },
+}

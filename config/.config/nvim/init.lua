@@ -1,5 +1,7 @@
 -- let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 require("keybindings")
+require("defaults")
+
 vim.loader.enable()
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -13,7 +15,6 @@ if not vim.loop.fs_stat(lazypath) then
 	})
 end
 vim.opt.rtp:prepend(lazypath)
-require("plugins")
+require("lazy-plugins")
 vim.opt.termguicolors = true
 vim.cmd.colorscheme("nightfox")
--- vim.g.python3_host_prog = "/Users/hugo/venvs/.nvim-venv/bin/python"

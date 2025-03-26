@@ -45,12 +45,11 @@ map("x", "<C-W>i", "<C-W>l", opts)
 -- tab controls -- ctrl-t makes a new tab
 map("n", "<C-t>", "<Esc>:tabnew<CR>", opts) -- Check collision!
 -- shift T turn a split window into a tab
-map("n", "<S-T>", "<Esc><C-w>T", opts) -- Check collision!
+map("n", "<S-T>", "<Esc><C-w>T", opts)      -- Check collision!
 map("n", "te", ":tabnext<CR>", opts)
 map("n", "tn", ":tabprev<CR>", opts)
 map("n", "th", ":tabfirst<CR>", opts)
 map("n", "ti", ":tablast<CR>", opts)
-map("n", "<leader>mm", ":Neogit<CR>", opts)
 map("n", "cd", ":lcd %:p:h<CR>", opts)
 
 -- }}}

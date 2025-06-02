@@ -15,7 +15,9 @@ return {
       b.formatting.shfmt,
       b.formatting.black.with({ extra_args = { "--fast" } }),
       b.formatting.isort,
-      b.formatting.stylua,
+      b.formatting.stylua.with({
+        filetypes = { "lua", "teal", "tl", "script" },
+      }),
       b.formatting.google_java_format,
       b.formatting.clang_format,
       -- b.formatting.swiftformat, -- Uncomment if needed
@@ -31,6 +33,7 @@ return {
       -- b.diagnostics.clazy,
       b.diagnostics.zsh,
       b.diagnostics.swiftlint,
+      -- b.diagnostics.teal,
 
       -- 🔹 Code Actions
       b.code_actions.gitsigns.with({

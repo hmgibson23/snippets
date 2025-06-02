@@ -10,6 +10,10 @@ return {
     },
   },
   {
+    "Hoffs/omnisharp-extended-lsp.nvim",
+    ft = "cs",
+  },
+  {
     "smjonas/inc-rename.nvim",
     config = function()
       require("inc_rename").setup()
@@ -133,30 +137,6 @@ return {
           end
 
           map("K", vim.lsp.buf.hover, "Show Hover Documentation")
-          -- 🔹 Find References (Snacks)
-          map("gr", function()
-            require("snacks").lsp_references()
-          end, "[G]oto [R]eferences")
-
-          -- 🔹 Find Implementations (Snacks)
-          map("gI", function()
-            require("snacks").lsp_implementations()
-          end, "[G]oto [I]mplementation")
-
-          -- 🔹 Type Definition (Snacks)
-          map("<leader>D", function()
-            require("snacks").lsp_type_definitions()
-          end, "Type [D]efinition")
-
-          -- 🔹 Document Symbols (Snacks)
-          map("<leader>ds", function()
-            require("snacks").lsp_document_symbols()
-          end, "[D]ocument [S]ymbols")
-
-          -- 🔹 Workspace Symbols (Snacks)
-          map("<leader>ws", function()
-            require("snacks").lsp_workspace_symbols()
-          end, "[W]orkspace [S]ymbols")
           map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
           map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
@@ -272,6 +252,21 @@ return {
           "configure.ac",
           ".git"
         ),
+      })
+      require("lspconfig").omnisharp.setup({
+        cmd = { "omnisharp" },
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        root_dir = require("lspconfig.util").root_pattern("*.sln", "*.csproj", ".git"),
+        settings = {
+          omnisharp = {
+            useModernNet = true, -- Uses .NET 6+ if available
+            enableRoslynAnalyzers = true,
+            analyzeOpenDocumentsOnly = false,
+          },
+        },
+        on_attach = function(client, bufnr)
+          require("omnisharp_extended").extend(client, bufnr) -- Enable omnisharp-extended features
+        end,
       })
     end,
   },

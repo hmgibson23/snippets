@@ -5,13 +5,13 @@ return {
     build = ":TSUpdate",
     dependencies = {
       { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre" },
-      { "windwp/nvim-ts-autotag", event = "InsertEnter" },
+      { "windwp/nvim-ts-autotag",                      event = "InsertEnter" },
       { "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
-      { "p00f/nvim-ts-rainbow", event = "BufReadPre", enabled = false },
-      { "RRethy/nvim-treesitter-textsubjects", event = "BufReadPre" },
-      { "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" } },
-      { "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", enabled = false },
-      { "mfussenegger/nvim-treehopper", enabled = false },
+      { "p00f/nvim-ts-rainbow",                        event = "BufReadPre",          enabled = false },
+      { "RRethy/nvim-treesitter-textsubjects",         event = "BufReadPre" },
+      { "nvim-treesitter/playground",                  cmd = { "TSPlaygroundToggle" } },
+      { "nvim-treesitter/nvim-treesitter-context",     event = "BufReadPre",          enabled = false },
+      { "mfussenegger/nvim-treehopper",                enabled = false },
       {
         "m-demare/hlargs.nvim",
         config = function()
@@ -32,6 +32,7 @@ return {
         "query",
         "vim",
         "vimdoc",
+        "teal",
       },
       auto_install = true,
       highlight = {

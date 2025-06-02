@@ -1,4 +1,6 @@
 return {
+  csharpier = {},
+  netcoredbg = {},
   html = {},
   marksman = {
     filetypes = { "markdown", "markdown.mdx", "pandoc" },

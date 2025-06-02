@@ -76,7 +76,4 @@ return {
     { "haydenmeade/neotest-jest" },
     { "rouge8/neotest-rust" },
   },
-  config = function()
-    require("config.neotest").setup()
-  end,
 }

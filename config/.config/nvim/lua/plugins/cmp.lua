@@ -12,19 +12,20 @@ return {
       local lspkind = require("lspkind")
 
       local source_mapping = {
-        nvim_lsp = "[Lsp]",
-        luasnip = "[Snip]",
-        buffer = "[Buffer]",
-        nvim_lua = "[Lua]",
-        treesitter = "[Tree]",
-        path = "[Path]",
-        rg = "[Rg]",
-        nvim_lsp_signature_help = "[Sig]",
-        codeium = "[Codeium]",
-        cmp_ai = "[CmpAI]",
-        supermaven = "[Supermaven]",
-        minuet = "[MinuetAI]",
-        cmp_tabnine = "[TNine]",
+        nvim_lsp = "[Lsp] ",
+        copilot = "[Copilot] ",
+        luasnip = "[Snip] ",
+        buffer = "[Buffer] ",
+        nvim_lua = "[Lua] ",
+        treesitter = "[Tree] 󰔱",
+        path = "[Path] ",
+        rg = "[Rg] ",
+        nvim_lsp_signature_help = "[Sig] 󰌨",
+        codeium = "[Codeium] ",
+        cmp_ai = "[CmpAI] 󰒙",
+        supermaven = "[Supermaven] ",
+        minuet = "[MinuetAI] 󰒙",
+        cmp_tabnine = "[TNine] 󰒙",
       }
 
       -- Fix for Codeium issues
@@ -136,7 +137,8 @@ return {
           ["<C-p>"] = { i = cmp.mapping.select_prev_item({ behavior = types.cmp.SelectBehavior.Insert }) },
         },
         sources = {
-          { name = "nvim_lsp", max_item_count = 15 },
+          { name = "copilot" },
+          { name = "nvim_lsp",               max_item_count = 15 },
           { name = "nvim_lsp_signature_help" },
           { name = "luasnip" },
           { name = "codeium" },
@@ -144,8 +146,8 @@ return {
           { name = "cmp_ai" },
           { name = "otter" },
           { name = "treesitter" },
-          { name = "rg", max_item_count = 8 },
-          { name = "buffer", max_item_count = 5 },
+          { name = "rg",                     max_item_count = 8 },
+          { name = "buffer",                 max_item_count = 5 },
           { name = "nvim_lua" },
           { name = "path" },
           { name = "crates" },
@@ -163,14 +165,13 @@ return {
           },
         },
       })
-
     end,
     dependencies = {
       "hrsh7th/cmp-buffer",
-  { 
-    "danymat/neogen", 
-    config = true,
-  },
+      {
+        "danymat/neogen",
+        config = true,
+      },
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-nvim-lua",
       "ray-x/cmp-treesitter",

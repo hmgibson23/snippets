@@ -2,6 +2,7 @@ return {
   "stevearc/overseer.nvim",
   dependencies = {
     "pianocomposer321/officer.nvim",
+    "franco-ruggeri/overseer-extra.nvim",
   },
   cmd = {
     "OverseerToggle",

@@ -1,5 +1,30 @@
 require("lazy").setup({
   "nvim-neotest/nvim-nio",
+  {
+    "RostislavArts/naysayer.nvim",
+    priority = 1000,
+    lazy = false,
+    config = function()
+      vim.cmd.colorscheme("naysayer")
+    end,
+  },
+  {
+    "mbbill/undotree",
+  },
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
+    },
+  },
   "nvim-lua/plenary.nvim",
   "sindrets/diffview.nvim",
   {
@@ -50,6 +75,8 @@ require("lazy").setup({
   require("plugins/overseer"),
   require("plugins/quarto"),
   require("plugins/neotest"),
+  require("plugins/harpoon"),
+  require("plugins/copilot"),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

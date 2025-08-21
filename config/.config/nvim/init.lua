@@ -17,7 +17,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy-plugins")
 vim.opt.termguicolors = true
-vim.cmd.colorscheme("nightfox")
+-- vim.cmd.colorscheme("nightfox")
 
 local paths_to_check = { "/", "/../" }
 local is_godot_project = false

@@ -9,6 +9,12 @@ require("lazy").setup({
     end,
   },
   {
+    "A7Lavinraj/fyler.nvim",
+    dependencies = { "nvim-mini/mini.icons" },
+    branch = "stable",
+    opts = {},
+  },
+  {
     "mbbill/undotree",
   },
   {
@@ -26,6 +32,7 @@ require("lazy").setup({
     },
   },
   "nvim-lua/plenary.nvim",
+  { "catppuccin/nvim",       name = "catppuccin", priority = 1000 },
   "sindrets/diffview.nvim",
   {
     "teal-language/vim-teal",
@@ -77,6 +84,10 @@ require("lazy").setup({
   require("plugins/neotest"),
   require("plugins/harpoon"),
   require("plugins/copilot"),
+  require("plugins/avante"),
+  require("plugins/aider"),
+  require("plugins/codecompanion"),
+  require("plugins/opencode"),
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

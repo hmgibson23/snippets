@@ -1,7 +1,7 @@
 return {
   "stevearc/overseer.nvim",
   dependencies = {
-    "pianocomposer321/officer.nvim",
+    -- "pianocomposer321/officer.nvim",
     "franco-ruggeri/overseer-extra.nvim",
   },
   cmd = {

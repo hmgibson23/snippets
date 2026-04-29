@@ -153,5 +153,25 @@ return {
     dap.listeners.after.event_initialized["dapui_config"] = dapui.open
     dap.listeners.before.event_terminated["dapui_config"] = dapui.close
     dap.listeners.before.event_exited["dapui_config"] = dapui.close
+    
+    -- Setup Python auto-configuration keymaps
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = 'python',
+      callback = function(args)
+        local bufnr = args.buf
+        local python_dap = require('dap.python')
+        
+        -- Override <leader>ds (start) for Python files
+        vim.keymap.set('n', '<leader>ds', function()
+          python_dap.start()
+        end, { buffer = bufnr, desc = 'Start (Python Auto)' })
+        
+        -- Override <leader>dc (continue) for Python files  
+        vim.keymap.set('n', '<leader>dc', function()
+          python_dap.continue()
+        end, { buffer = bufnr, desc = 'Continue (Python Auto)' })
+      end,
+      group = vim.api.nvim_create_augroup('DapPythonAutoConfig', { clear = true }),
+    })
   end,
 }

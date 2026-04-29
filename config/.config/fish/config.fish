@@ -25,3 +25,16 @@ function saml-login
     source (saml2aws script --shell=fish | psub)
 end
 
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
+
+# opencode
+fish_add_path /Users/hugo/.opencode/bin
+
+# Disable themes and welcome messages for AI Agents
+if set -q CODEX_AGENT or set -q CLAUDE_AGENT
+    set -g fish_greeting ""
+    # Add any other theme-disabling commands here
+end

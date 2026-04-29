@@ -1,5 +1,8 @@
 require("lazy").setup({
   "nvim-neotest/nvim-nio",
+  "JafarDakhan/vim-gml",
+  { "ahayworth/ink-syntax-vim", ft = "ink" },
+  { "pablopunk/pi.nvim" },
   {
     "RostislavArts/naysayer.nvim",
     priority = 1000,
@@ -84,10 +87,38 @@ require("lazy").setup({
   require("plugins/neotest"),
   require("plugins/harpoon"),
   require("plugins/copilot"),
-  require("plugins/avante"),
-  require("plugins/aider"),
+  -- require("plugins/aider"),
   require("plugins/codecompanion"),
   require("plugins/opencode"),
+  require("plugins/pi"),
+  -- LSP enhancement plugins
+  {
+    "kosayoda/nvim-lightbulb",
+    event = "LspAttach",
+    opts = {
+      autocmd = { enabled = true },
+      sign = { enabled = false },
+      virtual_text = { enabled = true, text = "💡" },
+    },
+  },
+  {
+    "aznhe21/actions-preview.nvim",
+    event = "LspAttach",
+    config = function()
+      require("actions-preview").setup({
+        backend = { "telescope" },
+        diff = {
+          algorithm = "patience",
+          ignore_whitespace = true,
+        },
+        telescope = vim.tbl_extend(
+          "force",
+          require("telescope.themes").get_dropdown(),
+          { make_value = nil, make_make_display = nil }
+        ),
+      })
+    end,
+  },
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

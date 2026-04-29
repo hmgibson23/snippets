@@ -1,6 +1,7 @@
 ---@module Plugins
 ---@author Hugo Gibson
 require("lazy").setup({
+  "JafarDakhan/vim-gml",
   {
     "ryanmsnyder/toggleterm-manager.nvim",
     dependencies = {

@@ -7,3 +7,16 @@
 *.emacs.d/auto-save-list
 *.emacs.d/tmp
 *.emacs.d/eshell
+.DS_Store
+task_plan.md
+findings.md
+progress.md
+local/.local/share/
+*.retry
+
+# Agent State
+.pi/superpowers-state.json
+.pi/taskplane.json
+.pi/telemetry/
+.pi/agent/memory/
+.pi/run-*/

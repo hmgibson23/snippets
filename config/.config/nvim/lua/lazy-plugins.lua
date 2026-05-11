@@ -88,6 +88,7 @@ require("lazy").setup({
   require("plugins/codecompanion"),
   require("plugins/opencode"),
   require("plugins/pi"),
+  require("plugins/workflows"),
   -- LSP enhancement plugins
   {
     "kosayoda/nvim-lightbulb",

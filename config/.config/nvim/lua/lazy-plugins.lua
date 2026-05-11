@@ -62,6 +62,7 @@ require("lazy").setup({
   require("plugins/dap"),
   require("plugins/done"),
   require("plugins/mini"),
+  require("plugins/markdown-preview"),
   require("plugins/nightfox"),
   require("plugins/treesitter"),
   require("plugins/snacks"),

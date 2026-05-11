@@ -34,9 +34,12 @@ require("lazy").setup({
       { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
     },
   },
-  "nvim-lua/plenary.nvim",
-  { "catppuccin/nvim",       name = "catppuccin", priority = 1000 },
-  "sindrets/diffview.nvim",
+  { "nvim-lua/plenary.nvim", lazy = true },
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
+  },
   {
     "teal-language/vim-teal",
     ft = "teal",
@@ -45,16 +48,10 @@ require("lazy").setup({
   { "kevinhwang91/nvim-bqf", ft = "qf" },
   "lewis6991/gitsigns.nvim",
   "LukasPietzschmann/boo.nvim",
-  {
-    "nvim-tree/nvim-web-devicons",
-    config = function()
-      require("nvim-web-devicons").setup({ default = true })
-    end,
-  },
+  { "nvim-tree/nvim-web-devicons", lazy = true, opts = { default = true } },
   "hedyhli/outline.nvim",
   "roobert/hoversplit.nvim",
   "folke/neoconf.nvim",
-  { "kevinhwang91/nvim-bqf" },
   {
     "GCBallesteros/jupytext.nvim",
     config = true,

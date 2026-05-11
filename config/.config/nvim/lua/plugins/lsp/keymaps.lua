@@ -49,7 +49,9 @@ keymaps.whichkey = {
   { "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<CR>",                              desc = "Run CodeLens" },
   {
     "<leader>lD",
-    "<cmd>lua require('plugins.lsp').toggle_diagnostics()<CR>",
+    function()
+      vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+    end,
     desc = "Toggle Inline [D]iagnostics",
   },
   { "<leader>le",  "<cmd>lua require('aerial').toggle()<CR>",                   desc = "Toggle A[e]rial" },

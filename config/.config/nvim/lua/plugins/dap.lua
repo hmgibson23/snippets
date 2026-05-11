@@ -1,31 +1,22 @@
 return {
   "mfussenegger/nvim-dap",
   lazy = true,
-  event = "BufReadPre",
-  keys = { [[<leader>d]] },
+  ft = "python",
   dependencies = {
-    "theHamsta/nvim-dap-virtual-text",
-    "jay-babu/mason-nvim-dap.nvim",
     "rcarriga/nvim-dap-ui",
     {
       "mfussenegger/nvim-dap-python",
+      lazy = true,
       config = function()
         require("dap-python").setup("~/.virtualenvs/debugpy/bin/python")
       end,
     },
-    {
-      "jay-babu/mason-nvim-dap.nvim",
-      config = function()
-        require("mason-nvim-dap").setup({
-          automatic_setup = true,
-          ensure_installed = { "stylua", "jq", "node2", "js", "chrome", "firefox", "js-debug-adapter" },
-        })
-      end,
-    },
+    "jay-babu/mason-nvim-dap.nvim",
     { "leoluz/nvim-dap-go" },
     { "jbyuki/one-small-step-for-vimkind" },
     {
       "mxsdev/nvim-dap-vscode-js",
+      lazy = true,
       dependencies = {
         "microsoft/vscode-js-debug",
         build = "npm install --legacy-peer-deps && npm run compile",
@@ -38,6 +29,7 @@ return {
     },
     {
       "theHamsta/nvim-dap-virtual-text",
+      lazy = true,
       config = function()
         require("nvim-dap-virtual-text").setup({
           enabled = true,                -- Enable virtual text

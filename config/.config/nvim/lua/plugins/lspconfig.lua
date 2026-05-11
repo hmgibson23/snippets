@@ -21,6 +21,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       {
         "stevearc/aerial.nvim",
@@ -69,13 +70,9 @@ return {
           require("symbol-usage").setup({})
         end,
       },
-      "nvimtools/none-ls.nvim",
       "b0o/schemastore.nvim",
       { "jose-elias-alvarez/typescript.nvim" },
-      "alpha2phi/nvim-navic",
-      config = function()
-        require("nvim-navic").setup({})
-      end,
+      { "alpha2phi/nvim-navic", opts = {} },
       {
         "simrat39/inlay-hints.nvim",
         config = function()
@@ -102,7 +99,7 @@ return {
           map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup("user-lsp-highlight", { clear = false })
             vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
               buffer = event.buf,
@@ -123,7 +120,7 @@ return {
             })
           end
 
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map("<leader>th", function()
               local opts = { bufnr = event.buf }
               if vim.lsp.inlay_hint.is_enabled(opts) then
@@ -154,9 +151,10 @@ return {
       -- Load your custom servers table
       local servers = require("plugins.lsp.servers")
 
-      -- Automatically ensure server tools are installed
-      vim.list_extend(vim.tbl_keys(servers or {}), { "stylua" })
-      require("mason-tool-installer").setup({ ensure_installed = vim.tbl_keys(servers) })
+      -- Automatically ensure server tools are installed.
+      local ensure_installed = vim.tbl_keys(servers or {})
+      vim.list_extend(ensure_installed, { "stylua" })
+      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
       require("mason-null-ls").setup({ automatic_setup = true, ensure_installed = { "stylua" } })
 
       -- For each server define/customize via vim.lsp.config

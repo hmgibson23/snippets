@@ -1,8 +1,7 @@
 return {
   "monkoose/DoNe",
-  config = function()
-    -- as example adding some keybindings
-    vim.keymap.set("n", "<F5>", "<Cmd>DoNe build<CR>")
-    --- ...
-  end,
+  cmd = "DoNe",
+  keys = {
+    { "<F5>", "<cmd>DoNe build<cr>", desc = "DoNe build" },
+  },
 }

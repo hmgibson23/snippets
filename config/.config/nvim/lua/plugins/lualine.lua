@@ -52,9 +52,14 @@ return {
       return " " .. vim.fs.basename(vim.loop.cwd()) -- Default icon
     end
 
-    -- Function to get Codeium status
+    -- Function to get Codeium status without forcing the plugin to load
     local function codeium_status()
-      local status = require("codeium.virtual_text").status()
+      local virtual_text = package.loaded["codeium.virtual_text"]
+      if not virtual_text then
+        return ""
+      end
+
+      local status = virtual_text.status()
       if status.state == "idle" then
         return " "
       elseif status.state == "waiting" then
@@ -65,9 +70,13 @@ return {
       return " 0 "
     end
 
-    -- Function to get Supermaven status
+    -- Function to get Supermaven status without forcing the plugin to load
     local function supermaven_status()
-      local sm = require("supermaven")
+      local sm = package.loaded["supermaven"]
+      if not sm then
+        return ""
+      end
+
       local status = sm.status()
       if status.state == "idle" then
         return "󰢤 Idle"
@@ -79,10 +88,35 @@ return {
       return "󰦖 Unknown"
     end
 
-    -- Ensure Overseer is loaded
-    local ok_overseer, overseer = pcall(require, "overseer")
-    if not ok_overseer then
-      return
+    local function overseer_status()
+      local overseer = package.loaded["overseer"]
+      if not overseer then
+        return ""
+      end
+
+      local ok, tasks = pcall(overseer.list_tasks, { unique = false })
+      if not ok or vim.tbl_isempty(tasks) then
+        return ""
+      end
+
+      local counts = {}
+      for _, task in ipairs(tasks) do
+        counts[task.status] = (counts[task.status] or 0) + 1
+      end
+
+      local symbols = {
+        [overseer.STATUS.FAILURE] = "󰇸",
+        [overseer.STATUS.CANCELED] = "",
+        [overseer.STATUS.SUCCESS] = "",
+        [overseer.STATUS.RUNNING] = "",
+      }
+      local parts = {}
+      for status, symbol in pairs(symbols) do
+        if counts[status] then
+          table.insert(parts, symbol .. counts[status])
+        end
+      end
+      return table.concat(parts, " ")
     end
 
     lualine.setup({
@@ -103,18 +137,7 @@ return {
           codeium_status,
           supermaven_status,
           project_name_display,
-          {
-            "overseer",
-            label = "",
-            colored = true,
-            symbols = {
-              [overseer.STATUS.FAILURE] = "󰇸 ",
-              [overseer.STATUS.CANCELED] = " ",
-              [overseer.STATUS.SUCCESS] = " ",
-              [overseer.STATUS.RUNNING] = " ",
-            },
-            unique = false,
-          },
+          overseer_status,
         },
         lualine_y = { { "filetype", icon = "" }, { "progress", icon = "󰦖" } },
         lualine_z = { { "location", separator = { left = "", right = " " }, left_padding = 2 } },

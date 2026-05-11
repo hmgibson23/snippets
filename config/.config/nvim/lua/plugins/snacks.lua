@@ -62,13 +62,6 @@ return {
       desc = "Buffers",
     },
     {
-      "<leader>fg",
-      function()
-        Snacks.picker.grep()
-      end,
-      desc = "Grep",
-    },
-    {
       "<leader>:",
       function()
         Snacks.picker.command_history()
@@ -91,13 +84,6 @@ return {
     },
     -- find
     {
-      "<leader>fb",
-      function()
-        Snacks.picker.buffers()
-      end,
-      desc = "Buffers",
-    },
-    {
       "<leader>fc",
       function()
         Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
@@ -112,7 +98,7 @@ return {
       desc = "Find Files",
     },
     {
-      "<leader>fg",
+      "<leader>fG",
       function()
         Snacks.picker.git_files()
       end,
@@ -182,36 +168,6 @@ return {
       end,
       desc = "Git Log File",
     },
-    -- Grep
-    {
-      "<leader>sb",
-      function()
-        Snacks.picker.lines()
-      end,
-      desc = "Buffer Lines",
-    },
-    {
-      "<leader>sB",
-      function()
-        Snacks.picker.grep_buffers()
-      end,
-      desc = "Grep Open Buffers",
-    },
-    {
-      "<leader>sg",
-      function()
-        Snacks.picker.grep()
-      end,
-      desc = "Grep",
-    },
-    {
-      "<leader>sw",
-      function()
-        Snacks.picker.grep_word()
-      end,
-      desc = "Visual selection or word",
-      mode = { "n", "x" },
-    },
     -- search
     {
       '<leader>s"',
@@ -242,6 +198,13 @@ return {
       desc = "Buffer Lines",
     },
     {
+      "<leader>sB",
+      function()
+        Snacks.picker.grep_buffers()
+      end,
+      desc = "Grep Open Buffers",
+    },
+    {
       "<leader>sc",
       function()
         Snacks.picker.command_history()
@@ -268,6 +231,13 @@ return {
         Snacks.picker.diagnostics_buffer()
       end,
       desc = "Buffer Diagnostics",
+    },
+    {
+      "<leader>sg",
+      function()
+        Snacks.picker.grep()
+      end,
+      desc = "Grep",
     },
     {
       "<leader>sh",
@@ -352,6 +322,14 @@ return {
         Snacks.picker.undo()
       end,
       desc = "Undo History",
+    },
+    {
+      "<leader>sw",
+      function()
+        Snacks.picker.grep_word()
+      end,
+      desc = "Visual selection or word",
+      mode = { "n", "x" },
     },
     {
       "<leader>uC",
@@ -439,13 +417,6 @@ return {
         Snacks.scratch.select()
       end,
       desc = "Select Scratch Buffer",
-    },
-    {
-      "<leader>n",
-      function()
-        Snacks.notifier.show_history()
-      end,
-      desc = "Notification History",
     },
     {
       "<leader>bd",

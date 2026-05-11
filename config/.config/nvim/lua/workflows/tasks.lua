@@ -3,10 +3,6 @@ local select = require("workflows.select")
 
 local M = {}
 
-local function has_module(name)
-  return pcall(require, name)
-end
-
 local function shell(cmd)
   if vim.fn.exists(":OverseerRunCmd") == 2 then
     vim.api.nvim_cmd({ cmd = "OverseerRunCmd", args = { cmd } }, {})
@@ -44,19 +40,29 @@ function M.debug_file()
   neotest_run({ vim.fn.expand("%"), strategy = "dap" })
 end
 
-function M.run_project_default()
-  local info = project.info()
-  if vim.tbl_contains(info.types, "python") then
-    shell(vim.uv.fs_stat(info.root .. "/uv.lock") and "uv run pytest" or "pytest")
-  elseif vim.tbl_contains(info.types, "node") then
-    shell("npm test")
-  elseif vim.tbl_contains(info.types, "rust") then
-    shell("cargo test")
-  elseif vim.tbl_contains(info.types, "go") then
-    shell("go test ./...")
+local function run_project_command(kind)
+  local command = project.command(kind)
+  if command then
+    shell(command)
   else
     vim.cmd("OverseerRun")
   end
+end
+
+function M.run_project_default()
+  run_project_command("test")
+end
+
+function M.run_project()
+  run_project_command("run")
+end
+
+function M.build_project()
+  run_project_command("build")
+end
+
+function M.format_project()
+  run_project_command("format")
 end
 
 function M.actions()
@@ -66,7 +72,10 @@ function M.actions()
     { label = "Test suite", action = M.run_suite },
     { label = "Debug nearest test", action = M.debug_nearest },
     { label = "Debug file tests", action = M.debug_file },
-    { label = "Run project default", action = M.run_project_default },
+    { label = "Run project tests", action = M.run_project_default },
+    { label = "Run project app", action = M.run_project },
+    { label = "Build/render project", action = M.build_project },
+    { label = "Format project", action = M.format_project },
     { label = "Overseer toggle", action = function() vim.cmd("OverseerToggle") end },
     { label = "Overseer run", action = function() vim.cmd("OverseerRun") end },
     { label = "Neotest summary", action = function() require("neotest").summary.toggle() end },
@@ -81,13 +90,19 @@ end
 function M.setup()
   vim.api.nvim_create_user_command("TaskPalette", M.palette, { desc = "Task/test/debug palette" })
   vim.api.nvim_create_user_command("ProjectTest", M.run_project_default, { desc = "Run default project test command" })
+  vim.api.nvim_create_user_command("ProjectRun", M.run_project, { desc = "Run default project app command" })
+  vim.api.nvim_create_user_command("ProjectBuild", M.build_project, { desc = "Run default project build/render command" })
+  vim.api.nvim_create_user_command("ProjectFormat", M.format_project, { desc = "Run default project format command" })
 
   vim.keymap.set("n", "<leader>kn", M.run_nearest, { desc = "Test nearest" })
   vim.keymap.set("n", "<leader>kf", M.run_file, { desc = "Test file" })
   vim.keymap.set("n", "<leader>ka", M.run_suite, { desc = "Test suite" })
   vim.keymap.set("n", "<leader>kd", M.debug_nearest, { desc = "Debug nearest test" })
   vim.keymap.set("n", "<leader>kD", M.debug_file, { desc = "Debug file tests" })
-  vim.keymap.set("n", "<leader>kr", M.run_project_default, { desc = "Run project default" })
+  vim.keymap.set("n", "<leader>kr", M.run_project_default, { desc = "Run project tests" })
+  vim.keymap.set("n", "<leader>kR", M.run_project, { desc = "Run project app" })
+  vim.keymap.set("n", "<leader>kb", M.build_project, { desc = "Build/render project" })
+  vim.keymap.set("n", "<leader>kF", M.format_project, { desc = "Format project" })
   vim.keymap.set("n", "<leader>kp", M.palette, { desc = "Task palette" })
 end
 

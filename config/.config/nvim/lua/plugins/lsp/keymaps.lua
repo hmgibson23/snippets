@@ -61,12 +61,6 @@ keymaps.whichkey = {
   { "<leader>lF",  "<cmd>lua vim.lsp.buf.format({async = true})<CR>",           desc = "[F]ormat Document" },
   { "<leader>tp",  "<cmd>TSPlay<cr>",                                           desc = "TS[P]lay" },
 
-  -- Additional Neotest mappings
-  { "<leader>k",   group = "Neotest" },
-  { "<leader>kt",  group = "Test Commands" },
-  { "<leader>ka",  "<cmd>lua require('neotest').run.attach()<cr>",              desc = "Attach" },
-  { "<leader>kA",  "<cmd>lua require('neotest').run.run({ suite = true })<cr>", desc = "Run all" },
-
   -- Visual mode mapping (you can include mode if needed)
   {
     "<leader>la",

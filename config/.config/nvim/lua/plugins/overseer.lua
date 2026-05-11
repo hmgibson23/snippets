@@ -26,7 +26,7 @@ return {
       { "<leader>ob", "<cmd>OverseerBuild<cr>", desc = "Build", icon = "" },
       { "<leader>or", "<cmd>OverseerRun<cr>", desc = "Run", icon = "" },
       { "<leader>ot", "<cmd>OverseerToggle<cr>", desc = "Toggle" },
-      { "<leader>oc", "<cmd>OverseerShell<cr>", desc = "Run Command", icon = icons.misc.Terminal },
+      { "<leader>oc", "<cmd>OverseerRunCmd<cr>", desc = "Run Command", icon = icons.misc.Terminal },
     })
 
     vim.api.nvim_create_user_command("OverseerRestartLast", function()

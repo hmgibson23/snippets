@@ -50,6 +50,10 @@ map("n", "te", ":tabnext<CR>", opts)
 map("n", "tn", ":tabprev<CR>", opts)
 map("n", "th", ":tabfirst<CR>", opts)
 map("n", "ti", ":tablast<CR>", opts)
+map("n", "<leader>wh", ":tabprev<CR>", opts)
+map("n", "<leader>wi", ":tabnext<CR>", opts)
+map("n", "<leader>wH", ":tabfirst<CR>", opts)
+map("n", "<leader>wI", ":tablast<CR>", opts)
 map("n", "cd", ":lcd %:p:h<CR>", opts)
 
 -- }}}

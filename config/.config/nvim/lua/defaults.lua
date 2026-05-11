@@ -85,15 +85,10 @@ g.netrw_altv = 1         -- Open with right splitting
 g.netrw_liststyle = 3    -- Tree-style view
 -- g.netrw_list_hide = (vim.fn["netrw_gitignore#Hide"]()) .. [[,\(^\|\s\s\)\zs\.\S\+]] -- use .gitignore
 
--- Treesitter based folding
-opt.foldlevel = 20
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+-- Treesitter based folding, with a Lua fallback for buffers without parsers.
+require("utils.folds").setup()
 
 -- opt.foldcolumn = "1"
--- opt.foldlevel = 99
--- opt.foldlevelstart = -1
--- opt.foldenable = true
 
 if g.neovide then
   g.neovide_transparency = 0.9

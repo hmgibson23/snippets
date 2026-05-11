@@ -155,7 +155,7 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, { "stylua" })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
-      require("mason-null-ls").setup({ automatic_setup = true, ensure_installed = { "stylua" } })
+      require("mason-null-ls").setup({ automatic_setup = false, ensure_installed = { "stylua" } })
 
       -- For each server define/customize via vim.lsp.config
       for server_name, server_opts in pairs(servers) do

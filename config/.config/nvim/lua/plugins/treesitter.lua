@@ -1,132 +1,174 @@
+local parsers = {
+  "bash",
+  "c",
+  "diff",
+  "html",
+  "lua",
+  "luadoc",
+  "markdown",
+  "markdown_inline",
+  "query",
+  "vim",
+  "vimdoc",
+  "teal",
+}
+
+local function has_parser(lang)
+  return pcall(vim.treesitter.language.add, lang)
+end
+
+local function start_treesitter(bufnr)
+  bufnr = bufnr or 0
+  if vim.bo[bufnr].buftype ~= "" then
+    return
+  end
+
+  local filetype = vim.bo[bufnr].filetype
+  local lang = vim.treesitter.language.get_lang(filetype)
+  if not lang or not has_parser(lang) then
+    return
+  end
+
+  pcall(vim.treesitter.start, bufnr, lang)
+
+  local ok = pcall(require, "nvim-treesitter")
+  if ok then
+    vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end
+end
+
 return {
   {
-    -- Highlight, edit, and navigate code
+    -- Neovim 0.12 requires the rewritten nvim-treesitter main branch. The old
+    -- master branch ships queries that can crash the built-in highlighter with
+    -- `attempt to call method 'range' (a nil value)`.
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
+    branch = "main",
+    lazy = false,
+    build = function()
+      if vim.fn.executable("tree-sitter") == 1 then
+        vim.cmd("TSUpdate")
+      end
+    end,
     dependencies = {
-      { "nvim-treesitter/nvim-treesitter-textobjects", event = "BufReadPre" },
-      { "windwp/nvim-ts-autotag",                      event = "InsertEnter" },
+      { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
+      { "windwp/nvim-ts-autotag", event = "InsertEnter" },
       { "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
-      { "p00f/nvim-ts-rainbow",                        event = "BufReadPre",          enabled = false },
-      { "RRethy/nvim-treesitter-textsubjects",         event = "BufReadPre" },
-      { "nvim-treesitter/playground",                  cmd = { "TSPlaygroundToggle" } },
-      { "nvim-treesitter/nvim-treesitter-context",     event = "BufReadPre",          enabled = false },
-      { "mfussenegger/nvim-treehopper",                enabled = false },
+      { "p00f/nvim-ts-rainbow", enabled = false },
+      { "RRethy/nvim-treesitter-textsubjects", enabled = false },
+      { "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" }, enabled = false },
+      { "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", enabled = false },
+      { "mfussenegger/nvim-treehopper", enabled = false },
       {
         "m-demare/hlargs.nvim",
-        config = function()
-          require("hlargs").setup()
-        end,
+        event = "BufReadPre",
+        opts = {},
       },
     },
     opts = {
-      ensure_installed = {
-        "bash",
-        "c",
-        "diff",
-        "html",
-        "lua",
-        "luadoc",
-        "markdown",
-        "markdown_inline",
-        "query",
-        "vim",
-        "vimdoc",
-        "teal",
+      install_dir = vim.fn.stdpath("data") .. "/site",
+    },
+    config = function(_, opts)
+      require("nvim-treesitter").setup(opts)
+
+      if vim.fn.executable("tree-sitter") == 1 then
+        local installed = require("nvim-treesitter.config").get_installed()
+        local missing = vim.tbl_filter(function(parser)
+          return not vim.tbl_contains(installed, parser)
+        end, parsers)
+        if #missing > 0 then
+          require("nvim-treesitter").install(missing)
+        end
+      end
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("UserTreesitterStart", { clear = true }),
+        callback = function(args)
+          start_treesitter(args.buf)
+        end,
+      })
+    end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    keys = {
+      {
+        "af",
+        function()
+          require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
+        end,
+        mode = { "x", "o" },
+        desc = "Around function",
       },
-      auto_install = true,
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = { "ruby" },
+      {
+        "if",
+        function()
+          require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
+        end,
+        mode = { "x", "o" },
+        desc = "Inside function",
       },
-      indent = {
-        enable = true,
-        disable = { "ruby", "python", "java", "rust", "lua" },
+      {
+        "ac",
+        function()
+          require("nvim-treesitter-textobjects.select").select_textobject("@class.outer", "textobjects")
+        end,
+        mode = { "x", "o" },
+        desc = "Around class",
       },
-      rainbow = {
-        enable = true,
-        extended_mode = true,
-        max_file_lines = nil,
+      {
+        "ic",
+        function()
+          require("nvim-treesitter-textobjects.select").select_textobject("@class.inner", "textobjects")
+        end,
+        mode = { "x", "o" },
+        desc = "Inside class",
       },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "gnn",
-          node_incremental = "gnr",
-          scope_incremental = "gnc",
-          node_decremental = "gnm",
+      {
+        "]m",
+        function()
+          require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects")
+        end,
+        mode = { "n", "x", "o" },
+        desc = "Next function start",
+      },
+      {
+        "[m",
+        function()
+          require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
+        end,
+        mode = { "n", "x", "o" },
+        desc = "Previous function start",
+      },
+      {
+        "]]",
+        function()
+          require("nvim-treesitter-textobjects.move").goto_next_start("@class.outer", "textobjects")
+        end,
+        mode = { "n", "x", "o" },
+        desc = "Next class start",
+      },
+      {
+        "[[",
+        function()
+          require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
+        end,
+        mode = { "n", "x", "o" },
+        desc = "Previous class start",
+      },
+    },
+    opts = {
+      select = {
+        lookahead = true,
+        selection_modes = {
+          ["@parameter.outer"] = "v",
+          ["@function.outer"] = "V",
+          ["@class.outer"] = "<c-v>",
         },
       },
-      matchup = {
-        enable = true,
-      },
-      textsubjects = {
-        enable = true,
-        prev_selection = ",",
-        keymaps = {
-          ["."] = "textsubjects-smart",
-          [";"] = "textsubjects-container-outer",
-          ["i;"] = "textsubjects-container-inner",
-        },
-      },
-      textobjects = {
-        select = {
-          enable = true,
-          lookahead = true,
-          keymaps = {
-            ["af"] = "@function.outer",
-            ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-            ["ib"] = { query = "@code_cell.inner", desc = "in block" },
-            ["ab"] = { query = "@code_cell.outer", desc = "around block" },
-          },
-          selection_modes = {
-            ["@parameter.outer"] = "v",
-            ["@function.outer"] = "V",
-            ["@class.outer"] = "<c-v>",
-          },
-        },
-        swap = {
-          enable = true,
-          swap_next = {
-            ["<leader>sbl"] = "@code_cell.outer",
-          },
-          swap_previous = {
-            ["<leader>sbh"] = "@code_cell.outer",
-          },
-        },
-        move = {
-          enable = true,
-          set_jumps = true,
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-            ["]]"] = "@class.outer",
-          },
-          goto_next_end = {
-            ["]M"] = "@function.outer",
-            ["]["] = "@class.outer",
-          },
-          goto_previous_start = {
-            ["[m"] = "@function.outer",
-            ["[["] = "@class.outer",
-          },
-          goto_previous_end = {
-            ["[M"] = "@function.outer",
-            ["[]"] = "@class.outer",
-          },
-        },
-      },
-      playground = {
-        enable = true,
-        disable = {},
-        updatetime = 25,
-        persist_queries = false,
-      },
-      query_linter = {
-        enable = true,
-        use_virtual_text = true,
-        lint_events = { "BufWrite", "CursorHold" },
+      move = {
+        set_jumps = true,
       },
     },
   },

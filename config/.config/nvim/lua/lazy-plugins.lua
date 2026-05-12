@@ -70,6 +70,7 @@ require("lazy").setup({
   require("plugins/otter"),
   require("plugins/lspconfig"),
   require("plugins/cmake-tools"),
+  require("plugins/csharp"),
   require("plugins/lspsaga"),
   require("plugins/none-ls"),
   require("plugins/cmp"),

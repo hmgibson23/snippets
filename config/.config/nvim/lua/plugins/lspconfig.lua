@@ -206,23 +206,8 @@ return {
       })
       vim.lsp.enable("clangd")
 
-      -- omnisharp
-      vim.lsp.config("omnisharp", {
-        cmd = { "omnisharp" },
-        capabilities = capabilities,
-        root_dir = require("lspconfig.util").root_pattern("*.sln", "*.csproj", ".git"),
-        settings = {
-          omnisharp = {
-            useModernNet = true,
-            enableRoslynAnalyzers = true,
-            analyzeOpenDocumentsOnly = false,
-          },
-        },
-        on_attach = function(client, bufnr)
-          require("omnisharp_extended").extend(client, bufnr)
-        end,
-      })
-      vim.lsp.enable("omnisharp")
+      -- C# is handled by seblyng/roslyn.nvim in lua/plugins/csharp.lua.
+      -- Keep OmniSharp installed for manual fallback, but do not start both LSPs.
     end,
   },
 }

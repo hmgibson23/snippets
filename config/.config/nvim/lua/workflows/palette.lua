@@ -18,6 +18,8 @@ function M.items()
     { label = "Markdown preview: start", action = function() vim.cmd("MarkdownPreview") end },
     { label = "Markdown preview: refresh", action = function() vim.cmd("MarkdownPreviewRefresh") end },
     { label = "Markdown preview: stop", action = function() vim.cmd("MarkdownPreviewStop") end },
+    { label = "C# palette", action = function() require("csharp").palette() end },
+    { label = "C# info", action = function() require("csharp").info() end },
     { label = "Project info", action = function() vim.notify(project.describe()) end },
     { label = "Project: test", action = tasks.run_project_default },
     { label = "Project: run app", action = tasks.run_project },

@@ -1,5 +1,13 @@
 local M = {}
 
+local function csharp_command(kind)
+  local ok, csharp = pcall(require, "csharp")
+  if ok then
+    return csharp.command(kind)
+  end
+  return nil
+end
+
 local markers = {
   python = { "pyproject.toml", "uv.lock", "requirements.txt", "setup.py", "pytest.ini" },
   node = { "package.json", "pnpm-lock.yaml", "yarn.lock", "package-lock.json" },
@@ -22,7 +30,7 @@ function M.root(bufnr)
   bufnr = bufnr or 0
   local name = vim.api.nvim_buf_get_name(bufnr)
   local start = name ~= "" and vim.fs.dirname(name) or vim.uv.cwd()
-  local root = vim.fs.root(start, { ".git", "pyproject.toml", "package.json", "Cargo.toml", "go.mod", "project.godot", "_quarto.yml" })
+  local root = vim.fs.root(start, { ".git", "pyproject.toml", "package.json", "Cargo.toml", "go.mod", "*.slnx", "*.sln", "*.csproj", "project.godot", "_quarto.yml" })
   return root or vim.uv.cwd()
 end
 
@@ -124,7 +132,7 @@ function M.command(kind, bufnr)
     elseif vim.tbl_contains(types, "go") then
       return "go test ./..."
     elseif vim.tbl_contains(types, "csharp") then
-      return "dotnet test"
+      return csharp_command("test") or "dotnet test"
     end
   elseif kind == "run" then
     if vim.tbl_contains(features, "fastapi") then
@@ -148,7 +156,7 @@ function M.command(kind, bufnr)
     elseif vim.tbl_contains(types, "go") then
       return "go build ./..."
     elseif vim.tbl_contains(types, "csharp") then
-      return "dotnet build"
+      return csharp_command("build") or "dotnet build"
     elseif vim.tbl_contains(types, "quarto") then
       return "quarto render"
     end
@@ -159,6 +167,8 @@ function M.command(kind, bufnr)
       return "cargo fmt"
     elseif vim.tbl_contains(types, "go") then
       return "gofmt -w ."
+    elseif vim.tbl_contains(types, "csharp") then
+      return csharp_command("format") or "dotnet format"
     elseif vim.tbl_contains(types, "quarto") then
       return "quarto render --to markdown"
     end

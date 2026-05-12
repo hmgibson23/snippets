@@ -98,6 +98,5 @@ return {
   dockerls = {},
   bashls = {},
   taplo = {},
-  omnisharp = {},
   zls = {},
 }

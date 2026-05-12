@@ -27,6 +27,7 @@ return {
     }), "stylua")
     add_if_available(sources, b.formatting.google_java_format, "google-java-format")
     add_if_available(sources, b.formatting.clang_format, "clang-format")
+    add_if_available(sources, b.formatting.csharpier, "csharpier")
     add_if_available(sources, b.formatting.terraform_fmt, "terraform")
 
     -- Diagnostics

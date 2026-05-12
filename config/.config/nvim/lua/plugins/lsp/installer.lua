@@ -5,6 +5,10 @@ function M.setup(servers, server_options)
   local icons = require("plugins.icons")
 
   require("mason").setup({
+    registries = {
+      "github:mason-org/mason-registry",
+      "github:Crashdummyy/mason-registry",
+    },
     ui = {
       icons = {
         package_installed = icons.lsp.server_installed,
@@ -19,7 +23,7 @@ function M.setup(servers, server_options)
   })
 
   require("mason-tool-installer").setup({
-    ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls", "prettierd" },
+    ensure_installed = { "codelldb", "stylua", "shfmt", "shellcheck", "prettierd", "terraform-ls", "prettierd", "roslyn", "csharpier" },
     auto_update = true,
     run_on_start = true,
   })

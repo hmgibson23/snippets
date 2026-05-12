@@ -31,7 +31,15 @@ return {
         cmd = { "AerialToggle" },
       },
       "folke/which-key.nvim",
-      { "williamboman/mason.nvim", opts = {} },
+      {
+        "williamboman/mason.nvim",
+        opts = {
+          registries = {
+            "github:mason-org/mason-registry",
+            "github:Crashdummyy/mason-registry",
+          },
+        },
+      },
       "williamboman/mason-lspconfig.nvim",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
 

@@ -30,6 +30,41 @@ function M.project_files(root)
   return files
 end
 
+function M.choose_target(targets)
+  if not targets or #targets == 0 then
+    return nil
+  end
+
+  local sorted = vim.deepcopy(targets)
+  table.sort(sorted)
+
+  for _, extension in ipairs({ "%.slnx$", "%.sln$", "%.slnf$", "%.csproj$" }) do
+    for _, target in ipairs(sorted) do
+      if target:match(extension) then
+        return target
+      end
+    end
+  end
+
+  return sorted[1]
+end
+
+function M.roslyn_executable()
+  local mason_bin = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin", vim.fn.has("win32") == 1 and "roslyn.cmd" or "roslyn")
+  if vim.fn.executable(mason_bin) == 1 then
+    return mason_bin
+  end
+  local roslyn = vim.fn.exepath("roslyn")
+  if roslyn ~= "" then
+    return roslyn
+  end
+  local language_server = vim.fn.exepath("Microsoft.CodeAnalysis.LanguageServer")
+  if language_server ~= "" then
+    return language_server
+  end
+  return nil
+end
+
 function M.command(kind, root)
   root = root or M.root()
   local commands = {
@@ -62,8 +97,7 @@ end
 function M.info()
   local root = M.root()
   local files = M.project_files(root)
-  local roslyn_bin = vim.fn.exepath("roslyn")
-  local roslyn_lsp = vim.fn.exepath("Microsoft.CodeAnalysis.LanguageServer")
+  local roslyn = M.roslyn_executable()
   local dotnet_version = vim.fn.executable("dotnet") == 1 and vim.fn.systemlist("dotnet --version")[1] or nil
 
   local lines = {
@@ -72,7 +106,7 @@ function M.info()
     "root: " .. root,
     "project files: " .. (#files > 0 and table.concat(files, ", ") or "none"),
     "dotnet: " .. (dotnet_version or "missing"),
-    "roslyn: " .. (roslyn_bin ~= "" and roslyn_bin or (roslyn_lsp ~= "" and roslyn_lsp or "not found (install roslyn language server)")),
+    "roslyn: " .. (roslyn or "not found (run :MasonInstall roslyn after registry update)"),
     "csharpier: " .. (vim.fn.executable("csharpier") == 1 and "ok" or "missing (format falls back to dotnet format)"),
     "active Roslyn clients: " .. tostring(#vim.lsp.get_clients({ name = "roslyn" })),
   }
@@ -88,7 +122,7 @@ function M.actions()
     { label = "Restore", action = function() M.run("restore") end },
     { label = "Clean", action = function() M.run("clean") end },
     { label = "Format", action = function() M.run("format") end },
-    { label = "Roslyn target", action = function() vim.cmd("Roslyn target") end },
+    { label = "Select Roslyn target", action = function() vim.cmd("Roslyn target") end },
     { label = "Info", action = M.info },
   }
 end
@@ -120,6 +154,7 @@ function M.setup()
   vim.api.nvim_create_user_command("CSharpClean", function() M.run("clean") end, { desc = "Clean C# project" })
   vim.api.nvim_create_user_command("CSharpFormat", function() M.run("format") end, { desc = "Format C# project" })
   vim.api.nvim_create_user_command("CSharpInfo", M.info, { desc = "Show C# tooling information" })
+  vim.api.nvim_create_user_command("CSharpTarget", function() vim.cmd("Roslyn target") end, { desc = "Select Roslyn solution/project target" })
   vim.api.nvim_create_user_command("CSharpPalette", M.palette, { desc = "C# action palette" })
 end
 

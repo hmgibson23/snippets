@@ -2,11 +2,14 @@ return {
   {
     "seblyng/roslyn.nvim",
     ft = { "cs", "razor" },
-    cmd = { "Roslyn", "CSharpPalette", "CSharpInfo" },
+    cmd = { "Roslyn", "CSharpPalette", "CSharpInfo", "CSharpTarget" },
     opts = {
       filewatching = "roslyn",
       broad_search = true,
-      lock_target = false,
+      choose_target = function(targets)
+        return require("csharp").choose_target(targets)
+      end,
+      lock_target = true,
       silent = false,
     },
     config = function(_, opts)

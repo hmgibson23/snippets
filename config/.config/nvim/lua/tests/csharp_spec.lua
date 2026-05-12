@@ -49,4 +49,23 @@ describe('csharp helpers', function()
     assert.are.equal('dotnet clean', csharp.command('clean', '/repo'))
     assert.are.equal('dotnet watch test', csharp.command('watch_test', '/repo'))
   end)
+
+  it('chooses a stable target preference when Roslyn finds many candidates', function()
+    local target = csharp.choose_target({
+      '/repo/src/App/App.csproj',
+      '/repo/Legacy.sln',
+      '/repo/App.slnx',
+    })
+
+    assert.are.equal('/repo/App.slnx', target)
+  end)
+
+  it('falls back to the first sorted target when no solution exists', function()
+    local target = csharp.choose_target({
+      '/repo/tests/Tests.csproj',
+      '/repo/src/App.csproj',
+    })
+
+    assert.are.equal('/repo/src/App.csproj', target)
+  end)
 end)

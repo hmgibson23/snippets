@@ -1,89 +1,134 @@
+local dap_filetypes = {
+  "python",
+  "javascript",
+  "javascriptreact",
+  "typescript",
+  "typescriptreact",
+  "c",
+  "cpp",
+  "go",
+}
+
+local function debugpy_python()
+  local mason_debugpy = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "packages", "debugpy", "venv", "bin", "python")
+  if vim.loop.fs_stat(mason_debugpy) then
+    return mason_debugpy
+  end
+  if vim.fn.executable("python3") == 1 then
+    return "python3"
+  end
+  return "python"
+end
+
 return {
   "mfussenegger/nvim-dap",
   lazy = true,
-  ft = "python",
+  ft = dap_filetypes,
+  cmd = { "DebugPalette", "DebugStart", "DebugInfo", "DapContinue", "DapToggleBreakpoint" },
   dependencies = {
     "rcarriga/nvim-dap-ui",
-    {
-      "mfussenegger/nvim-dap-python",
-      lazy = true,
-      config = function()
-        require("dap-python").setup("~/.virtualenvs/debugpy/bin/python")
-      end,
-    },
+    "nvim-neotest/nvim-nio",
+    { "mfussenegger/nvim-dap-python" },
     "jay-babu/mason-nvim-dap.nvim",
     { "leoluz/nvim-dap-go" },
-    { "jbyuki/one-small-step-for-vimkind" },
+    { "jbyuki/one-small-step-for-vimkind", lazy = true },
     {
       "mxsdev/nvim-dap-vscode-js",
-      lazy = true,
       dependencies = {
-        "microsoft/vscode-js-debug",
-        build = "npm install --legacy-peer-deps && npm run compile",
+        {
+          "microsoft/vscode-js-debug",
+          build = "npm install --legacy-peer-deps && npm run compile",
+        },
       },
-      config = function()
-        require("dap-vscode-js").setup({
-          adapters = { "node2", "chrome", "firefox" }, -- Debug Node.js & browsers
-        })
-      end,
     },
-    {
-      "theHamsta/nvim-dap-virtual-text",
-      lazy = true,
-      config = function()
-        require("nvim-dap-virtual-text").setup({
-          enabled = true,                -- Enable virtual text
-          enabled_commands = true,       -- Enable commands like `:DapVirtualTextEnable`
-          highlight_changed_variables = true, -- Highlight changed values
-          show_stop_reason = true,       -- Show why execution stopped
-        })
-      end,
-    },
+    { "theHamsta/nvim-dap-virtual-text" },
   },
   keys = {
-    -- Integrated keymap from your request
-    { "<leader>d",  group = "[D]AP" },
-    { "<leader>dR", "<cmd>lua require'dap'.run_to_cursor()<cr>",                        desc = "Run to Cursor" },
-    { "<leader>dE", "<cmd>lua require'dapui'.eval(vim.fn.input '[Expression] > ')<cr>", desc = "Evaluate Input" },
-    {
-      "<leader>dC",
-      "<cmd>lua require'dap'.set_breakpoint(vim.fn.input '[Condition] > ')<cr>",
-      desc = "Conditional Breakpoint",
-    },
-    { "<leader>dU", "<cmd>lua require'dapui'.toggle()<cr>",          desc = "Toggle UI" },
-    { "<leader>db", "<cmd>lua require'dap'.step_back()<cr>",         desc = "Step Back" },
-    { "<leader>dc", "<cmd>lua require'dap'.continue()<cr>",          desc = "Continue" },
-    { "<leader>dd", "<cmd>lua require'dap'.disconnect()<cr>",        desc = "Disconnect" },
-    { "<leader>de", "<cmd>lua require'dapui'.eval()<cr>",            desc = "Evaluate" },
-    { "<leader>dg", "<cmd>lua require'dap'.session()<cr>",           desc = "Get Session" },
-    { "<leader>dh", "<cmd>lua require'dap.ui.widgets'.hover()<cr>",  desc = "Hover Variables" },
-    { "<leader>dS", "<cmd>lua require'dap.ui.widgets'.scopes()<cr>", desc = "Scopes" },
-    { "<leader>di", "<cmd>lua require'dap'.step_into()<cr>",         desc = "Step Into" },
-    { "<leader>do", "<cmd>lua require'dap'.step_over()<cr>",         desc = "Step Over" },
-    { "<leader>dp", "<cmd>lua require'dap'.pause.toggle()<cr>",      desc = "Pause" },
-    { "<leader>dq", "<cmd>lua require'dap'.close()<cr>",             desc = "Quit" },
-    { "<leader>dr", "<cmd>lua require'dap'.repl.toggle()<cr>",       desc = "Toggle Repl" },
-    { "<leader>ds", "<cmd>lua require'dap'.continue()<cr>",          desc = "Start" },
-    { "<leader>dt", "<cmd>lua require'dap'.toggle_breakpoint()<cr>", desc = "Toggle Breakpoint" },
-    { "<leader>dx", "<cmd>lua require'dap'.terminate()<cr>",         desc = "Terminate" },
-    { "<leader>du", "<cmd>lua require'dap'.step_out()<cr>",          desc = "Step Out" },
-    { "<leader>de", "<cmd>lua require'dapui'.eval()<cr>",            desc = "Evaluate",         mode = "v" },
+    { "<leader>d", group = "[D]ebug" },
+    { "<leader>d?", function() require("dap.actions").info() end, desc = "Debug info" },
+    { "<leader>dP", function() require("dap.actions").palette() end, desc = "Debug palette" },
+    { "<leader>dS", function() require("dap.actions").start_smart() end, desc = "Smart start" },
+    { "<leader>dR", function() require("dap").run_to_cursor() end, desc = "Run to cursor" },
+    { "<leader>dC", function() require("dap.actions").conditional_breakpoint() end, desc = "Conditional breakpoint" },
+    { "<leader>dL", function() require("dap.actions").logpoint() end, desc = "Logpoint" },
+    { "<leader>dU", function() require("dapui").toggle() end, desc = "Toggle UI" },
+    { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+    { "<leader>dc", function() require("dap.actions").continue_or_start() end, desc = "Continue / start" },
+    { "<leader>dd", function() require("dap").disconnect() end, desc = "Disconnect" },
+    { "<leader>de", function() require("dapui").eval() end, desc = "Evaluate" },
+    { "<leader>dE", function() require("dap.actions").eval_input() end, desc = "Evaluate input" },
+    { "<leader>df", function() require("dap.actions").frames() end, desc = "Frames float" },
+    { "<leader>dh", function() require("dap.actions").hover() end, desc = "Hover variables" },
+    { "<leader>di", function() require("dap").step_into() end, desc = "Step into" },
+    { "<leader>do", function() require("dap").step_over() end, desc = "Step over" },
+    { "<leader>dp", function() require("dap").pause() end, desc = "Pause" },
+    { "<leader>dq", function() require("dap.actions").terminate() end, desc = "Terminate" },
+    { "<leader>dr", function() require("dap.actions").repl() end, desc = "Toggle REPL" },
+    { "<leader>ds", function() require("dap.actions").scopes() end, desc = "Scopes float" },
+    { "<leader>dt", function() require("dap.actions").debug_nearest_test() end, desc = "Debug nearest test" },
+    { "<leader>dT", function() require("dap.actions").debug_file_tests() end, desc = "Debug file tests" },
+    { "<leader>du", function() require("dap").step_out() end, desc = "Step out" },
+    { "<leader>dx", function() require("dap.actions").terminate() end, desc = "Terminate" },
+    { "<leader>de", function() require("dapui").eval() end, desc = "Evaluate selection", mode = "v" },
+    { "<F5>", function() require("dap.actions").continue_or_start() end, desc = "Debug continue/start" },
+    { "<F9>", function() require("dap").toggle_breakpoint() end, desc = "Toggle breakpoint" },
+    { "<F10>", function() require("dap").step_over() end, desc = "Step over" },
+    { "<F11>", function() require("dap").step_into() end, desc = "Step into" },
+    { "<F12>", function() require("dap").step_out() end, desc = "Step out" },
   },
   config = function()
     local dap = require("dap")
     local dapui = require("dapui")
 
-    -- Mason DAP setup
     require("mason-nvim-dap").setup({
       automatic_installation = true,
       handlers = {},
-      ensure_installed = { "debugpy", "cpptools" },
+      ensure_installed = { "python", "cppdbg", "delve" },
     })
 
-    -- DAP UI setup
+    pcall(function()
+      require("dap-python").setup(debugpy_python())
+    end)
+
+    pcall(function()
+      require("dap-vscode-js").setup({
+        debugger_path = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "vscode-js-debug"),
+        adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
+      })
+    end)
+
+    pcall(function()
+      require("dap-go").setup({
+        delve = { detached = vim.fn.has("win32") == 0 },
+      })
+    end)
+
+    pcall(function()
+      require("nvim-dap-virtual-text").setup({
+        enabled = true,
+        enabled_commands = true,
+        highlight_changed_variables = true,
+        highlight_new_as_changed = true,
+        show_stop_reason = true,
+        commented = true,
+      })
+    end)
+
+    require("dap.configs").apply(dap)
+
     dapui.setup({
       icons = { expanded = "▾", collapsed = "▸", current_frame = "*" },
+      mappings = {
+        expand = { "<CR>", "<2-LeftMouse>" },
+        open = "o",
+        remove = "d",
+        edit = "e",
+        repl = "r",
+        toggle = "t",
+      },
       controls = {
+        enabled = true,
+        element = "repl",
         icons = {
           pause = "⏸",
           play = "▶",
@@ -96,30 +141,36 @@ return {
           disconnect = "⏏",
         },
       },
+      floating = {
+        border = "rounded",
+        mappings = { close = { "q", "<Esc>" } },
+      },
       layouts = {
         {
           elements = {
-            { id = "scopes",      size = 0.25 },
-            { id = "breakpoints", size = 0.25 },
-            { id = "stacks",      size = 0.25 },
-            { id = "watches",     size = 0.25 },
+            { id = "scopes", size = 0.40 },
+            { id = "watches", size = 0.20 },
+            { id = "stacks", size = 0.25 },
+            { id = "breakpoints", size = 0.15 },
           },
-          size = 40, -- Width of the left sidebar
+          size = 42,
           position = "left",
         },
         {
           elements = {
-            { id = "repl", size = 1 }, -- Move REPL here
+            { id = "repl", size = 0.65 },
+            { id = "console", size = 0.35 },
           },
-          size = 40,             -- Width of the REPL
-          position = "right",    -- Place REPL on the right
+          size = 12,
+          position = "bottom",
         },
       },
     })
 
-    -- Change breakpoint icons
     vim.api.nvim_set_hl(0, "DapBreak", { fg = "#e51400" })
     vim.api.nvim_set_hl(0, "DapStop", { fg = "#ffcc00" })
+    vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = "#3b4252" })
+
     local breakpoint_icons = vim.g.have_nerd_font
         and {
           Breakpoint = "",
@@ -135,35 +186,23 @@ return {
           LogPoint = "◆",
           Stopped = "⭔",
         }
+
     for type, icon in pairs(breakpoint_icons) do
       local tp = "Dap" .. type
       local hl = (type == "Stopped") and "DapStop" or "DapBreak"
       vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     end
 
-    -- Setup event listeners
-    dap.listeners.after.event_initialized["dapui_config"] = dapui.open
-    dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-    dap.listeners.before.event_exited["dapui_config"] = dapui.close
-    
-    -- Setup Python auto-configuration keymaps
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = 'python',
-      callback = function(args)
-        local bufnr = args.buf
-        local python_dap = require('dap.python')
-        
-        -- Override <leader>ds (start) for Python files
-        vim.keymap.set('n', '<leader>ds', function()
-          python_dap.start()
-        end, { buffer = bufnr, desc = 'Start (Python Auto)' })
-        
-        -- Override <leader>dc (continue) for Python files  
-        vim.keymap.set('n', '<leader>dc', function()
-          python_dap.continue()
-        end, { buffer = bufnr, desc = 'Continue (Python Auto)' })
-      end,
-      group = vim.api.nvim_create_augroup('DapPythonAutoConfig', { clear = true }),
-    })
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+      dapui.open()
+    end
+    dap.listeners.before.event_terminated["dapui_config"] = function()
+      dapui.close()
+    end
+    dap.listeners.before.event_exited["dapui_config"] = function()
+      dapui.close()
+    end
+
+    require("dap.actions").setup_commands()
   end,
 }

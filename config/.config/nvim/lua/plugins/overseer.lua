@@ -20,7 +20,7 @@ return {
   config = function()
     local overseer = require("overseer")
     local whichkey = require("which-key")
-    local icons = require("plugins.icons")
+    local icons = require("config.icons")
     whichkey.add({
       { "<leader>o", group = "[O]verseer" },
       { "<leader>ob", "<cmd>OverseerBuild<cr>", desc = "Build", icon = "" },

@@ -16,6 +16,18 @@ local function mason_package_path(package, ...)
   return vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "packages", package, ...)
 end
 
+local function js_debug_adapter()
+  return {
+    type = "server",
+    host = "127.0.0.1",
+    port = "${port}",
+    executable = {
+      command = mason_package_path("js-debug-adapter", "js-debug-adapter"),
+      args = { "${port}", "127.0.0.1" },
+    },
+  }
+end
+
 function M.javascript()
   return {
     {
@@ -140,6 +152,11 @@ function M.apply(dap)
     type = "executable",
     command = mason_package_path("cpptools", "extension", "debugAdapters", "bin", "OpenDebugAD7"),
   }
+
+  local js_adapter = js_debug_adapter()
+  dap.adapters["pwa-node"] = dap.adapters["pwa-node"] or js_adapter
+  dap.adapters["pwa-chrome"] = dap.adapters["pwa-chrome"] or vim.deepcopy(js_adapter)
+  dap.adapters["pwa-msedge"] = dap.adapters["pwa-msedge"] or vim.deepcopy(js_adapter)
 
   dap.configurations.python = M.python()
 

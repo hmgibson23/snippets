@@ -83,24 +83,51 @@ end
 -- @param suppression table: { source, code, file, line? }
 function Storage:remove_suppression(suppression)
   local file = suppression.file
-  
-  if not self.suppressions.files[file] then
-    return
-  end
+  local removed = 0
 
-  local filtered = {}
-  for _, s in ipairs(self.suppressions.files[file]) do
+  local function should_remove(s, allow_project)
     local match = s.source == suppression.source and s.code == suppression.code
-    if suppression.line then
-      match = match and s.line == suppression.line
-    end
-    
     if not match then
-      table.insert(filtered, s)
+      return false
+    end
+    if allow_project and s.scope == "project" then
+      return true
+    end
+    if suppression.line and s.line then
+      return s.line == suppression.line
+    end
+    return not s.line
+  end
+
+  local function remove_from_file(target_file, allow_project)
+    local file_suppressions = self.suppressions.files[target_file]
+    if not file_suppressions then
+      return
+    end
+
+    local filtered = {}
+    for _, s in ipairs(file_suppressions) do
+      if should_remove(s, allow_project) then
+        removed = removed + 1
+      else
+        table.insert(filtered, s)
+      end
+    end
+    self.suppressions.files[target_file] = filtered
+  end
+
+  remove_from_file(file, true)
+
+  -- Project-level suppressions apply everywhere, so allow removing them from
+  -- whichever file currently shows the suppressed diagnostic.
+  if removed == 0 then
+    for target_file, _ in pairs(self.suppressions.files or {}) do
+      if target_file ~= file then
+        remove_from_file(target_file, true)
+      end
     end
   end
 
-  self.suppressions.files[file] = filtered
   self:save_suppressions()
 end
 
@@ -111,6 +138,14 @@ function Storage:get_suppressions(file)
   return self.suppressions.files[file] or {}
 end
 
+local function suppression_matches(suppression, diagnostic)
+  return suppression.source == diagnostic.source and suppression.code == diagnostic.code
+end
+
+local function line_matches(suppression, diagnostic)
+  return suppression.line and suppression.line == diagnostic.lnum
+end
+
 -- Check if diagnostic is suppressed
 -- @param file string: File path
 -- @param diagnostic table: Diagnostic object
@@ -119,17 +154,23 @@ function Storage:is_suppressed(file, diagnostic)
   local suppressions = self:get_suppressions(file)
 
   for _, suppression in ipairs(suppressions) do
-    local source_match = suppression.source == diagnostic.source
-    local code_match = suppression.code == diagnostic.code
-
-    if source_match and code_match then
-      -- File-level suppressions apply to all lines
+    if suppression_matches(suppression, diagnostic) then
+      -- File-level suppressions apply to all lines in the current file.
       if suppression.scope == "file" then
         return true
       end
 
-      -- Line-specific suppressions
-      if suppression.line and suppression.line == diagnostic.lnum then
+      -- Line-specific suppressions.
+      if line_matches(suppression, diagnostic) then
+        return true
+      end
+    end
+  end
+
+  -- Project-level suppressions apply regardless of the file they were created from.
+  for _, file_suppressions in pairs(self.suppressions.files or {}) do
+    for _, suppression in ipairs(file_suppressions) do
+      if suppression.scope == "project" and suppression_matches(suppression, diagnostic) then
         return true
       end
     end

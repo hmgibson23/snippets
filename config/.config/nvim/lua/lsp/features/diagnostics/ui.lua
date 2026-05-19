@@ -1,6 +1,8 @@
 -- ABOUTME: UI components for diagnostic suppression
 -- ABOUTME: Provides interactive pickers and visual feedback for suppressions
 
+local filter = require('lsp.features.diagnostics.filter')
+
 local M = {}
 
 -- Reference to the manager (will be set during setup)
@@ -38,49 +40,10 @@ function M.show_scope_picker()
   table.insert(scopes, "file")
   table.insert(scopes, "project")
   
-  -- Check if telescope is available
-  local has_telescope, telescope = pcall(require, 'telescope')
-  
-  if has_telescope then
-    M._show_telescope_picker(scopes, diagnostic, bufnr, file)
-  else
     M._show_vim_select_picker(scopes, diagnostic, bufnr, file)
-  end
 end
 
--- Show telescope picker for scope selection
-function M._show_telescope_picker(scopes, diagnostic, bufnr, file)
-  local pickers = require('telescope.pickers')
-  local finders = require('telescope.finders')
-  local conf = require('telescope.config').values
-  local actions = require('telescope.actions')
-  local action_state = require('telescope.actions.state')
-  
-  pickers.new({}, {
-    prompt_title = string.format('Suppress %s: %s', diagnostic.source, diagnostic.code),
-    finder = finders.new_table({
-      results = scopes,
-      entry_maker = function(scope)
-        return {
-          value = scope,
-          display = M._format_scope_display(scope),
-          ordinal = scope,
-        }
-      end
-    }),
-    sorter = conf.generic_sorter({}),
-    attach_mappings = function(prompt_bufnr, map)
-      actions.select_default:replace(function()
-        actions.close(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        M._suppress_with_scope(bufnr, file, diagnostic, selection.value)
-      end)
-      return true
-    end,
-  }):find()
-end
-
--- Show vim.ui.select picker for scope selection
+-- Show vim.ui.select picker for scope selection. Snacks.input/select enhances this globally.
 function M._show_vim_select_picker(scopes, diagnostic, bufnr, file)
   vim.ui.select(scopes, {
     prompt = string.format('Suppress %s: %s - Select scope:', diagnostic.source, diagnostic.code),
@@ -122,6 +85,7 @@ function M._suppress_with_scope(bufnr, file, diagnostic, scope)
   local success = M.manager:suppress_with_comment(bufnr, file, diagnostic, position)
   
   if success then
+    filter.refresh(bufnr)
     vim.notify(string.format("Suppressed %s: %s at %s scope", 
                             diagnostic.source, diagnostic.code, scope), 
                vim.log.levels.INFO)
@@ -129,6 +93,7 @@ function M._suppress_with_scope(bufnr, file, diagnostic, scope)
     -- Fall back to storage-only
     success = M.manager:suppress_diagnostic(bufnr, file, diagnostic, scope)
     if success then
+      filter.refresh(bufnr)
       vim.notify(string.format("Suppressed %s: %s at %s scope (storage only)", 
                               diagnostic.source, diagnostic.code, scope), 
                  vim.log.levels.INFO)
@@ -145,8 +110,8 @@ function M.show_suppressions()
     return
   end
   
-  -- Get all suppressions from storage
-  local all_suppressions = M.manager.storage.suppressions or {}
+  -- Get all suppressions from storage. Storage keeps rules under `files`.
+  local all_suppressions = (M.manager.storage.suppressions or {}).files or {}
   
   if vim.tbl_isempty(all_suppressions) then
     vim.notify("No suppressions found", vim.log.levels.INFO)
@@ -166,77 +131,34 @@ function M.show_suppressions()
       })
     end
   end
+  table.sort(items, function(a, b)
+    if a.file == b.file then
+      return (a.line or -1) < (b.line or -1)
+    end
+    return a.file < b.file
+  end)
   
-  -- Check if telescope is available
-  local has_telescope = pcall(require, 'telescope')
-  
-  if has_telescope then
-    M._show_suppressions_telescope(items)
-  else
-    M._show_suppressions_quickfix(items)
-  end
+  M._show_suppressions_select(items)
 end
 
--- Show suppressions in telescope
-function M._show_suppressions_telescope(items)
-  local pickers = require('telescope.pickers')
-  local finders = require('telescope.finders')
-  local conf = require('telescope.config').values
-  local actions = require('telescope.actions')
-  local action_state = require('telescope.actions.state')
-  
-  pickers.new({}, {
-    prompt_title = 'Diagnostic Suppressions',
-    finder = finders.new_table({
-      results = items,
-      entry_maker = function(item)
-        local display = string.format("%s:%s - %s: %s [%s]",
-          vim.fn.fnamemodify(item.file, ':~:.'),
-          item.line or 'file',
-          item.source,
-          item.code,
-          item.scope)
-        
-        return {
-          value = item,
-          display = display,
-          ordinal = display,
-          filename = item.file,
-          lnum = item.line and (item.line + 1) or 1,
-        }
-      end
-    }),
-    sorter = conf.generic_sorter({}),
-    attach_mappings = function(prompt_bufnr, map)
-      actions.select_default:replace(function()
-        actions.close(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        -- Jump to file/line
-        vim.cmd(string.format('edit %s', selection.filename))
-        if selection.lnum then
-          vim.api.nvim_win_set_cursor(0, { selection.lnum, 0 })
-        end
-      end)
-      
-      -- Add delete mapping
-      map('i', '<C-d>', function()
-        local selection = action_state.get_selected_entry()
-        M.manager.storage:remove_suppression(
-          selection.value.file,
-          selection.value.source,
-          selection.value.code
-        )
-        vim.notify(string.format("Removed suppression for %s: %s", 
-                                selection.value.source, selection.value.code),
-                  vim.log.levels.INFO)
-        actions.close(prompt_bufnr)
-        -- Reopen with updated list
-        M.show_suppressions()
-      end)
-      
-      return true
+function M._show_suppressions_select(items)
+  vim.ui.select(items, {
+    prompt = 'Diagnostic suppressions:',
+    format_item = function(item)
+      return string.format("%s:%s - %s: %s [%s]",
+        vim.fn.fnamemodify(item.file, ':~:.'),
+        item.line or 'file',
+        item.source,
+        item.code,
+        item.scope)
     end,
-  }):find()
+  }, function(choice)
+    if not choice then
+      return
+    end
+    vim.cmd.edit(vim.fn.fnameescape(choice.file))
+    vim.api.nvim_win_set_cursor(0, { choice.line and (choice.line + 1) or 1, 0 })
+  end)
 end
 
 -- Show suppressions in quickfix list

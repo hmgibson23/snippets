@@ -71,7 +71,14 @@ end
 
 function M.setup()
   vim.api.nvim_create_user_command("AiPalette", M.palette, { desc = "Unified AI action palette" })
+  vim.api.nvim_create_user_command("PiToggle", function() require("pi").toggle() end, { desc = "Toggle pi" })
+  vim.api.nvim_create_user_command("PiFocus", function() require("pi").focus() end, { desc = "Focus pi" })
+  vim.api.nvim_create_user_command("PiLogin", function() require("pi").login() end, { desc = "Login via saml2aws" })
+
   vim.keymap.set({ "n", "v" }, "<leader>aP", M.palette, { desc = "AI palette" })
+  vim.keymap.set("n", "<leader>apt", function() require("pi").toggle() end, { desc = "Toggle pi" })
+  vim.keymap.set("n", "<leader>apf", function() require("pi").focus() end, { desc = "Focus pi" })
+  vim.keymap.set("n", "<leader>apl", function() require("pi").login() end, { desc = "Login (saml2aws)" })
 end
 
 return M

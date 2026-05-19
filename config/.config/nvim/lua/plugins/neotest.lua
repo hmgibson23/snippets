@@ -14,19 +14,7 @@ end
 
 return {
   "nvim-neotest/neotest",
-  keys = {
-    { "<leader>k", group = "[K]Tests" },
-    { "<leader>kn", function() require("neotest").run.run() end, desc = "Test nearest" },
-    { "<leader>kf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test file" },
-    { "<leader>ka", function() require("neotest").run.run({ suite = true }) end, desc = "Test suite" },
-    { "<leader>kl", function() require("neotest").run.run_last() end, desc = "Run last" },
-    { "<leader>kd", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug nearest" },
-    { "<leader>kD", function() require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap" }) end, desc = "Debug file" },
-    { "<leader>ko", function() require("neotest").output.open({ enter = true }) end, desc = "Output" },
-    { "<leader>kO", function() require("neotest").output_panel.toggle() end, desc = "Output panel" },
-    { "<leader>ks", function() require("neotest").summary.toggle() end, desc = "Summary" },
-    { "<leader>kS", function() require("neotest").run.stop() end, desc = "Stop" },
-  },
+  lazy = true,
   dependencies = {
     {
       "vim-test/vim-test",

@@ -22,10 +22,7 @@ return {
         rg = "[Rg] ",
         nvim_lsp_signature_help = "[Sig] 󰌨",
         codeium = "[Codeium] ",
-        cmp_ai = "[CmpAI] 󰒙",
         supermaven = "[Supermaven] ",
-        minuet = "[MinuetAI] 󰒙",
-        cmp_tabnine = "[TNine] 󰒙",
       }
 
       -- Fix for Codeium issues
@@ -143,15 +140,12 @@ return {
           { name = "luasnip" },
           { name = "codeium" },
           { name = "supermaven" },
-          { name = "cmp_ai" },
           { name = "otter" },
           { name = "treesitter" },
           { name = "rg",                     max_item_count = 8 },
           { name = "buffer",                 max_item_count = 5 },
           { name = "nvim_lua" },
           { name = "path" },
-          { name = "crates" },
-          { name = "minuet" },
           { name = "spell" },
           { name = "calc" },
         },
@@ -161,7 +155,7 @@ return {
         window = {
           documentation = {
             border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-            winhighlight = "NormalFloat:NormalFloat,FloatBorder:TelescopeBorder",
+            winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
           },
         },
       })

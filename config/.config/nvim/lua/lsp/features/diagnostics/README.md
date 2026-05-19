@@ -8,7 +8,7 @@ A comprehensive system for suppressing LSP diagnostics in Neovim with comment-ba
 - **Scope-based suppression**: Suppress at statement, function, class, file, or project level
 - **Comment adapters**: Generate language-specific suppression comments (Python supported)
 - **Storage system**: Persists suppressions to `.nvim/diagnostics.json`
-- **Interactive UI**: Telescope integration for scope selection and suppression management
+- **Interactive UI**: `vim.ui.select` integration for scope selection and suppression management; Snacks enhances this when loaded
 
 ## Setup
 
@@ -21,14 +21,14 @@ require('lsp.features.diagnostics').setup({
   
   -- Optional: customize keybindings
   keybindings = {
-    prefix = '<leader>d',  -- default prefix
+    prefix = '<leader>lx',  -- default prefix
     mappings = {
-      suppress_inline = 's',      -- <leader>ds
-      suppress_above = 'S',       -- <leader>dS
-      suppress_file = 'f',        -- <leader>df
-      unsuppress = 'u',           -- <leader>du
-      suppress_interactive = 'i', -- <leader>di
-      list_suppressions = 'l',    -- <leader>dl
+      suppress_inline = 's',      -- <leader>lxs
+      suppress_above = 'S',       -- <leader>lxS
+      suppress_file = 'f',        -- <leader>lxf
+      unsuppress = 'u',           -- <leader>lxu
+      suppress_interactive = 'i', -- <leader>lxi
+      list_suppressions = 'l',    -- <leader>lxl
     }
   }
 })
@@ -38,12 +38,12 @@ require('lsp.features.diagnostics').setup({
 
 | Keybinding | Action | Description |
 |------------|--------|-------------|
-| `<leader>ds` | Suppress inline | Add suppression comment at end of line |
-| `<leader>dS` | Suppress above | Add suppression comment on line above |
-| `<leader>df` | Suppress file | Add file-level suppression comment |
-| `<leader>du` | Unsuppress | Remove suppression at cursor |
-| `<leader>di` | Interactive | Show scope picker (requires Telescope) |
-| `<leader>dl` | List | Show all suppressions (requires Telescope) |
+| `<leader>lxs` | Suppress inline | Add suppression comment at end of line |
+| `<leader>lxS` | Suppress above | Add suppression comment on line above |
+| `<leader>lxf` | Suppress file | Add file-level suppression comment |
+| `<leader>lxu` | Unsuppress | Remove suppression at cursor |
+| `<leader>lxi` | Interactive | Show scope picker via `vim.ui.select`/Snacks |
+| `<leader>lxl` | List | Show all suppressions via `vim.ui.select`/Snacks |
 
 ## Commands
 

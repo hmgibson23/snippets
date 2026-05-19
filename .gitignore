@@ -13,6 +13,9 @@ findings.md
 progress.md
 local/.local/share/
 *.retry
+Session.vim
+config/.config/nvim/lua/.jukit/
+config/.config/nvim/lua/test.lua
 
 # Agent State
 .pi/superpowers-state.json

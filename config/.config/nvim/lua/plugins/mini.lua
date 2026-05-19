@@ -2,30 +2,6 @@ return {
   {
     "echasnovski/mini.nvim",
     config = function()
-      require("mini.animate").setup()
-      require("mini.ai").setup({
-        n_lines = 500,
-      })
-
-      require("mini.jump").setup({})
-      require("mini.jump2d").setup({})
-      require("mini.clue").setup({})
-
-      require("mini.surround").setup({
-        mappings = {
-          add = "sa",       -- Add surrounding in Normal and Visual modes
-          delete = "sd",    -- Delete surrounding
-          find = "sf",      -- Find surrounding (to the right)
-          find_left = "sF", -- Find surrounding (to the left)
-          highlight = "sh", -- Highlight surrounding
-          replace = "sr",   -- Replace surrounding
-          update_n_lines = "sn", -- Update `n_lines`
-
-          suffix_last = "l", -- Suffix to search with "prev" method
-          suffix_next = "n", -- Suffix to search with "next" method
-        },
-      })
-
       -- Minimal tabline
       require("mini.tabline").setup({
         -- Show file icons (requires mini.icons)
@@ -52,9 +28,9 @@ return {
 
       require("mini.sessions").setup({
         autoread = false,
-        autowrite = true,
-        directory = vim.fn.stdpath("data") .. "/session", -- Session directory
-        file = "Session.vim",                         -- Local session filename
+        autowrite = false,
+        directory = vim.fn.stdpath("data") .. "/session", -- Global session directory
+        file = "",                                     -- Disable cwd-local Session.vim files
         force = { read = false, write = true, delete = false },
         hooks = {
           pre = {
@@ -85,7 +61,7 @@ return {
         verbose = { read = false, write = true, delete = true },
       })
 
-      -- Bind <leader>ss to manually save the session using MiniSessions.write()
+      -- Bind project/session helpers early; heavier mini modules are deferred below.
       local wk_ok, which_key = pcall(require, "which-key")
       if wk_ok then
         which_key.add({
@@ -101,18 +77,48 @@ return {
           {
             "<leader>ps",
             function()
-              require("mini.sessions").write()
+              require("mini.sessions").write(get_cwd_as_name() .. ".vim")
             end,
             desc = "[S]ave Session",
           },
         })
       end
 
-      -- Align text interactively
-      require("mini.align").setup()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "VeryLazy",
+        once = true,
+        callback = function()
+          require("mini.animate").setup()
+          require("mini.ai").setup({
+            n_lines = 500,
+          })
+          require("mini.jump").setup({})
+          require("mini.jump2d").setup({})
+          require("mini.clue").setup({})
+          require("mini.surround").setup({
+            mappings = {
+              add = "sa",       -- Add surrounding in Normal and Visual modes
+              delete = "sd",    -- Delete surrounding
+              find = "sf",      -- Find surrounding (to the right)
+              find_left = "sF", -- Find surrounding (to the left)
+              highlight = "sh", -- Highlight surrounding
+              replace = "sr",   -- Replace surrounding
+              update_n_lines = "sn", -- Update `n_lines`
 
-      -- Autopairs for brackets, quotes, etc.
-      require("mini.pairs").setup()
+              suffix_last = "l", -- Suffix to search with "prev" method
+              suffix_next = "n", -- Suffix to search with "next" method
+            },
+          })
+          require("mini.align").setup()
+        end,
+      })
+
+      vim.api.nvim_create_autocmd("InsertEnter", {
+        once = true,
+        callback = function()
+          require("mini.pairs").setup()
+        end,
+      })
     end,
   },
 }

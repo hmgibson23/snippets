@@ -11,7 +11,7 @@ local dap_filetypes = {
 
 local function debugpy_python()
   local mason_debugpy = vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "packages", "debugpy", "venv", "bin", "python")
-  if vim.loop.fs_stat(mason_debugpy) then
+  if vim.uv.fs_stat(mason_debugpy) then
     return mason_debugpy
   end
   if vim.fn.executable("python3") == 1 then
@@ -32,15 +32,6 @@ return {
     "jay-babu/mason-nvim-dap.nvim",
     { "leoluz/nvim-dap-go" },
     { "jbyuki/one-small-step-for-vimkind", lazy = true },
-    {
-      "mxsdev/nvim-dap-vscode-js",
-      dependencies = {
-        {
-          "microsoft/vscode-js-debug",
-          build = "npm install --legacy-peer-deps && npm run compile",
-        },
-      },
-    },
     { "theHamsta/nvim-dap-virtual-text" },
   },
   keys = {
@@ -62,7 +53,6 @@ return {
     { "<leader>di", function() require("dap").step_into() end, desc = "Step into" },
     { "<leader>do", function() require("dap").step_over() end, desc = "Step over" },
     { "<leader>dp", function() require("dap").pause() end, desc = "Pause" },
-    { "<leader>dq", function() require("dap.actions").terminate() end, desc = "Terminate" },
     { "<leader>dr", function() require("dap.actions").repl() end, desc = "Toggle REPL" },
     { "<leader>ds", function() require("dap.actions").scopes() end, desc = "Scopes float" },
     { "<leader>dt", function() require("dap.actions").debug_nearest_test() end, desc = "Debug nearest test" },
@@ -83,18 +73,11 @@ return {
     require("mason-nvim-dap").setup({
       automatic_installation = true,
       handlers = {},
-      ensure_installed = { "python", "cppdbg", "delve" },
+      ensure_installed = require("plugins.lsp.tools").dap_adapters,
     })
 
     pcall(function()
       require("dap-python").setup(debugpy_python())
-    end)
-
-    pcall(function()
-      require("dap-vscode-js").setup({
-        debugger_path = vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "vscode-js-debug"),
-        adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
-      })
     end)
 
     pcall(function()

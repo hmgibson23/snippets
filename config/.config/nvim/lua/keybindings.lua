@@ -1,5 +1,6 @@
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
+local window_resize_step = 5
 
 vim.g.mapleader = ","
 
@@ -40,6 +41,12 @@ map("x", "<C-W>h", "<C-W>h", opts)
 map("x", "<C-W>n", "<C-W>j", opts)
 map("x", "<C-W>e", "<C-W>k", opts)
 map("x", "<C-W>i", "<C-W>l", opts)
+
+-- Larger resize steps than Vim's default 1-cell increments.
+map("n", "<C-W><", "<C-W>" .. window_resize_step .. "<", opts)
+map("n", "<C-W>>", "<C-W>" .. window_resize_step .. ">", opts)
+map("n", "<C-W>+", "<C-W>" .. window_resize_step .. "+", opts)
+map("n", "<C-W>-", "<C-W>" .. window_resize_step .. "-", opts)
 
 -- window & tab controls
 -- tab controls -- ctrl-t makes a new tab

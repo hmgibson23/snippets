@@ -4,7 +4,10 @@ return {
   ---@type oil.SetupOpts
   opts = {},
   dependencies = { { "echasnovski/mini.icons", opts = {} } },
-  lazy = false,
+  cmd = "Oil",
+  keys = {
+    { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
+  },
   config = function()
     require("oil").setup()
   end,

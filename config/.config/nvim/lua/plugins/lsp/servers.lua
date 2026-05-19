@@ -1,6 +1,4 @@
 return {
-  csharpier = {},
-  netcoredbg = {},
   html = {},
   marksman = {
     filetypes = { "markdown", "markdown.mdx", "pandoc" },
@@ -38,8 +36,7 @@ return {
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = { "vim", "describe", "it", "before_each", "after_each", "packer_plugins", "MiniTest" },
-          -- disable = { "lowercase-global", "undefined-global", "unused-local", "unused-vararg", "trailing-space" },
+          globals = { "vim", "describe", "it", "before_each", "after_each" },
         },
         workspace = {
           checkThirdParty = false,
@@ -54,7 +51,7 @@ return {
   },
   ts_ls = {
     disable_formatting = true,
-    semanticeTokens = true,
+    semanticTokens = true,
     settings = {
       javascript = {
         inlayHints = {
@@ -82,15 +79,16 @@ return {
   },
   vimls = {},
   yamlls = {
-    schemastore = {
-      enable = true,
-    },
     settings = {
       yaml = {
         hover = true,
         completion = true,
         validate = true,
-        schemas = require("schemastore").json.schemas(),
+        schemaStore = {
+          enable = false,
+          url = "",
+        },
+        schemas = require("schemastore").yaml.schemas(),
       },
     },
   },

@@ -1,5 +1,6 @@
 return {
   "nvim-lualine/lualine.nvim",
+  event = "VeryLazy",
   dependencies = {
     "nvim-tree/nvim-web-devicons",
     {
@@ -44,12 +45,12 @@ return {
     local function project_name_display()
       local projections_available, Session = pcall(require, "projections.session")
       if projections_available then
-        local info = Session.info(vim.loop.cwd())
+        local info = Session.info(vim.uv.cwd())
         if info ~= nil then
           return " " .. info.project.name
         end
       end
-      return " " .. vim.fs.basename(vim.loop.cwd()) -- Default icon
+      return " " .. vim.fs.basename(vim.uv.cwd()) -- Default icon
     end
 
     -- Function to get Codeium status without forcing the plugin to load

@@ -12,7 +12,7 @@ function M.find_fastapi_entry(project_root)
   
   for _, filename in ipairs(candidates) do
     local filepath = project_root .. '/' .. filename
-    local stat = vim.loop.fs_stat(filepath)
+    local stat = vim.uv.fs_stat(filepath)
     
     if stat and stat.type == 'file' then
       -- Read the file and look for FastAPI app variable

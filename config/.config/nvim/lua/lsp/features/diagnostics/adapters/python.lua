@@ -67,6 +67,43 @@ function PythonAdapter:get_suppression_comment(diagnostic)
   return format_fn(code)
 end
 
+local function is_coding_comment(line)
+  return line and line:match("coding[:=]%s*[-%w_.]+") ~= nil
+end
+
+local function is_docstring_start(line)
+  return line and line:match('^%s*[rubfRUBF]*["\']%s*["\']%s*["\']') ~= nil
+end
+
+function PythonAdapter:_file_suppression_insert_line(bufnr)
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  local index = 0
+
+  if lines[index + 1] and lines[index + 1]:match("^#!") then
+    index = index + 1
+  end
+
+  if is_coding_comment(lines[index + 1]) then
+    index = index + 1
+  end
+
+  if is_docstring_start(lines[index + 1]) then
+    local quote = lines[index + 1]:match('(["\']["\']["\'])')
+    index = index + 1
+    if quote and not lines[index]:match(quote .. "%s*$") then
+      while lines[index + 1] do
+        local line = lines[index + 1]
+        index = index + 1
+        if line:find(quote, 1, true) then
+          break
+        end
+      end
+    end
+  end
+
+  return index
+end
+
 -- Insert suppression comment into buffer
 -- @param bufnr number: Buffer number
 -- @param diagnostic table: Diagnostic object
@@ -88,8 +125,9 @@ function PythonAdapter:insert_suppression_comment(bufnr, diagnostic, position)
     vim.api.nvim_buf_set_lines(bufnr, line_num, line_num, false, { new_line })
     
   elseif position == "file" then
-    -- Insert at top of file
-    vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, { comment })
+    -- Insert after shebang/encoding/module docstring so Python file metadata remains valid.
+    local insert_at = self:_file_suppression_insert_line(bufnr)
+    vim.api.nvim_buf_set_lines(bufnr, insert_at, insert_at, false, { comment })
   end
 end
 

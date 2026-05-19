@@ -20,9 +20,18 @@ end
 
 return {
   "hkupty/iron.nvim",
+  cmd = { "IronRepl", "IronFocus", "IronHide", "IronRestart" },
+  keys = {
+    { "<leader>ii", "<cmd>IronRepl<cr>", desc = "Open REPL" },
+    { "<leader>if", "<cmd>IronFocus<cr>", desc = "Focus REPL" },
+    { "<leader>ih", "<cmd>IronHide<cr>", desc = "Hide REPL" },
+    { "<leader>ir", "<cmd>IronRestart<cr>", desc = "Restart REPL" },
+    { "<leader>iF", function() require("iron.core").send_file() end, desc = "Send File" },
+    { "<leader>il", function() require("iron.core").send_line("r") end, desc = "Send Line" },
+  },
   config = function()
     local iron = require("iron")
-    local icons = require("plugins.icons")
+    local icons = require("config.icons")
     local whichkey = require("which-key")
     whichkey.add({
 

@@ -5,11 +5,11 @@ local M = {}
 
 -- Setup keybindings
 -- @param opts table: Configuration options
---   - prefix: Key prefix (default: <leader>d)
+--   - prefix: Key prefix (default: <leader>lx)
 --   - mappings: Custom mappings override
 function M.setup(opts)
   opts = opts or {}
-  local prefix = opts.prefix or '<leader>d'
+  local prefix = opts.prefix or '<leader>lx'
   
   -- Default mappings
   local mappings = opts.mappings or {

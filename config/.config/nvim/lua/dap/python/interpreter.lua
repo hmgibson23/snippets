@@ -12,12 +12,12 @@ function M.resolve(context)
     return 'uv'
   end
   
-  -- Try to get from venv-selector plugin
+  -- Try to get the selected Python executable from venv-selector.
   local ok, venv_selector = pcall(require, 'venv-selector')
-  if ok and venv_selector.venv then
-    local venv_path = venv_selector.venv()
-    if venv_path then
-      return venv_path
+  if ok and venv_selector.python then
+    local python_path = venv_selector.python()
+    if python_path then
+      return python_path
     end
   end
   

@@ -1,73 +1,57 @@
 local keymaps = {}
-local icons = require("plugins.icons")
+local icons = require("config.icons")
+
+local function snacks_picker(name, opts)
+  return function()
+    Snacks.picker[name](opts)
+  end
+end
 
 keymaps.whichkey = {
-  -- BufferLine mappings
-  { "<leader>l",   group = "[L]SP" }, -- group
-  -- Venv mappings
-  { "<leader>lv",  group = "Venv" },
-  { "<leader>lvs", "<cmd>VenvSelect<cr>",                    desc = "Select" },
-
-  -- LSP mappings
-  { "<leader>lR",  "<cmd>Trouble lsp_references toggle<cr>", desc = "Trouble References" },
-  { "<leader>lw",  "<cmd>DocsViewToggle<CR>",                desc = "Toggle Docs Vie[w]" },
-  { "<leader>lO",  "<cmd>Outline<CR>",                       desc = "[O]utline" },
-  {
-    "<leader>lc",
-    "<cmd>lua vim.lsp.codelens.run()<CR>",
-    desc = "[C]odeLens",
-    icon = icons.misc.Star,
-  },
-  {
-    "<leader>lgd",
-    "<cmd>Glance definitions<CR>",
-    desc = "[G]lance [D]efinitions",
-  },
-  {
-    "<leader>lgr",
-    "<cmd>Glance references<CR>",
-    desc = "[G]lance [R]eferences",
-  },
-  { "<leader>lgt", "<cmd>Glance type_definitions<CR>", desc = "[G]lance [T]ypes" },
-  {
-    "<leader>lgm",
-    "<cmd>Glance implementations<CR>",
-    desc = "[G]lance I[m]plementations",
-  },
-  { "<leader>lf",  "<cmd>Lspsaga finder<CR>",          desc = "[F]inder" },
-  { "<leader>li",  "<cmd>LspInfo<CR>",                 desc = "Lsp [I]nfo" },
-  {
-    "<leader>ln",
-    "<cmd>lua vim.lsp.buf.rename()<CR>",
-    desc = "Re[n]ame",
-  },
-  { "<leader>ls", "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", desc = "Document [S]ymbols" },
-  { "<leader>lt", "<cmd>Trouble diagnostics toggle<CR>",                              desc = "[T]rouble" },
-  { "<leader>lq", "<cmd>Trouble qflist toggle<CR>",                                   desc = "Trouble [Q]uickFix" },
-  { "<leader>lI", "<cmd>Trouble implementations toggle<CR>",                          desc = "Trouble QuickF[i]x" },
-  { "<leader>lL", "<cmd>lua vim.lsp.codelens.refresh()<CR>",                          desc = "Refresh Code[L]ens" },
-  { "<leader>ll", "<cmd>lua vim.lsp.codelens.run()<CR>",                              desc = "Run CodeLens" },
-  {
-    "<leader>lD",
-    function()
-      vim.diagnostic.enable(not vim.diagnostic.is_enabled())
-    end,
-    desc = "Toggle Inline [D]iagnostics",
-  },
-  { "<leader>le",  "<cmd>lua require('aerial').toggle()<CR>",                   desc = "Toggle A[e]rial" },
-  { "<leader>lb",  group = "[B oo" },
-  { "<leader>lbo", "<cmd>lua require('boo').boo()<CR>",                         desc = "Show b[o]o" },
-  { "<leader>lbc", "<cmd>lua require('boo').close()<CR>",                       desc = "[C]lose boo" },
-  { "<leader>lF",  "<cmd>lua vim.lsp.buf.format({async = true})<CR>",           desc = "[F]ormat Document" },
-  { "<leader>tp",  "<cmd>TSPlay<cr>",                                           desc = "TS[P]lay" },
-
-  -- Visual mode mapping (you can include mode if needed)
-  {
-    "<leader>la",
-    "<cmd>'<,'>lua vim.lsp.buf.range_code_action()<CR>",
-    desc = "Code Action",
-    mode = "v",
-  },
+  { "<leader>l", group = "[L]SP" },
+  { "<leader>lv", group = "Venv" },
 }
+
+keymaps.maps = {
+  { "K", vim.lsp.buf.hover, desc = "Show Hover Documentation" },
+  { "gD", snacks_picker("lsp_declarations"), desc = "Goto Declaration" },
+  { "gd", snacks_picker("lsp_definitions"), desc = "Goto Definition" },
+  { "gr", snacks_picker("lsp_references"), desc = "References", nowait = true },
+  { "gI", snacks_picker("lsp_implementations"), desc = "Goto Implementation" },
+  { "gy", snacks_picker("lsp_type_definitions"), desc = "Goto T[y]pe Definition" },
+
+  { "<leader>la", function() require("actions-preview").code_actions() end, desc = "Code Action", mode = { "n", "v" } },
+  { "<leader>lc", vim.lsp.codelens.run, desc = "[C]odeLens", icon = icons.misc.Star },
+  { "<leader>ld", "<cmd>DiagnosticPalette<cr>", desc = "[D]iagnostics palette" },
+  { "<leader>lD", function() vim.diagnostic.enable(not vim.diagnostic.is_enabled()) end, desc = "Toggle [D]iagnostics" },
+  { "<leader>lf", snacks_picker("lsp_definitions"), desc = "Definitions" },
+  { "<leader>lF", function() vim.lsp.buf.format({ async = true }) end, desc = "[F]ormat Document" },
+  { "<leader>li", "<cmd>LspInfo<CR>", desc = "Lsp [I]nfo" },
+  { "<leader>lI", snacks_picker("lsp_implementations"), desc = "[I]mplementations" },
+  { "<leader>ll", vim.lsp.codelens.run, desc = "Run CodeLens" },
+  { "<leader>lL", vim.lsp.codelens.refresh, desc = "Refresh Code[L]ens" },
+  { "<leader>ln", vim.lsp.buf.rename, desc = "Re[n]ame" },
+  { "<leader>lq", "<cmd>Trouble qflist toggle<CR>", desc = "Trouble [Q]uickFix" },
+  { "<leader>lr", snacks_picker("lsp_references"), desc = "[R]eferences" },
+  { "<leader>lR", "<cmd>Trouble lsp_references toggle<cr>", desc = "Trouble [R]eferences" },
+  { "<leader>ls", snacks_picker("lsp_symbols"), desc = "Document [S]ymbols" },
+  { "<leader>lS", snacks_picker("lsp_workspace_symbols"), desc = "Workspace [S]ymbols" },
+  { "<leader>lt", "<cmd>Trouble diagnostics toggle<CR>", desc = "[T]rouble diagnostics" },
+  { "<leader>lT", snacks_picker("lsp_type_definitions"), desc = "[T]ype definitions" },
+  { "<leader>lvs", "<cmd>VenvSelect<cr>", desc = "Select virtualenv" },
+  { "<leader>lw", "<cmd>DocsViewToggle<CR>", desc = "Toggle Docs Vie[w]" },
+}
+
+function keymaps.setup(bufnr)
+  for _, map in ipairs(keymaps.maps) do
+    local modes = map.mode or "n"
+    local opts = {
+      buffer = bufnr,
+      desc = "LSP: " .. map.desc,
+      nowait = map.nowait,
+    }
+    vim.keymap.set(modes, map[1], map[2], opts)
+  end
+end
 
 return keymaps

@@ -179,15 +179,68 @@ describe("Python Adapter", function()
       _G.vim.api = _G.vim.api or {}
       local buffer_lines = vim.fn.deepcopy(lines)
       
+      _G.vim.api.nvim_buf_get_lines = function(bufnr, start, end_, strict)
+        if end_ == -1 then
+          return buffer_lines
+        end
+        local result = {}
+        for i = start + 1, end_ do
+          table.insert(result, buffer_lines[i])
+        end
+        return result
+      end
+
       _G.vim.api.nvim_buf_set_lines = function(bufnr, start, end_, strict, replacement)
-        -- Insert at beginning
-        table.insert(buffer_lines, 1, replacement[1])
+        table.insert(buffer_lines, start + 1, replacement[1])
       end
 
       adapter:insert_suppression_comment(0, diagnostic, "file")
       
       -- Should have inserted at top of file
       assert.is_true(buffer_lines[1]:match("# pylint:") ~= nil)
+    end)
+
+    it("places file-level suppression after shebang, encoding, and module docstring", function()
+      local lines = {
+        "#!/usr/bin/env python3",
+        "# -*- coding: utf-8 -*-",
+        '"""Module docs."""',
+        "",
+        "import os",
+      }
+
+      local diagnostic = {
+        source = "pylint",
+        code = "C0114",
+        lnum = 0,
+        col = 0,
+      }
+
+      _G.vim = _G.vim or {}
+      _G.vim.api = _G.vim.api or {}
+      local buffer_lines = vim.fn.deepcopy(lines)
+
+      _G.vim.api.nvim_buf_get_lines = function(bufnr, start, end_, strict)
+        if end_ == -1 then
+          return buffer_lines
+        end
+        local result = {}
+        for i = start + 1, end_ do
+          table.insert(result, buffer_lines[i])
+        end
+        return result
+      end
+
+      _G.vim.api.nvim_buf_set_lines = function(bufnr, start, end_, strict, replacement)
+        table.insert(buffer_lines, start + 1, replacement[1])
+      end
+
+      adapter:insert_suppression_comment(0, diagnostic, "file")
+
+      assert.are.equal("#!/usr/bin/env python3", buffer_lines[1])
+      assert.are.equal("# -*- coding: utf-8 -*-", buffer_lines[2])
+      assert.are.equal('"""Module docs."""', buffer_lines[3])
+      assert.is_true(buffer_lines[4]:match("# pylint:") ~= nil)
     end)
   end)
 

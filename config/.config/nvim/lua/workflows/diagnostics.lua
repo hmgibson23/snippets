@@ -86,7 +86,7 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>ld", M.palette, { desc = "Diagnostic palette" })
   vim.keymap.set("n", "<leader>lX", M.toggle, { desc = "Toggle diagnostics" })
-  vim.keymap.set("n", "<leader>lS", M.summary, { desc = "Diagnostic summary" })
+  vim.keymap.set("n", "<leader>lC", M.summary, { desc = "Diagnostic summary" })
 end
 
 return M

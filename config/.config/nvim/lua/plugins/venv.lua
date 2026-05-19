@@ -8,10 +8,13 @@ return {
   opts = {
     name = "venv",
     auto_refresh = true,
+    options = {
+      picker = "snacks",
+    },
   },
   dependencies = {
     "neovim/nvim-lspconfig",
-    "nvim-telescope/telescope.nvim",
+    "folke/snacks.nvim",
     { "mfussenegger/nvim-dap-python", lazy = true },
   },
 }

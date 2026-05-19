@@ -16,7 +16,7 @@ function M.find_project_root(filepath)
   -- Walk up the directory tree
   while root_dir ~= '/' do
     local pyproject_path = root_dir .. '/pyproject.toml'
-    local stat = vim.loop.fs_stat(pyproject_path)
+    local stat = vim.uv.fs_stat(pyproject_path)
     
     if stat and stat.type == 'file' then
       return root_dir
@@ -59,6 +59,37 @@ function M.detect_file_type(content)
   return 'script'
 end
 
+--- Check whether a project root is managed by uv
+--- @param project_root string|nil The project root directory
+--- @return boolean True if uv metadata is present
+function M.is_uv_project(project_root)
+  if not project_root then
+    return false
+  end
+
+  if vim.uv.fs_stat(project_root .. '/uv.lock') then
+    return true
+  end
+
+  local pyproject_path = project_root .. '/pyproject.toml'
+  if not vim.uv.fs_stat(pyproject_path) then
+    return false
+  end
+
+  local ok, lines = pcall(vim.fn.readfile, pyproject_path)
+  if not ok then
+    return false
+  end
+
+  for _, line in ipairs(lines) do
+    if line:match('^%s*%[tool%.uv%]') then
+      return true
+    end
+  end
+
+  return false
+end
+
 --- Detect full context for the current buffer
 --- @param bufnr number|nil Buffer number (defaults to current buffer)
 --- @return table Context information with fields: project_root, file_type, is_uv_project, filepath
@@ -81,7 +112,7 @@ function M.detect_context(bufnr)
     filepath = filepath,
     project_root = project_root,
     file_type = file_type,
-    is_uv_project = project_root ~= nil,
+    is_uv_project = M.is_uv_project(project_root),
   }
   
   -- Cache the result

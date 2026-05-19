@@ -6,6 +6,7 @@ local LspProvider = require('lsp.providers.lsp')
 local TreesitterProvider = require('lsp.providers.treesitter')
 local NoneLsProvider = require('lsp.providers.none_ls')
 local PythonAdapter = require('lsp.features.diagnostics.adapters.python')
+local filter = require('lsp.features.diagnostics.filter')
 
 local M = {}
 
@@ -86,6 +87,7 @@ function M.suppress_at_cursor(position)
   local success = M.manager:suppress_with_comment(bufnr, file, diagnostic, position)
   
   if success then
+    filter.refresh(bufnr)
     vim.notify(string.format("Suppressed %s: %s", diagnostic.source, diagnostic.code), vim.log.levels.INFO)
   else
     -- Fall back to storage-only suppression
@@ -93,6 +95,7 @@ function M.suppress_at_cursor(position)
     success = M.manager:suppress_diagnostic(bufnr, file, diagnostic, scope)
     
     if success then
+      filter.refresh(bufnr)
       vim.notify(string.format("Suppressed %s: %s (no comment adapter available)", 
                                diagnostic.source, diagnostic.code), vim.log.levels.INFO)
     else
@@ -124,7 +127,13 @@ function M.unsuppress_at_cursor()
   end
   
   -- Remove from storage
-  M.manager.storage:remove_suppression(file, diagnostic.source, diagnostic.code)
+  M.manager.storage:remove_suppression({
+    file = file,
+    source = diagnostic.source,
+    code = diagnostic.code,
+    line = diagnostic.lnum,
+  })
+  filter.refresh(bufnr)
   
   vim.notify(string.format("Removed suppression for %s: %s", diagnostic.source, diagnostic.code), 
              vim.log.levels.INFO)

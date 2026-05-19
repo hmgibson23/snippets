@@ -22,6 +22,7 @@ return {
       },
     },
   },
+  cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
   keys = {
     { "<leader>acc", "<cmd>CodeCompanionChat<cr>",    desc = "AI Chat" },
     { "<leader>aca", "<cmd>CodeCompanion<cr>",        desc = "Ask AI" },

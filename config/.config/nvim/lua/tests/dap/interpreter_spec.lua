@@ -15,17 +15,20 @@ describe('interpreter', function()
       assert.are.equal('uv', result)
     end)
     
-    it('should use venv-selector for non-uv projects with active venv', function()
+    it('should use venv-selector python executable for non-uv projects with active venv', function()
       local context = {
         is_uv_project = false,
         project_root = nil,
       }
       
-      -- Mock venv-selector
+      -- Mock venv-selector. python() returns the executable; venv() returns the directory.
       package.loaded['venv-selector'] = {
-        venv = function()
+        python = function()
           return '/home/user/.venv/bin/python'
-        end
+        end,
+        venv = function()
+          return '/home/user/.venv'
+        end,
       }
       
       local result = interpreter.resolve(context)

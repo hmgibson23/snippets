@@ -75,6 +75,43 @@ describe("Suppression Storage", function()
       local suppressions = storage:get_suppressions("test.py")
       assert.are.equal(0, #suppressions)
     end)
+
+    it("removes file-level suppressions when called from a diagnostic line", function()
+      storage:add_suppression({
+        source = "pylint",
+        code = "W0611",
+        scope = "file",
+        file = "test.py"
+      })
+
+      storage:remove_suppression({
+        source = "pylint",
+        code = "W0611",
+        file = "test.py",
+        line = 10
+      })
+
+      local suppressions = storage:get_suppressions("test.py")
+      assert.are.equal(0, #suppressions)
+    end)
+
+    it("removes project-level suppressions from other file buckets", function()
+      storage:add_suppression({
+        source = "ruff",
+        code = "E501",
+        scope = "project",
+        file = "origin.py"
+      })
+
+      storage:remove_suppression({
+        source = "ruff",
+        code = "E501",
+        file = "other.py",
+        line = 8
+      })
+
+      assert.are.equal(0, #storage:get_suppressions("origin.py"))
+    end)
   end)
 
   describe("get_suppressions", function()
@@ -138,6 +175,23 @@ describe("Suppression Storage", function()
       }
 
       assert.is_true(storage:is_suppressed("test.py", diagnostic))
+    end)
+
+    it("returns true for project-level suppression across files", function()
+      storage:add_suppression({
+        source = "ruff",
+        code = "E501",
+        scope = "project",
+        file = "test.py"
+      })
+
+      local diagnostic = {
+        source = "ruff",
+        code = "E501",
+        lnum = 3
+      }
+
+      assert.is_true(storage:is_suppressed("other.py", diagnostic))
     end)
 
     it("returns false for non-suppressed diagnostic", function()
@@ -363,7 +417,7 @@ describe("Suppression Manager", function()
         return { buffer_lines[start + 1] }
       end
       
-      _G.vim.api.nvim_buf_get_option = function(bufnr, option)
+      _G.vim.api.nvim_get_option_value = function(option, opts)
         if option == "filetype" then
           return "python"
         end
@@ -398,7 +452,7 @@ describe("Suppression Manager", function()
       -- Mock vim.api
       _G.vim = _G.vim or {}
       _G.vim.api = _G.vim.api or {}
-      _G.vim.api.nvim_buf_get_option = function(bufnr, option)
+      _G.vim.api.nvim_get_option_value = function(option, opts)
         if option == "filetype" then
           return "javascript"
         end

@@ -122,7 +122,7 @@ end
 -- @return boolean: True if comment was inserted
 function SuppressionManager:suppress_with_comment(bufnr, file, diagnostic, position)
   -- Get filetype from buffer
-  local filetype = vim.api.nvim_buf_get_option(bufnr, 'filetype')
+  local filetype = vim.api.nvim_get_option_value('filetype', { buf = bufnr })
   
   -- Find appropriate adapter
   local adapter = self.adapters[filetype]

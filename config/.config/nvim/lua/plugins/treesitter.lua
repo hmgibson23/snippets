@@ -14,6 +14,8 @@ local parsers = {
   "teal",
 }
 
+local install_dir = vim.fn.stdpath("data") .. "/site"
+
 local function has_parser(lang)
   return pcall(vim.treesitter.language.add, lang)
 end
@@ -45,29 +47,15 @@ return {
     -- `attempt to call method 'range' (a nil value)`.
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    lazy = false,
+    event = { "BufReadPre", "BufNewFile" },
     build = function()
       if vim.fn.executable("tree-sitter") == 1 then
+        require("nvim-treesitter").setup({ install_dir = install_dir })
         vim.cmd("TSUpdate")
       end
     end,
-    dependencies = {
-      { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
-      { "windwp/nvim-ts-autotag", event = "InsertEnter" },
-      { "JoosepAlviste/nvim-ts-context-commentstring", event = "BufReadPre" },
-      { "p00f/nvim-ts-rainbow", enabled = false },
-      { "RRethy/nvim-treesitter-textsubjects", enabled = false },
-      { "nvim-treesitter/playground", cmd = { "TSPlaygroundToggle" }, enabled = false },
-      { "nvim-treesitter/nvim-treesitter-context", event = "BufReadPre", enabled = false },
-      { "mfussenegger/nvim-treehopper", enabled = false },
-      {
-        "m-demare/hlargs.nvim",
-        event = "BufReadPre",
-        opts = {},
-      },
-    },
     opts = {
-      install_dir = vim.fn.stdpath("data") .. "/site",
+      install_dir = install_dir,
     },
     config = function(_, opts)
       require("nvim-treesitter").setup(opts)
@@ -89,6 +77,19 @@ return {
         end,
       })
     end,
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+  },
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    event = "BufReadPre",
+  },
+  {
+    "m-demare/hlargs.nvim",
+    event = "BufReadPre",
+    opts = {},
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",

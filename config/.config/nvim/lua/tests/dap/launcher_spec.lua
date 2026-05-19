@@ -9,8 +9,8 @@ describe('launcher', function()
       local project_root = '/home/user/project'
       
       -- Mock file system
-      local original_fs_stat = vim.loop.fs_stat
-      vim.loop.fs_stat = function(path)
+      local original_fs_stat = vim.uv.fs_stat
+      vim.uv.fs_stat = function(path)
         if path == '/home/user/project/main.py' then
           return { type = 'file' }
         end
@@ -38,15 +38,15 @@ describe('launcher', function()
       assert.are.equal('main:app', result)
       
       -- Clean up
-      vim.loop.fs_stat = original_fs_stat
+      vim.uv.fs_stat = original_fs_stat
       vim.fn.readfile = original_readfile
     end)
     
     it('should find app.py with custom app variable name', function()
       local project_root = '/home/user/project'
       
-      local original_fs_stat = vim.loop.fs_stat
-      vim.loop.fs_stat = function(path)
+      local original_fs_stat = vim.uv.fs_stat
+      vim.uv.fs_stat = function(path)
         if path == '/home/user/project/app.py' then
           return { type = 'file' }
         end
@@ -68,22 +68,22 @@ describe('launcher', function()
       local result = launcher.find_fastapi_entry(project_root)
       assert.are.equal('app:application', result)
       
-      vim.loop.fs_stat = original_fs_stat
+      vim.uv.fs_stat = original_fs_stat
       vim.fn.readfile = original_readfile
     end)
     
     it('should return nil when no entry point is found', function()
       local project_root = '/home/user/project'
       
-      local original_fs_stat = vim.loop.fs_stat
-      vim.loop.fs_stat = function(path)
+      local original_fs_stat = vim.uv.fs_stat
+      vim.uv.fs_stat = function(path)
         return nil
       end
       
       local result = launcher.find_fastapi_entry(project_root)
       assert.is_nil(result)
       
-      vim.loop.fs_stat = original_fs_stat
+      vim.uv.fs_stat = original_fs_stat
     end)
   end)
   

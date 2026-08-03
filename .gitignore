@@ -17,9 +17,33 @@ Session.vim
 config/.config/nvim/lua/.jukit/
 config/.config/nvim/lua/test.lua
 
-# Agent State
+# Agent State (pi)
 .pi/superpowers-state.json
-.pi/taskplane.json
 .pi/telemetry/
 .pi/agent/memory/
 .pi/run-*/
+
+# pi agent home: only skills/agents/extensions/config are tracked (see
+# ~/.pi/agent/{skills,agents,extensions,settings,profiles,presets,models,
+# local-models}.json symlinked in from here). Everything else under
+# .pi/agent/ is secrets, caches, logs, or runtime state and must never be
+# committed (this repo is public).
+.pi/agent/auth.json
+.pi/agent/*.cache.json
+.pi/agent/models-store.json
+.pi/agent/litellm-models.json
+.pi/agent/models.json.bak
+.pi/agent/filechanges.log.json
+.pi/agent/pi-crash.log
+.pi/agent/run-history.jsonl
+.pi/agent/opencode-provider-cache.json
+.pi/agent/trust.json
+.pi/agent/alibaba-config.json
+.pi/agent/npm/
+.pi/agent/git/
+.pi/agent/sessions/
+.pi/agent/teams/
+.pi/agent/messenger/
+
+# internal/company-specific instance config, not for a public repo
+.pi/agent/extensions/saml2aws-login.config.json

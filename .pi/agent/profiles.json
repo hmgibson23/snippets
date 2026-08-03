@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "work": {
+      "providers": ["amazon-bedrock", "github-copilot", "github-models", "deepseek", "openai-codex", "opencode", "opencode-zen", "opencode-go", "local", "local-coder", "llama-cpp", "alibaba-plan"],
+      "defaultModel": "github-copilot/claude-sonnet-4.6"
+    },
+    "personal": {
+      "providers": [
+        "openai",
+        "openai-codex",
+        "github-copilot",
+        "github-models",
+        "deepseek",
+        "opencode",
+        "opencode-zen",
+        "opencode-zen-anthropic",
+        "opencode-go",
+        "opencode-go-anthropic",
+        "openrouter",
+        "local",
+        "local-coder",
+        "llama-cpp",
+        "alibaba-plan"
+      ],
+      "defaultModel": "local/qwen"
+    }
+  },
+  "rules": [
+    { "match": "~/git/newsuk", "profile": "work" },
+    { "match": "*", "profile": "personal" }
+  ]
+}

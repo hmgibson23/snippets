@@ -1,6 +1,6 @@
 ---
 name: model-provider-routing
-description: Use before dispatching any subagent/teammate (or picking a model) whenever the instruction names a bare model/tier word without an explicit provider (e.g. "use subagent luna", "dispatch on sol", "spin up an opus reviewer"). Prevents silently picking the wrong provider when the same model id is offered by several providers at once. Not needed when the user names a provider explicitly, or inside a pipeline that intentionally pins a fixed provider (animoid-full-pipeline, codex-workflow).
+description: Use before dispatching any subagent (or picking a model) whenever the instruction names a bare model/tier word without an explicit provider (e.g. "use subagent luna", "dispatch on sol", "spin up an opus reviewer"). Prevents silently picking the wrong provider when the same model id is offered by several providers at once. Not needed when the user names a provider explicitly, or inside a pipeline that intentionally pins a fixed provider (animoid-full-pipeline, codex-workflow).
 ---
 
 # Model/provider routing for ambiguous bare model names
@@ -31,7 +31,7 @@ session picked one.
 
 ## Resolution order
 
-When you're about to dispatch a subagent, `teams` teammate, or otherwise pin
+When you're about to dispatch a subagent or otherwise pin
 a model, and the instruction is a bare tier/model word with no explicit
 provider:
 

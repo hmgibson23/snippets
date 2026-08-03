@@ -4,7 +4,6 @@
   "defaultModel": "claude-opus-4.8",
   "packages": [
     "npm:pi-web-access",
-    "npm:@tmustier/pi-agent-teams",
     "npm:pi-superpowers-plus",
     "npm:pi-planning-with-files",
     "npm:@e9n/pi-memory",

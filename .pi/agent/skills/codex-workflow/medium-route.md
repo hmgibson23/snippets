@@ -5,7 +5,7 @@ Use this workflow only after the Medium route has been selected under `SKILL.md`
 ## Main-Agent Role
 
 You are the main agent and perform the work directly without spawning
-subagents or a `teams` team.
+subagents.
 
 Use the full project workflow at a proportionate level: understand the
 relevant context, plan when needed, implement the requested changes, verify

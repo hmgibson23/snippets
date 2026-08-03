@@ -1,13 +1,18 @@
 ---
 name: plan-then-local-exec
-description: Plan with current (strong) model, then dispatch ONE worker with a local model to implement. Use when you want strong-model planning + local-model execution. Handles plan creation, worker dispatch, progress monitoring, and cleanup.
+description: Plan with current (strong) model, then dispatch ONE worker with a local model to implement via the `subagent` tool. Use when you want strong-model planning + local-model execution. Handles plan creation, worker dispatch, review, and cleanup.
 ---
 
 # Plan then Local Exec
 
-**One cycle:** Plan with your current model → Dispatch one local-model worker → Review → Cleanup.
+**One cycle:** Plan with your current model → Dispatch one local-model worker via `subagent` → Review → Cleanup.
 
 The key insight: local models need **much** more detailed plans. Every file path, every code block, every command with expected output goes in the plan. Leave nothing to inference.
+
+This uses the `subagent`/`subagent-minimal` tool, not a persistent worker —
+each dispatch is a single bounded call that runs to completion and returns
+one final report. There's no live "monitor while it runs" step: the tool
+call itself blocks until the local-model worker finishes (or times out).
 
 ## Prerequisites
 
@@ -118,80 +123,111 @@ git commit -m "feat: add --json output flag to status command"
 
 ### Phase 3: Dispatch One Worker
 
-After saving the plan, dispatch **one** worker with the chosen local model:
+Write a per-run agent file pinned to the chosen local model (same pattern as
+`subagent-dispatch`'s dynamic templates — this overwrites any previous run,
+which is fine, it's per-run scratch):
+
+Write to `~/.pi/agent/agents/local-plan-worker.md`:
+
+```markdown
+---
+name: local-plan-worker
+description: Implements a hyper-detailed plan on a user-chosen local model. Generic, one-off.
+tools: read,write,edit,bash,grep,find,ls
+model: local/<model-name>
+timeout: 120
+---
+
+You are implementing a hyper-detailed plan written for you by a stronger
+planning model. Read the plan file named in the task fully before touching
+anything.
+
+Rules:
+- Execute each task in the plan in order. Do not skip steps, do not move to
+  the next task until the current one's test passes.
+- Follow the plan's exact file paths, code blocks, and commands — it was
+  written with no inference required.
+- Run the specified test after each implementation step; expect the stated
+  result before moving on.
+- Commit after each completed task, using the commit message given in the
+  plan if one is provided.
+- This is a non-interactive run — if something is ambiguous, make the most
+  reasonable call given the plan's stated context and say so explicitly in
+  your final report. Do not stall waiting for a reply.
+- When ALL tasks are complete and verified, report: tasks completed, test
+  results, commit SHAs, and any deviations from the plan.
+```
+
+Replace `local/<model-name>` with the model chosen in Phase 1 (must match
+`~/.pi/agent/models.json` exactly, e.g. `local/north`, `local/mistral`,
+`local/qwen14`).
+
+Then dispatch:
 
 ```
-teams({
-  action: "delegate",
-  model: "local/<model-name>",
-  tasks: [
-    {
-      text: `Implement the plan at docs/plans/<plan-file.md>.
-
-Read the plan file first. Execute each task step-by-step in order.
-Do not skip steps. Do not move to the next task until the current one passes.
-Run tests after each implementation step. Commit after each completed task.
-
-When ALL tasks are complete and verified, report back with a summary of what was implemented.`
-    }
-  ]
+subagent({
+  agent: "local-plan-worker",
+  task: "Implement the plan at docs/plans/<plan-file.md>. Read the plan file first, then execute it exactly as written."
 })
 ```
 
-**Important:** Use `model: "local/<name>"` matching exactly what's in `models.json`. Examples: `"local/north"`, `"local/mistral"`, `"local/qwen14"`.
+This call blocks until the worker finishes (or its timeout is hit) and
+returns one final report — there's no separate "wait/poll" step.
 
-### Phase 4: Monitor
+### Phase 4: Review
 
-While the worker runs:
-- Check `teams({ action: "member_status" })` periodically to see progress
-- If the worker reports back with questions, answer them
-- If the worker gets stuck, decide: update plan and re-dispatch, or escalate to user
-
-### Phase 5: Review
-
-When the worker reports done:
-1. Verify key tests pass (ask the worker or run them yourself)
-2. Check the implementation matches the plan
+When the `subagent` call returns:
+1. Verify key tests pass yourself (`git diff`, rerun the test command) —
+   don't just trust the worker's self-reported "done".
+2. Check the implementation matches the plan.
 3. Report results to the user:
    - What was implemented
    - Test results
    - Any deviations from the plan
    - Commit SHAs if applicable
 
-### Phase 6: Cleanup
+### Phase 5: Cleanup
 
-When the user confirms satisfaction:
-
-```
-teams({ action: "team_done" })
-```
-
-This shuts down the worker and hides the team widget.
-
-If the user wants changes:
+Nothing to shut down — a `subagent` call has no lingering process once it
+returns. If the user wants changes:
 - Small: you can make them directly (leader is on strong model)
-- Large: create a revised plan and re-dispatch
+- Large: create a revised plan and re-dispatch (Phase 3 again)
 
 ---
 
 ## When the Worker Gets Stuck
 
-1. **Plan ambiguity:** The plan wasn't detailed enough. Note what confused the worker, update the plan, re-dispatch.
-2. **Test failures:** The worker should fix within reason. If tests keep failing, inspect and provide guidance.
-3. **Different codebase state:** The plan assumed different code. Read the actual files, update the plan, re-dispatch.
+Since each dispatch is a fresh, memoryless call, "getting stuck" shows up as
+an incomplete/blocked final report, not a live conversation you can steer
+mid-run.
 
-**To re-dispatch after fixing the plan:**
+1. **Plan ambiguity:** The plan wasn't detailed enough. Note what confused
+   the worker from its final report, update the plan, re-dispatch (a fresh
+   `subagent` call with the same agent).
+2. **Test failures:** Check the worker's report for what failed. If it's a
+   real plan/codebase mismatch, fix the plan and re-dispatch; don't just
+   re-run hoping for a different result.
+3. **Different codebase state:** The plan assumed different code. Read the
+   actual files, update the plan, re-dispatch.
+
+**To re-dispatch after fixing the plan or continuing partial progress:**
+
 ```
-teams({
-  action: "delegate",
-  model: "local/<model-name>",
-  tasks: [{ text: "Continue implementing the updated plan at docs/plans/.... Start from where you left off." }]
+subagent({
+  agent: "local-plan-worker",
+  task: "Continue implementing the updated plan at docs/plans/<plan-file.md>. Tasks 1-<N> are already done and committed (see git log) — start from task <N+1>."
 })
 ```
 
+Since there's no persistent memory between calls, always state explicitly in
+the task text what's already done, referencing git history/committed state
+rather than assuming the worker remembers a prior run.
+
 ## When the Plan Is Complex (>8 tasks)
 
-Split into phases. Create one plan per phase. Dispatch for each phase sequentially. This keeps each plan small enough for the local model to hold in context.
+Split into phases. Create one plan per phase. Dispatch for each phase
+sequentially (one `subagent` call per phase). This keeps each plan small
+enough for the local model to hold in context.
 
 ---
 
@@ -204,17 +240,18 @@ User: local/north
 
 [Pi reads codebase: src/commands/status.ts, src/cli.ts]
 [Pi writes docs/plans/2026-07-03-json-flag.md with hyper-detailed steps]
-[Pi dispatches one worker: teams({ action: "delegate", model: "local/north", tasks: [...] })]
+[Pi writes ~/.pi/agent/agents/local-plan-worker.md pinned to model: local/north]
+[Pi dispatches: subagent({ agent: "local-plan-worker", task: "Implement the plan at docs/plans/2026-07-03-json-flag.md" })]
 
-Worker: Implemented status --json flag. Tests pass (2/2). Committed as abc1234.
-Worker: Summary:
+[call returns with a final report:]
+Implemented status --json flag. Tests pass (2/2). Committed as abc1234.
+Summary:
   - Added --json flag parsing to cli.ts
   - Added JSON output branch to status.ts
   - Added test file with 2 tests
   - All tests passing
 
-[Pi checks: tests pass, matches plan, reports to user]
+[Pi verifies: git diff, reruns tests, matches plan, reports to user]
 
 User: Looks good
-Pi:   teams({ action: "team_done" })
 ```

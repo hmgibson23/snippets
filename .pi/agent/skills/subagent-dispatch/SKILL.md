@@ -11,6 +11,15 @@ similar one-off task with no project-specific pipeline in play). Ask the
 user which model to use, generate a per-run agent file with that model
 pinned, then dispatch with `subagent`.
 
+If the user's instruction already names a bare model/tier word instead of
+asking you to choose ("use subagent luna", "dispatch this on sol", "spin up
+an opus reviewer") — **read `model-provider-routing` first**, before step 2
+below. That word names a model, not a provider, and several providers in
+this install expose the exact same model id. Resolve `<provider>/<model-id>`
+using that skill's rules (current session provider by default, verified via
+`pi --list-models`) instead of calling `ask_model` or guessing a provider
+from whatever similarly-named agent file you happen to find first.
+
 This is the same pattern `copilot-plan-implement-pipeline` and
 `animoid-full-pipeline` already use for their user-chosen-model stages —
 this skill just makes it available for any standalone subagent call, not
@@ -31,7 +40,9 @@ only inside those larger pipelines.
 
    Use the returned string as `CHOSEN_MODEL`. If the user cancels or says
    "keep using current model", use the current session model instead — do
-   not re-ask.
+   not re-ask. **Skip this step** if `model-provider-routing` already gave
+   you a confirmed `<provider>/<model-id>` from the user's own wording —
+   use that as `CHOSEN_MODEL` directly instead of asking again.
 
 3. Read the matching template in this skill directory:
    - `implementer-agent.template.md` → generic-implementer-dynamic

@@ -17,6 +17,13 @@ plan. Do not pull in Animoid-specific skills or assumptions unless the user's
 plan is actually about the Animoid project (in which case load `animoid` /
 `animoid-zig-nightly` yourself as you normally would).
 
+If the plan's tasks are mostly independent and speed matters more than a
+single serial implementer working through everything, use
+`parallel-plan-execution` instead — it dispatches independent tasks across
+multiple parallel subagents, still with exactly one whole-diff review and
+one remediation pass per round like this pipeline, just with actual
+concurrency in the implementation stage.
+
 **All coding/TDD for the ENTIRE plan happens in Stage 3 before Stage 4's
 review runs even once.** Stage 3 is a single subagent dispatch covering every
 task in the plan — never split the plan into per-task dispatches that each

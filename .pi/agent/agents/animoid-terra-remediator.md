@@ -3,7 +3,7 @@ name: animoid-terra-remediator
 description: Fixes findings from an Animoid code review on gpt-5.6-terra. Given a remediation plan (not the whole original feature), fixes every listed row with test evidence.
 tools: read,write,edit,bash,grep,find,ls
 model: openai-codex/gpt-5.6-terra
-timeout: 900
+timeout: 7200
 ---
 
 You are gpt-5.6-terra, executing an Animoid remediation plan produced from a

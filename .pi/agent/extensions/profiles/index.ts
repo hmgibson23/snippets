@@ -91,8 +91,17 @@ function buildPatterns(isNewsuk: boolean, ctx: ExtensionContext): string[] {
 		return patterns;
 	}
 
-	// Outside newsuk: all models EXCEPT github-copilot
-	const allModels = ctx.modelRegistry.getAll();
+	// Outside newsuk: all *available* models EXCEPT github-copilot.
+	// Using getAvailable() (not getAll()) is deliberate: getAll() returns every
+	// model pi knows about across ~48 providers, most of which have no
+	// configured auth in this install. Scoping to getAll() made enabledModels
+	// enumerate ~48 provider globs every session start, most resolving to zero
+	// models — which is both slow (full registry walk + settings.json rewrite
+	// on every startup) and noisy ("Warning: No models match pattern X/*" for
+	// every unauthenticated provider). getAvailable() only returns models with
+	// real configured auth (or local providers that don't need auth), so the
+	// scoped list only ever contains providers that can actually resolve.
+	const allModels = ctx.modelRegistry.getAvailable();
 	const providers = new Set<string>();
 	for (const m of allModels) {
 		providers.add(m.provider);
@@ -148,10 +157,10 @@ export default function scopedModelsExtension(pi: ExtensionAPI) {
 		ctx.ui.setStatus("scoped", scopeTag(inNewsuk, ctx.ui.theme));
 
 		// Notify on first run within this session
-		const modelCount = ctx.modelRegistry.getAll().length;
+		const modelCount = ctx.modelRegistry.getAvailable().length;
 		const visibleCount = inNewsuk
 			? patterns.length * 10 // rough estimate
-			: modelCount - (ctx.modelRegistry.getAll().filter((m) => m.provider === WORK_PROVIDER).length ?? 0);
+			: modelCount - (ctx.modelRegistry.getAvailable().filter((m) => m.provider === WORK_PROVIDER).length ?? 0);
 
 		ctx.ui.notify(
 			`scoped: ${inNewsuk ? "newsuk mode" : "other mode"} — ` +

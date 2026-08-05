@@ -84,5 +84,10 @@
     "zai/*",
     "zai-coding-cn/*"
   ],
-  "theme": "dark"
+  "theme": "dark",
+  "litellm": {
+    "mcp": {
+      "enabled": false
+    }
+  }
 }

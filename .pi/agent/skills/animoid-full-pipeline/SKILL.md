@@ -6,30 +6,54 @@ description: Use when the user hands you an Animoid plan and wants the full pipe
 # Animoid full pipeline (deepseek → user-chosen review → terra → sol)
 
 You (the lead agent) run this whole runbook yourself, in order, using the
-`subagent` tool (single mode, one agent + task at a time), `ask_model`, and
-plain shell checks. Do not use `dispatch_implementation` for this pipeline —
-it does not work in this environment. Do not skip stages. Do not trust any
-subagent's "done" claim without checking real evidence yourself (diff, tests,
-ledger) — dispatched models, especially fast ones, are known to over-claim
-completion.
+`subagent` tool (single mode for an individual dispatch, parallel mode
+`tasks: [...]` when a stage's remaining work is genuinely independent — see
+`parallel-plan-execution` and the "Parallel dispatch for independent work"
+section of `animoid/SKILL.md`), `ask_model`, and plain shell checks. Do not
+use `dispatch_implementation` for this pipeline — it does not work in this
+environment. Do not skip stages. Do not trust any subagent's "done" claim
+without checking real evidence yourself (diff, tests, ledger) — dispatched
+models, especially fast ones, are known to over-claim completion.
 
 **All coding/TDD for the ENTIRE plan happens before any review, and all
 remediation happens in one pass after ONE review — never per-task.** Stage 3
-is a single subagent dispatch that implements every task in the plan, start
-to finish. Do not chop the plan into per-task dispatches that each get their
-own implement → review → remediate cycle — that means N separate review/
-remediation rounds instead of one, which is slower and gives the reviewer
-less context (it can no longer see how tasks interact). Concretely:
+implements every task in the plan, start to finish, before Stage 4 ever runs.
+That does not mean Stage 3 has to be a single serial subagent call: if the
+plan's tasks are independent (different files/modules, no shared state, no
+task depends on another's output), group them into dependency waves and
+dispatch each wave in parallel (`subagent({ tasks: [...] })`, one call per
+wave, same `animoid-deepseek-implementer` agent for every task in the
+batch) — do this by default whenever the plan allows it, not only when asked.
+What you must never do is chop the plan into per-task dispatches that each
+get their own implement → review → remediate cycle — that means N separate
+review/remediation rounds instead of one, which is slower and gives the
+reviewer less context (it can no longer see how tasks interact). Concretely:
 
-- Stage 3 gets the WHOLE plan text and must not return/be treated as done
-  until every task in it is implemented — not just the first one or two.
-- Stage 5 (review) runs exactly once, against the diff for the whole plan.
-- Stage 6 (remediation) runs exactly once, fixing every finding from that
-  one review in a single dispatch — not one dispatch per finding, and not a
-  detour back to Stage 3 for an individual task.
+- Stage 3 must not return/be treated as done until every task in the plan is
+  implemented — not just the first one or two — whether that took one
+  dispatch or several parallel waves.
+- Stage 5 (review) runs exactly once, against the diff for the whole plan
+  (every wave's changes together).
+- Stage 6 (remediation) runs exactly once *as a round* — fixing every finding
+  from that one review before the next review happens. Within that one
+  round, independent findings (different files, no shared state) should
+  still be dispatched in parallel waves via `animoid-terra-remediator`, same
+  as Stage 3 — "one remediation pass" means one round before the next
+  review, not literally one subagent call if the findings are independent.
 - The only case where you repeat Stage 3 is if Stage 3's own verification
   (the `git diff --stat` check) shows tasks were genuinely skipped or
   missed — that's completing Stage 3, not starting a new per-task round.
+- **Parallelism is *within* a stage, never *across* stages.** Stages
+  themselves (3 → 3.5 → 4 → 5 → 6 → 6.5 → 7) stay strictly sequential —
+  each depends on the previous stage's real, verified diff. Only the
+  dispatches inside Stage 3 or Stage 6 may fan out into parallel waves.
+- **A prior emulator-test failure (3.5/6.5), a completed remediation round,
+  or being on a second/third loop of this pipeline does not by itself mean
+  you should fall back to one-task-at-a-time serial dispatch for whatever
+  independent work is still left.** Re-check independence fresh for the
+  current stage's actual remaining tasks/findings every time, and
+  parallelize again if they qualify — this is a common regression, watch for
+  it explicitly.
 
 Stages:
 
@@ -88,15 +112,46 @@ subagent to also read it.
 
 ## Stage 3 — Implement with deepseek-v4-flash
 
-One dispatch, the whole plan — not one dispatch per task. Record `BASE_SHA`
-now (before any implementation):
+Group the plan's tasks into dependency waves first (see `parallel-plan-execution`):
+tasks with no unmet dependencies and no file/module overlap with each other
+go in the same wave. If the whole plan is one tightly-dependent chain, you'll
+end up with one task per wave — that degrades to serial, which is fine; the
+point is to actually check, not to assume serial by default.
+
+Record `BASE_SHA` now (before any implementation):
 
 ```bash
 git rev-parse HEAD
 git status --short
 ```
 
-Call:
+**If Wave 1 has 2+ independent tasks**, dispatch them together in one
+parallel call, all on `animoid-deepseek-implementer`:
+
+```
+subagent({
+  tasks: [
+    { agent: "animoid-deepseek-implementer", task: "Also read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 1 full text>" },
+    { agent: "animoid-deepseek-implementer", task: "Also read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 2 full text>" },
+  ],
+})
+```
+
+Each task capsule must state its exact file scope so parallel workers don't
+step on each other. After a wave returns, check for conflicts before moving
+on:
+
+```bash
+git status --short
+git diff --stat
+```
+
+If two parallel tasks touched the same file, resolve it yourself (pick the
+correct hunk, or re-dispatch one with the other's result as context) before
+dispatching the next wave.
+
+**If a wave has only one task, or the whole plan is one dependent chain**,
+just dispatch that one task single-mode, same as before:
 
 ```
 subagent(
@@ -106,7 +161,9 @@ subagent(
 )
 ```
 
-When it returns, do NOT accept the summary at face value. Independently verify:
+Repeat wave-by-wave until every task in the plan has been dispatched. When
+the last wave returns, do NOT accept any subagent's summary at face value.
+Independently verify the whole plan's diff together:
 
 ```bash
 git status --short
@@ -116,8 +173,8 @@ git diff --stat <BASE_SHA>..HEAD
 
 If there's no ledger file, no real diff, or the diff doesn't match the plan's
 tasks, treat this stage as failed — do not proceed to Stage 4. Either
-re-invoke the subagent with the missing tasks called out explicitly, or hand
-it back to the user.
+re-invoke the relevant subagent(s) with the missing tasks called out
+explicitly, or hand it back to the user.
 
 Record the current commit/working-tree state as `IMPL_SHA` (or just use the
 working tree if uncommitted — `git diff <BASE_SHA>` still works either way).

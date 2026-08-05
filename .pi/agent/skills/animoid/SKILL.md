@@ -17,6 +17,35 @@ Before every Animoid coding/remediation dispatch, read agent frontmatter and ver
 
 Never dispatch `opencode/mimo-v2.5-free` for Animoid work. Hugo has a paid MiMo subscription; MiMo means `mimo/mimo-v2.5-pro` unless he explicitly requests another variant. If frontmatter differs, stop and repair routing before dispatch. Keep each one-shot task narrow enough to finish, and give build/test commands enough timeout for Zig/Gradle.
 
+## Parallel dispatch for independent work
+
+Whenever there are 2+ independent tasks or remediation findings (different
+files/modules, no shared state, neither needs the other's output), dispatch
+them **in parallel** — one `subagent({ tasks: [...] })` call covering the
+whole independent batch, not one call per task waited on serially. See
+`parallel-plan-execution` for the full wave/dependency-grouping method (group
+by independence, one call per wave not per task, still exactly one review/
+remediation pass covering everything in that round).
+
+Parallelizing never means changing which model does the work — every task
+in a parallel batch still uses the correct pinned agent from the table above
+(e.g. several `animoid-deepseek-implementer` calls in one parallel batch, or
+several `animoid-terra-remediator` calls in one parallel batch).
+
+Not independent — never run these against each other in parallel: two tasks
+that touch the same file/module, a JNI declaration and its Kotlin caller, or
+any pair where one's output is the other's input. Put those in the same
+task, or in different sequential waves.
+
+**A prior emulator-test failure, a completed remediation round, or the
+pipeline being on its second or third loop does NOT by itself mean the next
+batch of independent work must go back to one-task-at-a-time serial
+dispatch.** Re-check independence fresh for whatever work actually remains
+and parallelize it again if it qualifies — don't downgrade to serial out of
+caution alone just because something upstream failed or this is a later
+round. If you notice yourself about to dispatch one subagent at a time for
+genuinely independent work, stop and re-group into parallel waves first.
+
 ## Who runs emulator tests
 
 Emulator/connected Android tests (`connectedAndroidTest`, instrumented

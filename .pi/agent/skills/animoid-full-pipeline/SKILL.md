@@ -215,7 +215,12 @@ Generate the dynamic reviewer agent:
 
 1. Read `~/.pi/agent/skills/animoid-full-pipeline/review-agent.template.md`.
 2. Replace `{MODEL}` with `REVIEW_MODEL`.
-3. Write the result to `~/.pi/agent/agents/animoid-review-dynamic.md` (this
+3. Replace `{THINKING}` with the required thinking level for that model —
+   `xhigh` if `REVIEW_MODEL` resolves to `openai-codex/gpt-5.6-luna`, `high`
+   if it resolves to `openai-codex/gpt-5.6-terra` (matching the pinned
+   levels in `animoid/SKILL.md`'s subagent table), or `high` as the default
+   for any other model the user picks.
+4. Write the result to `~/.pi/agent/agents/animoid-review-dynamic.md` (this
    overwrites any previous run's version — that's fine, it's per-run scratch).
 
 Call:

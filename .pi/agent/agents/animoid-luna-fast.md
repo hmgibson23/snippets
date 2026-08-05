@@ -3,7 +3,7 @@ name: animoid-luna-fast
 description: Executes one narrowly scoped Animoid fix using GPT-5.6 Luna.
 tools: read,write,edit,bash,grep,find,ls
 model: openai-codex/gpt-5.6-luna
-thinking: low
+thinking: xhigh
 timeout: 120
 ---
 

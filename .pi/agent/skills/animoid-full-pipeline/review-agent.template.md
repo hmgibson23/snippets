@@ -3,6 +3,7 @@ name: animoid-review-dynamic
 description: Final read-only review of an Animoid diff on a user-chosen model. Verifies claimed work against the real diff and real test output, writes a findings file, never edits code.
 tools: read,bash,grep,find,ls
 model: {MODEL}
+thinking: {THINKING}
 timeout: 45
 ---
 

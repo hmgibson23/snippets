@@ -3,7 +3,7 @@ name: animoid-luna-remediator
 description: Diagnoses and remediates Animoid bugs using GPT-5.6 Luna under strict TDD and device-test ownership rules.
 tools: read,write,edit,bash,grep,find,ls
 model: openai-codex/gpt-5.6-luna
-thinking: medium
+thinking: xhigh
 timeout: 120
 ---
 

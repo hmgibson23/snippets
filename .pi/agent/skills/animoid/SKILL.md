@@ -7,13 +7,24 @@ description: Use when planning, implementing, debugging, reviewing, or verifying
 
 ## Pinned coding subagents
 
-Before every Animoid coding/remediation dispatch, read agent frontmatter and verify exact model. Use only:
+Before every Animoid coding/remediation dispatch, read agent frontmatter and verify exact model AND thinking level. Use only:
 
-| Role | Agent profile | Required model |
-|---|---|---|
-| Fast implementation | `animoid-deepseek-implementer` | `deepseek/deepseek-v4-flash` |
-| MiMo implementation/remediation | `animoid-mimo-pro-remediator` | `mimo/mimo-v2.5-pro` |
-| Terra remediation | `animoid-terra-remediator` | `openai-codex/gpt-5.6-terra` |
+| Role | Agent profile | Required model | Required thinking |
+|---|---|---|---|
+| Fast implementation | `animoid-deepseek-implementer` | `deepseek/deepseek-v4-flash` | (model has no thinking levels) |
+| MiMo implementation/remediation | `animoid-mimo-pro-remediator` | `mimo/mimo-v2.5-pro` | (unspecified — leave as-is) |
+| Terra remediation | `animoid-terra-remediator` | `openai-codex/gpt-5.6-terra` | `high` |
+
+**Blanket rule, applies to every Animoid agent file pinned to one of these two
+models, not just the ones named above:** any agent whose `model:` is
+`openai-codex/gpt-5.6-luna` (`animoid-luna-fast`, `animoid-luna-remediator`,
+`animoid-luna-codex-remediator`, `animoid-luna-plan-implementer`, or a future
+one-off) must have `thinking: xhigh`. Any agent whose `model:` is
+`openai-codex/gpt-5.6-terra` (`animoid-terra-implementer`,
+`animoid-terra-remediator`, or a dynamically-generated review agent that
+resolved to terra) must have `thinking: high`. If you find or create one
+that doesn't match, fix its frontmatter before dispatching — don't dispatch
+with the wrong thinking level and don't silently accept a mismatch.
 
 Never dispatch `opencode/mimo-v2.5-free` for Animoid work. Hugo has a paid MiMo subscription; MiMo means `mimo/mimo-v2.5-pro` unless he explicitly requests another variant. If frontmatter differs, stop and repair routing before dispatch. Keep each one-shot task narrow enough to finish, and give build/test commands enough timeout for Zig/Gradle.
 

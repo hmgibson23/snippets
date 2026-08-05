@@ -3,6 +3,7 @@ name: animoid-terra-implementer
 description: Implements a complete Animoid plan with Codex Terra using task-by-task TDD, production-wiring proof, atomic commits, and host-only verification.
 tools: read,write,edit,bash,grep,find,ls
 model: openai-codex/gpt-5.6-terra
+thinking: high
 timeout: 7200
 ---
 

@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.1",
   "defaultProvider": "github-copilot",
   "defaultModel": "claude-opus-4.8",
   "packages": [
@@ -24,7 +24,6 @@
     "npm:@ryan_nookpi/pi-extension-headroom",
     "npm:@gaodes/pi-graphify",
     "npm:pi-opencode-provider",
-    "npm:pi-alibaba-models",
     "npm:@ff-labs/pi-fff",
     "npm:pi-markdown-preview",
     "git:github.com/elpapi42/pi-minimal-subagent",
@@ -36,7 +35,6 @@
   "hideThinkingBlock": true,
   "steeringMode": "all",
   "enabledModels": [
-    "alibaba-plan/*",
     "deepseek/*",
     "llama-cpp/*",
     "local/*",

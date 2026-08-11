@@ -18,11 +18,22 @@
  * Config: ~/.pi/agent/profiles.json (same file as before, keeps backward compat)
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve, sep } from "node:path";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { getAgentDir } from "@earendil-works/pi-coding-agent";
+
+/**
+ * Set by subagent-spawning tools (pi-superpowers-plus subagent, pi-minimal-subagent)
+ * on the child pi process's env. When present, this extension is a nested/child
+ * session — skip touching settings.json entirely. Child processes never need the
+ * scoped-models UX, and every child that *did* write here was one more concurrent
+ * writer racing against every other pi process (parent + siblings) on the same
+ * shared settings.json file (see writeEnabledModelsIfChanged() below for why that
+ * race was dangerous).
+ */
+const IS_SUBAGENT_CHILD = process.env.PI_SUBAGENT_CHILD === "1";
 
 // ── Directory Rules ─────────────────────────────────────────────────────────
 
@@ -112,16 +123,56 @@ function buildPatterns(isNewsuk: boolean, ctx: ExtensionContext): string[] {
 
 // ── Settings Persistence ─────────────────────────────────────────────────────
 
-function writeEnabledModels(patterns: string[] | undefined): void {
+/**
+ * Reads settings.json, updates enabledModels only if it actually changed, and
+ * writes atomically. Returns true if a write happened.
+ *
+ * Safety properties (this replaced a version that caused real data loss):
+ *   - Never resets settings to `{}` on a read/parse failure. If the file can't
+ *     be read or parsed, we log a warning and bail out WITHOUT writing —
+ *     leaving the existing file untouched is always safer than overwriting it
+ *     with a guess. A transient read failure (e.g. another pi process mid-write
+ *     to the same shared/symlinked settings.json) must never turn into data loss.
+ *   - Atomic write: write to a temp file in the same directory, then rename()
+ *     over the target. rename() is atomic on the same filesystem, so a
+ *     concurrent reader (another pi process's session_start) either sees the
+ *     old complete file or the new complete file — never a truncated/partial
+ *     write. The previous writeFileSync() wrote directly to the live path,
+ *     which could hand a concurrent reader invalid JSON mid-write.
+ *   - Skips the write entirely when the computed patterns already match what's
+ *     on disk — avoids a disk write (and the race window that comes with it)
+ *     on every single session_start when nothing actually changed.
+ */
+function writeEnabledModelsIfChanged(patterns: string[] | undefined): boolean {
 	const agentDir = getAgentDir();
 	const settingsPath = join(agentDir, "settings.json");
 
-	let settings: Record<string, unknown> = {};
+	let settings: Record<string, unknown>;
 	try {
-		settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
-	} catch {
-		// File doesn't exist or is invalid — start fresh
+		const raw = readFileSync(settingsPath, "utf-8");
+		settings = raw.trim() ? JSON.parse(raw) : {};
+	} catch (err) {
+		if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+			settings = {};
+		} else {
+			// Read or parse failed for some other reason (e.g. concurrent writer,
+			// transient I/O error). Do NOT reset to {} and do NOT write — that
+			// would clobber every other key in settings.json with a guess.
+			console.error(
+				`[scoped-models] settings.json read/parse failed, skipping enabledModels update this run: ${err}`,
+			);
+			return false;
+		}
 	}
+
+	const existing = Array.isArray(settings.enabledModels) ? (settings.enabledModels as unknown[]) : undefined;
+	const unchanged =
+		patterns === undefined
+			? existing === undefined
+			: existing !== undefined &&
+				existing.length === patterns.length &&
+				existing.every((v, i) => v === patterns[i]);
+	if (unchanged) return false;
 
 	if (patterns === undefined) {
 		delete settings.enabledModels;
@@ -129,7 +180,10 @@ function writeEnabledModels(patterns: string[] | undefined): void {
 		settings.enabledModels = patterns;
 	}
 
-	writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + "\n", "utf-8");
+	const tmpPath = `${settingsPath}.tmp-${process.pid}-${Date.now()}`;
+	writeFileSync(tmpPath, JSON.stringify(settings, null, 2) + "\n", "utf-8");
+	renameSync(tmpPath, settingsPath); // atomic on same filesystem
+	return true;
 }
 
 // ── Status Tag ──────────────────────────────────────────────────────────────
@@ -149,14 +203,23 @@ export default function scopedModelsExtension(pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		const inNewsuk = isNewsukDir(ctx.cwd, rules);
 
-		// Write the scoped-model patterns for future sessions
-		const patterns = buildPatterns(inNewsuk, ctx);
-		writeEnabledModels(patterns);
-
-		// Show status indicator
+		// Always show the status indicator, even for subagent children — cheap,
+		// no disk I/O, useful if a child's transcript is ever inspected directly.
 		ctx.ui.setStatus("scoped", scopeTag(inNewsuk, ctx.ui.theme));
 
-		// Notify on first run within this session
+		// Subagent-spawned child processes don't need the scoped-models UX and
+		// were previously an extra concurrent writer to the shared settings.json
+		// on every dispatch. Skip the write and the notification entirely.
+		if (IS_SUBAGENT_CHILD) return;
+
+		// Write the scoped-model patterns for future sessions (only if changed)
+		const patterns = buildPatterns(inNewsuk, ctx);
+		const wrote = writeEnabledModelsIfChanged(patterns);
+
+		// Only notify when something actually changed — this used to fire on
+		// every single startup regardless, which was pure noise.
+		if (!wrote) return;
+
 		const modelCount = ctx.modelRegistry.getAvailable().length;
 		const visibleCount = inNewsuk
 			? patterns.length * 10 // rough estimate

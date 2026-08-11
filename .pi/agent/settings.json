@@ -14,7 +14,8 @@
     {
       "source": "https://github.com/addyosmani/agent-skills",
       "skills": [
-        "!skills/test-driven-development/**"
+        "!skills/test-driven-development/**",
+        "!skills/debugging-and-error-recovery/**"
       ]
     },
     "npm:pi-provider-litellm",
@@ -31,7 +32,7 @@
     "npm:pi-codex-goal",
     "npm:@lesetong/pi-mimo"
   ],
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "steeringMode": "all",
   "enabledModels": [

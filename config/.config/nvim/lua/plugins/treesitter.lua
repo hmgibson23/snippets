@@ -12,6 +12,7 @@ local parsers = {
   "vim",
   "vimdoc",
   "teal",
+  "zig",
 }
 
 local install_dir = vim.fn.stdpath("data") .. "/site"

@@ -8,7 +8,10 @@ local M = {}
 local state = {
   buf = nil, -- terminal buffer number
   win = nil, -- window handle (nil when hidden)
+  job_id = nil, -- terminal channel/job id
 }
+
+local MAX_CONTEXT_BYTES = 24000
 
 -- Returns true if the buffer is still valid and the terminal job is alive
 local function buf_valid()
@@ -39,12 +42,13 @@ local function open()
     vim.api.nvim_win_set_buf(state.win, state.buf)
 
     -- Start pi inside it (-c = continue last session)
-    vim.fn.termopen("pi -c", {
+    state.job_id = vim.fn.termopen("pi -c", {
       cwd = vim.fn.getcwd(),
       on_exit = function()
         -- Invalidate state when pi exits so next toggle spawns fresh
         state.buf = nil
         state.win = nil
+        state.job_id = nil
       end,
     })
 
@@ -68,6 +72,17 @@ local function hide()
   end
 end
 
+-- Open the pi sidecar and keep focus in the original window when possible.
+function M.open()
+  local saved_win = vim.api.nvim_get_current_win()
+  if not win_visible() then
+    open()
+  end
+  if vim.api.nvim_win_is_valid(saved_win) then
+    vim.api.nvim_set_current_win(saved_win)
+  end
+end
+
 -- Toggle: open if hidden, hide if visible
 function M.toggle()
   if win_visible() then
@@ -85,6 +100,105 @@ function M.focus()
     vim.api.nvim_set_current_win(state.win)
     vim.cmd("startinsert")
   end
+end
+
+local function trim_context(text)
+  if #text <= MAX_CONTEXT_BYTES then
+    return text
+  end
+
+  return text:sub(1, MAX_CONTEXT_BYTES) .. "\n\n...[truncated by pi.nvim context helper]..."
+end
+
+local function current_buffer_context()
+  local name = vim.api.nvim_buf_get_name(0)
+  local filetype = vim.bo.filetype or ""
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+  return table.concat({
+    "Current Neovim buffer context:",
+    "- cwd: " .. vim.fn.getcwd(),
+    "- file: " .. (name ~= "" and name or "[No Name]"),
+    "- cursor: line " .. cursor[1] .. ", column " .. cursor[2],
+    "",
+    "```" .. filetype,
+    trim_context(table.concat(lines, "\n")),
+    "```",
+  }, "\n")
+end
+
+local function range_context(line1, line2)
+  local name = vim.api.nvim_buf_get_name(0)
+  local filetype = vim.bo.filetype or ""
+  local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
+
+  return table.concat({
+    "Selected Neovim context:",
+    "- cwd: " .. vim.fn.getcwd(),
+    "- file: " .. (name ~= "" and name or "[No Name]"),
+    "- lines: " .. line1 .. "-" .. line2,
+    "",
+    "```" .. filetype,
+    trim_context(table.concat(lines, "\n")),
+    "```",
+  }, "\n")
+end
+
+local function send_to_pi(text)
+  local had_valid_buffer = buf_valid()
+  M.focus()
+
+  local job_id = state.job_id or (state.buf and vim.b[state.buf].terminal_job_id)
+  if not job_id then
+    vim.notify("[pi] terminal job is not available", vim.log.levels.ERROR)
+    return
+  end
+  state.job_id = job_id
+
+  local delay_ms = had_valid_buffer and 50 or 500
+  vim.defer_fn(function()
+    if state.job_id then
+      -- Bracketed paste prevents multiline context from being submitted line-by-line.
+      vim.fn.chansend(state.job_id, "\027[200~" .. text .. "\027[201~\r")
+    end
+  end, delay_ms)
+end
+
+local function ask_with_context(context, question)
+  if question and question ~= "" then
+    send_to_pi(question .. "\n\n" .. context)
+    return
+  end
+
+  vim.ui.input({ prompt = "Ask pi: " }, function(input)
+    if not input or input == "" then
+      return
+    end
+
+    send_to_pi(input .. "\n\n" .. context)
+  end)
+end
+
+function M.ask(question)
+  ask_with_context(current_buffer_context(), question)
+end
+
+function M.ask_selection(opts)
+  opts = opts or {}
+  local line1 = opts.line1 or vim.fn.line("'<")
+  local line2 = opts.line2 or vim.fn.line("'>")
+
+  if line1 <= 0 or line2 <= 0 then
+    line1 = vim.fn.line(".")
+    line2 = line1
+  end
+
+  if line2 < line1 then
+    line1, line2 = line2, line1
+  end
+
+  ask_with_context(range_context(line1, line2), opts.question)
 end
 
 -- Run `saml2aws login` in a floating terminal, then parse the resulting

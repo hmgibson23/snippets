@@ -88,7 +88,8 @@ return {
         pattern = "VeryLazy",
         once = true,
         callback = function()
-          require("mini.animate").setup()
+          -- Disabled: animated scrolling/cursor movement feels worse than default Neovim motion.
+          -- require("mini.animate").setup()
           require("mini.ai").setup({
             n_lines = 500,
           })

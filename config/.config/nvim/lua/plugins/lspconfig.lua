@@ -35,7 +35,6 @@ return {
         },
       },
       "williamboman/mason-lspconfig.nvim",
-      "WhoIsSethDaniel/mason-tool-installer.nvim",
 
       { "j-hui/fidget.nvim",       opts = {} },
       {
@@ -124,11 +123,7 @@ return {
       -- Load your custom server and tool inventories.
       local servers = require("plugins.lsp.servers")
       local tools = require("plugins.lsp.tools")
-
-      -- Automatically ensure LSP servers and formatter/linter tools are installed.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, tools.mason_packages())
-      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+      local mason = require("plugins.lsp.mason")
 
       local function disable_client_formatting(client)
         client.server_capabilities.documentFormattingProvider = false
@@ -156,11 +151,6 @@ return {
 
         -- Define the server config
         vim.lsp.config(server_name, server_opts)
-      end
-
-      -- Then enable the servers
-      for server_name, _ in pairs(servers) do
-        vim.lsp.enable(server_name)
       end
 
       -- Custom server configs that need extra setup
@@ -195,10 +185,35 @@ return {
           ".git"
         ),
       })
-      vim.lsp.enable("clangd")
-
       -- C# is handled by seblyng/roslyn.nvim in lua/plugins/csharp.lua.
-      -- Keep OmniSharp installed for manual fallback, but do not start both LSPs.
+
+      local lspconfig_to_package = require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package
+      local lsp_servers = vim.tbl_keys(servers)
+      table.insert(lsp_servers, "clangd")
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("user-mason-on-demand", { clear = true }),
+        callback = function(event)
+          local filetype = vim.bo[event.buf].filetype
+
+          for _, server_name in ipairs(lsp_servers) do
+            local config = vim.lsp.config[server_name]
+            if config and vim.tbl_contains(config.filetypes or {}, filetype) then
+              local package_name = lspconfig_to_package[server_name]
+              if package_name then
+                mason.ensure({ package_name }, "LSP server " .. server_name .. " for *" .. filetype .. "*", function(ok)
+                  if ok then
+                    vim.lsp.enable(server_name)
+                  end
+                end)
+              end
+            end
+          end
+
+          mason.ensure_specs(tools.for_filetype(filetype), "formatter/linter tools for *" .. filetype .. "*", function() end)
+          mason.ensure_specs(tools.dap_for_filetype(filetype), "debug adapters for *" .. filetype .. "*", function() end)
+        end,
+      })
     end,
   },
 }

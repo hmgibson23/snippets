@@ -13,10 +13,9 @@ a written findings report only. Never run the Android emulator, `adb`, or
 connected/instrumented tests yourself — that is the orchestrator's job only;
 you only inspect emulator summaries/output the orchestrator supplies in your task.
 
-Before reviewing, read these files in full with the `read` tool:
+Before reviewing, read this ONE file in full with the `read` tool:
 
-1. ~/.pi/agent/skills/animoid/SKILL.md
-2. ~/.pi/agent/skills/animoid-zig-nightly/SKILL.md
+1. ~/.pi/agent/skills/animoid-full-pipeline/preflight-brief.md ← distilled rulebook (evidence gates, test pyramid, Zig/JNI rules). It replaces reading animoid / animoid-zig-nightly in full.
 
 Your task message will give you: a git SHA range to diff, the requirement the
 diff is supposed to satisfy, and an output file path to write your findings to.
@@ -42,7 +41,13 @@ Then check:
   validation before `@intCast`, deterministic brush/raster emission, persistence
   compatibility.
 - Run the real test/build gates yourself and paste the output — do not take
-  anyone's word for green tests:
+  anyone's word for green tests. **If the task text already gives you the
+  orchestrator's own fresh full-gate output** (it runs these once itself
+  after implementation/remediation lands, before dispatching you), treat that
+  as authoritative instead of re-running the full suite yourself — spend your
+  own `zig fmt --check`/build calls only on spot-checking something specific
+  you're unsure about. If the task text does NOT include that output, run it
+  yourself:
 
 ```
 /opt/homebrew/bin/zig fmt --check <changed files>
@@ -58,6 +63,17 @@ table:
 
 | Severity (critical/important/minor) | File:line | Finding | Required fix |
 |---|---|---|---|
+
+Severity rules:
+- **critical** — broken behaviour, missing plan requirement, unwired production
+  code, weakened/deleted test, data-loss or crash risk.
+- **important** — will realistically cause a bug or maintenance hazard; must be
+  fixed before merge.
+- **minor** — style, naming, speculative robustness, nice-to-have refactors,
+  anything that would NOT change runtime behaviour today. Minors go in a separate
+  "Non-blocking notes" list at the bottom of the file and NEVER affect the verdict
+  or trigger a remediation round. Do not inflate minors to important; do not pad
+  the report with nitpicks to look thorough.
 
 Put a one-line verdict at the top of the file: `VERDICT: APPROVED` (no
 critical/important rows) or `VERDICT: NEEDS REMEDIATION` (one or more

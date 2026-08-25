@@ -38,6 +38,36 @@ actual concurrency to the implementation stage itself.
   processes, not just "no per-task review" (which those two already give
   you serially).
 
+## Animoid UI/testing overlay
+
+When `animoid` is active, every implementation capsule must state its test
+layer and enforce test-first evidence:
+
+- pure geometry/controller/policy work → focused JVM RED/GREEN;
+- Compose semantics, layout, bounds, navigation, visibility, or callbacks →
+  Robolectric Compose UI RED/GREEN under `android/app/src/test`, mounting
+  production composables/routes;
+- irreducible Android/JNI/runtime behavior → focused `androidTest` source plus
+  compile/APK proof in subagents; connected execution remains orchestrator-only
+  and requires current explicit user authorization;
+- native state/pixels/transactions → imported Zig RED/GREEN.
+
+Do not assign the same shared host-test file to parallel lanes. If production
+files are disjoint but all tests currently live in one large class, first
+allocate separate new test files per lane or put those lanes in sequential
+waves. One lane may own shared test-harness extraction; dependent lanes start
+only after that commit is integrated.
+
+Before dispatch, require each lane to name: exact owned files, forbidden shared
+files, behavioral RED command, focused GREEN command, production wiring proof,
+and instrumentation compile command when it adds `androidTest`. Subagents must
+never run emulator/ADB/connected tests.
+
+After integration, run the combined Robolectric/JVM host set before the single
+whole-diff review. Review must reject pure-model-only or source-text-only proof
+for visible UI requirements and reject new instrumentation coverage for
+host-testable UI behavior.
+
 ## The process
 
 1. **Read the plan once.** Extract every task with its full text. For each
@@ -77,7 +107,10 @@ actual concurrency to the implementation stage itself.
    Each task capsule must be fully self-contained — a subagent has no memory
    of the plan, the conversation, or the other parallel tasks running beside
    it. Tell each one explicitly which files are *theirs* and which are out
-   of scope, to avoid accidental overlap.
+   of scope, to avoid accidental overlap. For UI work, name the expected JVM or
+   Robolectric Compose RED/GREEN tests and require production-composable
+   mounting; mention focused instrumentation only for a justified irreducible
+   runtime boundary.
 
    **No review dispatch after each task or each wave.** Implementers
    self-review and run their own tests internally (same as any other
@@ -90,6 +123,9 @@ actual concurrency to the implementation stage itself.
    - `git status --short` / `git diff --stat` — confirm the files touched
      match what you scoped, and no two parallel tasks stepped on the same
      file.
+   - Verify each UI lane supplied real Robolectric Compose RED/GREEN evidence
+     (not source text or pure-model-only proof), and compile any newly added
+     instrumentation source without executing connected tests.
    - If two agents did conflict, resolve it yourself before starting the
      next wave (pick the correct hunk, or re-dispatch one task with the
      other's result as context) — don't let a conflict ride into the next

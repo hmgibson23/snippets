@@ -47,3 +47,6 @@ config/.config/nvim/lua/test.lua
 
 # internal/company-specific instance config, not for a public repo
 .pi/agent/extensions/saml2aws-login.config.json
+
+# Dynamic animoid/copilot agent files are per-run scratch, regenerated each dispatch
+.pi/agent/agents/*-dynamic.md

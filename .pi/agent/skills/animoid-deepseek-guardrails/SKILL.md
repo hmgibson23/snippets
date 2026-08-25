@@ -9,7 +9,10 @@ You are a fast model. Your known failure is: **you say a plan or task is DONE wh
 
 Also load and obey: `execute-plan-fully` (the workflow) and `animoid-zig-nightly` (Zig/JNI correctness) and `animoid` (project rules). This skill sits ON TOP of them and only adds hard stops. If they conflict with each other, the plan and the user win; this skill never loosens their gates.
 
-> Dispatching this to a worker? Prepend `dispatch-preamble.md` (next to this file) to the plan you pass to `dispatch_implementation`, then append the real plan under its `--- PLAN ---` marker.
+> Dispatching this to a worker? Use the `subagent` tool with the dynamically-generated
+> `animoid-implement-dynamic` agent (see `animoid-full-pipeline`'s
+> `implementer-agent.template.md` — it loads this skill itself regardless of which
+> model fills the template).
 
 ## THE ONE RULE
 
@@ -18,6 +21,27 @@ Also load and obey: `execute-plan-fully` (the workflow) and `animoid-zig-nightly
 No pasted output = not done. Your memory is not evidence. A summary is not evidence. "Should work" is not evidence. Compiling is not passing. Green aggregate tests do not prove wiring, UI, JNI, or persistence.
 
 If you are about to claim progress, STOP and run the Done Test (bottom of this file) first.
+
+## Solo plan vs. one parallel-wave task — check this FIRST
+
+Your task message tells you which one you are:
+
+- **Solo**: you were given the whole plan (or the rest of it) to run start to
+  finish, alone. The Done Test and full final gates below apply to you in
+  full — you are the one closing this stage out.
+- **One task of a parallel wave**: your task message explicitly says you are
+  one of several parallel tasks/waves (e.g. "Also read these extra skill(s)
+  first... Implement this task from the plan" with an explicit file scope).
+  In this case your own "done" claim covers ONLY your assigned task(s) —
+  focused test evidence + the `rg` wiring proof for your own files. **Do NOT
+  run the four full-repo final gates** (`zig build test --summary all`, `zig
+  test src/run_tests.zig -O ReleaseFast`, `zig build -Drelease=true`, or a
+  full `zig fmt` sweep) yourself. The orchestrator runs those exactly once,
+  after your whole wave lands, not per parallel task — running them yourself
+  triggers a redundant full host build/test per worker for no benefit and is
+  a known major source of pipeline slowness. If unsure which mode you're in,
+  the task text is silent on parallelism, or the task literally hands you the
+  entire plan, treat yourself as solo.
 
 ## Setup (do once, before any edit)
 
@@ -76,7 +100,8 @@ Test-quality lint on your added tests:
 bash ~/.pi/agent/skills/animoid-zig-nightly/scripts/lint-added-tests.sh "$PWD" main
 ```
 
-Final gates (run FRESH this turn, paste each):
+Final gates — **solo dispatch only** (skip if you're one task of a parallel
+wave; see the section above the Setup step). Run FRESH this turn, paste each:
 
 ```bash
 /opt/homebrew/bin/zig fmt <changed-files>
@@ -86,6 +111,10 @@ Final gates (run FRESH this turn, paste each):
 git diff --check
 git status --short
 ```
+
+If you're a parallel-wave task, your own gate is just: `zig fmt` on your
+changed files, `git diff --check`, `git status --short`, and your focused
+test — not the full `zig build test` / ReleaseFast / release-build trio.
 
 ## Banned excuses (if you catch yourself writing one, you are NOT done — keep working)
 
@@ -118,7 +147,7 @@ Answer every question. If any answer is NO or "I'm not sure" → you are NOT don
 1. Did I run EVERY task in the plan, in order? (check the todo list)
 2. Is every todo complete with real test and wiring evidence?
 3. For every new symbol, did I paste an `rg` line showing a NON-test production file calls it?
-4. Did I run the focused wrapper and the four final gates FRESH this turn and paste their output?
+4. Did I run the focused wrapper FRESH this turn and paste its output? (Solo dispatch only: did I also run and paste the four full final gates? Parallel-wave tasks skip those four — the orchestrator runs them once after the wave.)
 5. Did the test-added lint pass?
 6. Is `git diff --check` clean and `git status --short` showing only intended files?
 7. Did I avoid weakening, skipping, or deleting any valid test?

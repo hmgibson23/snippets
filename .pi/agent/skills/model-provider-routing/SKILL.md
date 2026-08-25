@@ -39,12 +39,13 @@ provider:
    opus", "run it on bedrock") → use that provider. Done.
 
 2. **Inside a pipeline/skill that intentionally pins a fixed provider per
-   role** (e.g. `animoid-full-pipeline`'s deepseek/terra/sol stages,
-   `codex-workflow`'s `codex-executor-luna`/`codex-executor-sol`/etc., any
-   agent file whose *name itself* embeds the provider like
-   `animoid-luna-codex-remediator`) → honor that pin. These are deliberate,
+   role** (e.g. `codex-workflow`'s `codex-executor-luna`/`codex-executor-sol`/
+   etc., any agent file whose *name itself* embeds the provider like
+   `codex-executor-luna`) → honor that pin. These are deliberate,
    documented design decisions, not the bug this skill guards against. Don't
-   "fix" them to match the current session provider.
+   "fix" them to match the current session provider. (`animoid-full-pipeline`
+   is NOT one of these anymore — every stage there resolves its model fresh
+   per run via this skill or `ask_model`, nothing is pinned.)
 
 3. **Otherwise (ad hoc / generic dispatch, no pin, no named provider)** →
    default the provider to the **current session's active provider**, read

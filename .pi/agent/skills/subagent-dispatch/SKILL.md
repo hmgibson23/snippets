@@ -69,9 +69,14 @@ only inside those larger pipelines.
 
 ## When NOT to use this skill
 
-- Inside `animoid-full-pipeline` — its three roles (deepseek implementer,
-  terra remediator, sol reviewer) are intentionally pinned; never substitute
-  a different model for them without the user explicitly saying so.
+- Any Animoid work at all, pipeline or one-off — see `animoid/SKILL.md`'s
+  "One-off Animoid dispatches" section. Animoid has its own five fixed
+  dynamic template files (implement/remediate/review/plan/investigate) in
+  `animoid-full-pipeline/`; always reuse one of those instead of this
+  skill's step 1 fallback ("write a new one-off agent file yourself if none
+  fit") — that fallback is exactly what produced the stray
+  `animoid-*`/`openai-codex-*-animoid-*`/`qwen-*-animoid-*` one-off agent
+  files that used to clutter `~/.pi/agent/agents/`.
 - Inside `copilot-plan-implement-pipeline` — it already asks per round via
   its own `ask_model` + `implementer-agent.template.md` step; don't duplicate
   the prompt.

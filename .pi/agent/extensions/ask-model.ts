@@ -1,6 +1,19 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { Type } from "typebox";
-import { Container, DynamicBorder, Key, matchesKey, SelectList, Text } from "@mariozechner/pi-tui";
+import { Container, Key, matchesKey, SelectList, Text } from "@mariozechner/pi-tui";
+
+// pi-tui >=0.84 no longer exports DynamicBorder. It was just a full-width
+// horizontal rule, so inline an equivalent to avoid depending on the removed export.
+class DynamicBorder {
+	private color: (str: string) => string;
+	constructor(color: (str: string) => string = (str) => str) {
+		this.color = color;
+	}
+	invalidate() {}
+	render(width: number): string[] {
+		return [this.color("─".repeat(Math.max(1, width)))];
+	}
+}
 
 export default function askModelExtension(pi: ExtensionAPI) {
 	pi.registerTool({

@@ -7,7 +7,15 @@ description: Implement an existing written software plan completely, task by tas
 
 ## Project workflow overrides
 
-When the `animoid` skill is active, follow its streamlined workflow instead of this skill's ledger and pre-edit runtime-baseline steps: use Pi's todo list, use TDD, finish code changes first, run emulator tests once, then review. Do not create a ledger file or a baseline-runtime-evidence task for Animoid.
+When the `animoid` skill is active:
+
+- use Pi's todo list **and** create/update any ledger required by the written plan or repository instructions before production edits;
+- do not create a pre-edit emulator/runtime-baseline task when connected execution is explicitly deferred;
+- place tests by Animoid's test-pyramid contract: JVM for pure logic, Robolectric Compose host tests for rendering/semantics/layout/navigation/callbacks, Zig for native authority, and focused instrumentation only for irreducible Android/JNI/runtime boundaries;
+- finish implementation waves and focused host TDD first, then run one consolidated review/remediation cycle;
+- never run emulator/ADB/connected tests without current explicit user authorization. Compile instrumentation/APKs and report runtime verification deferred when authorization is absent.
+
+These rules replace conflicting generic runtime guidance below; ledger, production-wiring, RED/GREEN, fresh host gates, and evidence requirements still apply.
 
 ## READ FIRST — the 6 rules that stop fake completion
 
@@ -60,7 +68,7 @@ Do these in order:
    - installed SDKs, runtimes, browsers, containers, test services;
    - repo runner scripts and CI-equivalent commands;
    - credentials/artifacts that are genuinely unavailable.
-5. If the plan touches a runtime/integration surface, run the cheapest smoke test BEFORE editing. For a previously flaky harness, run or sample the full gate early to expose lifecycle/fixture/runner/screen-entry failures first.
+5. If the plan touches a runtime/integration surface, run the cheapest authorized smoke test BEFORE editing. When Animoid connected execution is deferred, use focused host/Robolectric tests and compile-only Android checks instead; do not probe emulator/ADB availability or execute connected tests.
 6. Record baseline failures with exact test, stage, process, artifact. Do NOT call them product defects until the harness proves it reached the real production state.
 7. **Build the ledger file.** Create `docs/plans/<plan-name>.ledger.md` from this template and fill one row per requirement:
 
@@ -114,7 +122,7 @@ rg -n '<NewSymbolOrFunc>\(' --glob '!**/test/**' --glob '!**/androidTest/**' src
 - If every match is under a test dir → NOT wired → this task is INCOMPLETE.
 - For each new reducer/controller/route/adapter/state object: find its real caller in production sources (`src/main`, `src`, platform equivalent) and confirm the UI/JNI/CLI callback uses that same function/object.
 - Test the callable production seam, not a copy of its behaviour. A debug bridge is not the release path.
-- For UI/device work: existence ≠ visibility ≠ usability. Prove the real screen is open, the control is displayed and reachable at the target viewport, the action enters the production callback, and product state changes.
+- For UI/device work: existence ≠ visibility ≠ usability. Prove host-testable rendering, semantics, exact bounds/state, navigation, and typed callbacks with Robolectric Compose mounting production composables/routes. Use focused instrumentation only when Android runtime is irreducible; use authorized connected tests for real root/window/surface behavior.
 
 ### 5. GREEN  ·  gate: focused + adjacent tests pass, diff reviewed
 - Run the focused test.
@@ -173,8 +181,8 @@ If the plan's proposed implementation is impossible in the current codebase, exh
 - Give concise progress updates during long work, then continue.
 - Do not stop because a task is hard, context compacted, a test is slow, or an optional device/service is absent.
 - Respect explicit CURRENT deferrals. Do not inherit stale deferrals blindly — a newer user instruction overrides an older plan note.
-- When device/runtime testing is relevant, actively check for a simulator/emulator/local service/attached device before declaring it deferred.
-- If a compatible emulator/simulator is installed, use it for all compatible gates. Reserve physical hardware only for what the emulator cannot represent.
+- When device/runtime testing is relevant, respect current project/user authorization before checking or using simulator/emulator/device state. Animoid's explicit connected-test deferral overrides generic auto-discovery.
+- If authorized and a compatible emulator/simulator is installed, use it for compatible gates. Reserve physical hardware only for what the emulator cannot represent.
 - Compile-only runtime tests are acceptable ONLY when no compatible runtime exists or the user explicitly deferred execution this turn. State which condition applies.
 - Do not broaden scope into deployment, release, messaging, or destructive operations unless the plan authorises them.
 
@@ -219,7 +227,7 @@ Then:
 1. Reread the ENTIRE plan; compare every ledger row against the diff.
 2. Run every final command from a fresh invocation (not cached).
 3. Run repo-wide tests/builds in proportion to risk.
-4. Execute every compatible runtime/emulator gate discovered at the start — do not stop at test compilation.
+4. Execute every compatible **authorized** runtime/emulator gate discovered at the start. When current instructions defer connected execution, compile runtime tests/APKs, record exact deferral, and do not imply execution passed.
 5. Run formatting / lint / type / ABI / source-search gates the plan requires.
 6. `git diff --check` clean (Git).
 7. `git status` shows only intended files changed.

@@ -1,9 +1,7 @@
 ---
-name: animoid-investigate-dynamic
+name: animoid-investigator
 description: Read-only Animoid investigator/explorer on a user-chosen model. Never edits, writes, commits, or runs the emulator.
 tools: read,bash,grep,find,ls,map,search,outline,expand,path
-model: {MODEL}
-thinking: {THINKING}
 timeout: 30
 ---
 

@@ -9,7 +9,7 @@ description: Plan with current (strong) model, then dispatch ONE worker with a l
 
 The key insight: local models need **much** more detailed plans. Every file path, every code block, every command with expected output goes in the plan. Leave nothing to inference.
 
-This uses the `subagent`/`subagent-minimal` tool, not a persistent worker —
+This uses the `subagent`/`subagent` tool, not a persistent worker —
 each dispatch is a single bounded call that runs to completion and returns
 one final report. There's no live "monitor while it runs" step: the tool
 call itself blocks until the local-model worker finishes (or times out).

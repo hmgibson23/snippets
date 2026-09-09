@@ -19,7 +19,7 @@ tasks.
 ## Dispatch mechanism: `subagent` only
 
 Every dispatched worker in this route is a bounded, one-shot call through the
-`subagent`/`subagent-minimal` tool with `agent: "codex-<role>"`. There is no
+`subagent`/`subagent` tool with `agent: "codex-<role>"`. There is no
 persistent teammate/thread in this setup — each call spins up an isolated
 headless `pi` subprocess that runs the task to completion and returns one
 final report, with no memory of anything beyond that single call.
@@ -195,7 +195,7 @@ Run this section only when the user directly commands the exact phrase
    dispatch. Update `project_diary.md` only for significant decisions or
    lessons.
 3. If meaningful project files changed, dispatch one bounded
-   `SESSION-CLOSURE-AUDIT` via `subagent`/`subagent-minimal` with
+   `SESSION-CLOSURE-AUDIT` via `subagent`/`subagent` with
    `agent: "codex-explorer"`. The explorer performs read-only repository
    closure checks and returns its report directly; it must not edit files,
    Git state, `project_progress.md`, or `latest_session_work.md`.

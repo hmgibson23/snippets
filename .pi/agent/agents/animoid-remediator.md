@@ -1,9 +1,7 @@
 ---
-name: animoid-remediate-dynamic
+name: animoid-remediator
 description: Fixes findings from an Animoid code review on a user-chosen model. Given a remediation plan (not the whole original feature), fixes every listed row with test evidence.
 tools: read,write,edit,bash,grep,find,ls
-model: {MODEL}
-thinking: {THINKING}
 timeout: 45
 ---
 

@@ -36,9 +36,7 @@ separate round and does not involve you reviewing anything yet.
 
 Do not use `dispatch_implementation` — use the `subagent` tool. See
 `~/.pi/agent/skills/animoid-full-pipeline/SKILL.md` for background on why (the
-`subagent` tool spawns a real headless `pi` process per call and pins its
-model via the agent file's `model:` frontmatter — there is no per-call model
-override, which is why Stage 2 below generates the agent file dynamically).
+`subagent` tool spawns a real headless `pi` process per call and passes its model directly in the `subagent` call).
 
 ## Stages (one "round" = stages 2-5; can repeat)
 
@@ -85,20 +83,15 @@ Use the returned string as `IMPL_MODEL`.
 ## Stage 3 — Dispatch the implementer
 
 One dispatch, the whole plan (or the whole remediation plan, on a
-remediation round) — never one dispatch per task. Generate the dynamic
-implementer agent:
-
-1. Read `~/.pi/agent/skills/copilot-plan-implement-pipeline/implementer-agent.template.md`.
-2. Replace `{MODEL}` with `IMPL_MODEL`.
-3. Write the result to `~/.pi/agent/agents/copilot-implementer-dynamic.md`
-   (overwrites any previous round's version — that's fine, it's per-round
-   scratch, not something to preserve).
+remediation round) — never one dispatch per task. Use the stable `implementer`
+profile and pass `IMPL_MODEL` directly in the call.
 
 Call:
 
 ```
 subagent(
-  agent = "copilot-implementer-dynamic",
+  agent = "implementer",
+  model = IMPL_MODEL,
   task = "Implement this plan in full (read docs/plans/<slug>.plan.md yourself "
        + "for the complete task list; the summary below is for context only):\n\n"
        + "<the plan text, or the remediation plan text if this is a remediation round>"
@@ -170,7 +163,7 @@ reference.
 - Planning, reviewing, and drafting remediation are always done by you
   inline — never spin up a "planner subagent" for this pipeline.
 - Only ever one subagent role here: the implementer, single-mode
-  (`agent="copilot-implementer-dynamic"`, one `task` at a time). Never
+  (`agent="implementer"``, one `task` at a time). Never
   parallel/chain — rounds are strictly sequential, each depending on the real
   diff from the previous round.
 - Re-ask `ask_model` at the start of every round, even remediation rounds —

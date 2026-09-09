@@ -33,29 +33,20 @@ Never dispatch `opencode/mimo-v2.5-free` for Animoid work. Hugo has a paid MiMo 
 
 ## One-off Animoid dispatches (outside the full pipeline)
 
-Even a quick ad hoc ask ("investigate why X crashes", "implement just this
-one task", "review this diff", "draft a plan for Y") that isn't going
-through the whole `animoid-full-pipeline` runbook must still use that
-skill's five fixed dynamic template files, never a new hand-written agent
-file:
+Even a quick ad hoc ask uses one of five stable profiles—never a generated
+agent file:
 
-| One-off task shape | Template (in `animoid-full-pipeline/`) | Write to (fixed path, always overwrite) |
-|---|---|---|
-| Implement/fix code | `implementer-agent.template.md` | `~/.pi/agent/agents/animoid-implement-dynamic.md` |
-| Remediate specific findings | `remediator-agent.template.md` | `~/.pi/agent/agents/animoid-remediate-dynamic.md` |
-| Review a diff | `review-agent.template.md` | `~/.pi/agent/agents/animoid-review-dynamic.md` |
-| Draft/update a plan document | `planner-agent.template.md` | `~/.pi/agent/agents/animoid-plan-dynamic.md` |
-| Read-only investigate/explore, no edits | `investigator-agent.template.md` | `~/.pi/agent/agents/animoid-investigate-dynamic.md` |
+| One-off task shape | Stable profile |
+|---|---|
+| Implement/fix code | `animoid-implementer` |
+| Remediate specific findings | `animoid-remediator` |
+| Review a diff | `animoid-reviewer` |
+| Draft/update a plan document | `animoid-planner` |
+| Read-only investigate/explore, no edits | `animoid-investigator` |
 
-Resolve the model/thinking level per this skill's table above, fill
-`{MODEL}`/`{THINKING}` into the matching template, write it to the fixed
-path (overwriting whatever was there from a previous run), then dispatch
-with `subagent`. Never mint a brand-new filename for the dispatch (e.g.
-nothing like `openai-codex-luna-max-animoid-implementer.md` or
-`animoid-luna-max-onion-plan-explorer.md`) — that's the anti-pattern that
-caused agent-file proliferation before this rule existed. Picking the wrong
-role for the task (e.g. using the implementer template for a read-only
-investigation) is also wrong — match role to task shape, not convenience.
+Resolve the model/thinking level per this skill's table, then pass `model`
+and optional `thinking` in the `subagent` call. Never write or mint an agent
+file to select a model. Match profile to task shape, not convenience.
 
 This overrides the generic `subagent-dispatch` skill's "write a new one-off
 agent file yourself if none fit" fallback for ALL Animoid work — Animoid
@@ -74,8 +65,8 @@ remediation pass covering everything in that round).
 
 Parallelizing never means changing which model does the work — every task
 in a parallel batch still uses the same resolved model for that stage (e.g.
-several `animoid-implement-dynamic` calls in one parallel batch, all filled
-with the same `IMPLEMENT_MODEL`, or several `animoid-remediate-dynamic`
+several `animoid-implementer` calls in one parallel batch, all filled
+with the same `IMPLEMENT_MODEL`, or several `animoid-remediator`
 calls all filled with the same `REMEDIATE_MODEL`).
 
 Not independent — never run these against each other in parallel: two tasks
@@ -128,7 +119,7 @@ Emulator/connected Android tests (`connectedAndroidTest`, instrumented
 `androidTest` execution, anything needing `adb` or a running
 emulator/device, `android-emulator-gate.sh`) are run **only by the
 top-level orchestrating session** — the human-facing conversation, never by
-a dispatched subagent (`subagent`/`subagent-minimal`, any
+a dispatched subagent (`subagent`/`subagent`, any
 `animoid-*-implementer`/`*-remediator`/`*-reviewer` agent). There is one
 shared emulator/device; running it from multiple headless subagent processes
 risks device contention, wasted time budget, and unreviewable flaky results.

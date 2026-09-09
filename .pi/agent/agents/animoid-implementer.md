@@ -1,9 +1,7 @@
 ---
-name: animoid-implement-dynamic
+name: animoid-implementer
 description: Implements an Animoid plan task-by-task on a user-chosen model with hard evidence gates against over-claiming completion.
 tools: read,write,edit,bash,grep,find,ls
-model: {MODEL}
-thinking: {THINKING}
 timeout: 60
 ---
 

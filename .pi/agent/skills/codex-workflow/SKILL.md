@@ -8,14 +8,14 @@ description: Structured light/medium/heavy route workflow for project work, usin
 Adapted from [viettran-edgeAI/codex_workflow](https://github.com/viettran-edgeAI/codex_workflow),
 originally written for the OpenAI Codex CLI's native subagent/TOML system. This
 version runs the same route-selection philosophy and role design on **pi**,
-using pi's own `subagent`/`subagent-minimal` tool, and pins delegated roles to
+using pi's own `subagent`/`subagent` tool, and pins delegated roles to
 **openai-codex** provider models (`gpt-5.6-luna`, `gpt-5.6-sol` — confirmed
 available under `openai-codex/*` in this install). Make sure you are logged
 into the `openai-codex` provider (ChatGPT Plus/Pro OAuth) before using
 Medium/Heavy route delegation.
 
 (There is no `teams`/persistent-teammate tool in this install — it was
-removed in favor of `subagent`/`subagent-minimal` for everything. Every
+removed in favor of `subagent`/`subagent` for everything. Every
 dispatch below is a one-shot subagent call; see "Repair loops without a
 persistent thread" in `heavy-route.md` for how iteration/follow-ups work
 without a long-lived worker process.)
@@ -124,7 +124,7 @@ Read and follow `medium-route.md` (in this skill's directory).
 ### Heavy route
 
 You are the orchestrator, coordinating dispatched roles to deploy large
-tasks/plans in the `deployment state`, using pi's `subagent`/`subagent-minimal`
+tasks/plans in the `deployment state`, using pi's `subagent`/`subagent`
 tool for every dispatch (bounded, one-shot calls — there's no persistent
 worker thread in this setup). Read and follow `heavy-route.md` (in this
 skill's directory).
@@ -168,7 +168,7 @@ guess a route yourself.
 ## Delegated Roles (openai-codex provider)
 
 Five role agents live under `~/.pi/agent/agents/` and are usable directly via
-the `subagent`/`subagent-minimal` tools (`agent: "codex-<role>"`). All are
+the `subagent`/`subagent` tools (`agent: "codex-<role>"`). All are
 pinned to `openai-codex` models to match the source repo:
 
 | Role | File | Model | Purpose |

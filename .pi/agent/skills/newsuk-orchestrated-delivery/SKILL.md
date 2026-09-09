@@ -27,8 +27,8 @@ Anthropic direct, or any other provider, even if the same model id exists there.
 | Role | Who | Default model | Agent file |
 | --- | --- | --- | --- |
 | Orchestrator | you (this session) | whatever you are | — |
-| Implementer | subagent | `github-copilot/gpt-5.6-luna` (xhigh) = **luna max** | `copilot-implementer-dynamic` |
-| Reviewer | subagent | `github-copilot/gpt-5.6-terra` (high) = **terra high** | `terra-reviewer-dynamic` |
+| Implementer | subagent | `github-copilot/gpt-5.6-luna` (xhigh) = **luna max** | `implementer` |
+| Reviewer | subagent | `github-copilot/gpt-5.6-terra` (high) = **terra high** | `code-reviewer` |
 
 Copilot tiers available for swapping (all `github-copilot/…`): `gpt-5.6-luna`,
 `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.5`, `gpt-5.4`, `gpt-5.3-codex`,
@@ -37,11 +37,9 @@ model, keep it on `github-copilot/…`; if they name a bare tier word, resolve i
 to the copilot variant (read `model-provider-routing` only to confirm the id,
 not to pick a non-copilot provider).
 
-Dispatch with the `subagent` tool (it spawns a real headless `pi` and pins the
-model from the agent file's `model:` frontmatter — there is no per-call model
-override). To change a role's tier, edit that agent file's `model:` line (or
-generate a per-run agent file per `subagent-dispatch`), always keeping the
-`github-copilot/` prefix.
+Dispatch with `subagent`, passing exact `model` and `thinking` per call. To
+change a role tier, change only that call's `model`, always keeping the
+`github-copilot/` prefix; never rewrite or generate an agent file.
 
 ## Stage 1 — Plan (you decide; DELEGATE the investigation)
 
@@ -81,7 +79,8 @@ Give the implementer a self-contained task containing:
 
 ## Stage 3 — Review (dispatch the reviewer subagent, independent)
 
-Dispatch `terra-reviewer-dynamic` (read-only) on the same branch/diff. It must
+Dispatch `code-reviewer` (read-only) on the same branch/diff with
+`model: "github-copilot/gpt-5.6-terra", thinking: "high"`. It must
 check, in priority order: does it fix the **root cause** or just a symptom;
 production wiring of every new symbol/resource; correctness + blast radius
 (infra: in-place vs replace, stateful destroys, IAM/KMS, hot-partition risk);

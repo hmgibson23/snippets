@@ -1,9 +1,22 @@
 ---
 name: animoid-full-pipeline
-description: Use when the user hands you an Animoid plan and wants the full pipeline run end to end: implement, review, remediate, and repeat review/remediation until approved or genuinely blocked. Triggers on "run the full pipeline", "pipeline this plan", "implement with luna then review with X", or an explicit request for implementation plus review/remediation. Every stage's model is user-chosen (named explicitly, or asked). Do not use for one one-off dispatch.
+description: "Use when the user hands you an Animoid plan and wants the full pipeline run end to end: implement, review, remediate, and repeat review/remediation until approved or genuinely blocked. Triggers on \"run the full pipeline\", \"pipeline this plan\", \"implement with luna then review with X\", or an explicit request for implementation plus review/remediation. Every stage's model is user-chosen (named explicitly, or asked). Do not use for one one-off dispatch."
 ---
 
 # Animoid full pipeline (implement → review ⇄ remediate until approved)
+
+## User-selected workflow precedence
+
+Record the run's role/order contract before dispatch. Explicit user choices override numbered defaults below:
+
+- If lead review is requested, lead performs Stages 5/7 with written whole-diff findings; do not invent a reviewer-model dispatch or ask for one.
+- If emulator acceptance is requested after review/remediation, defer Stages 3.5/6.5 until implementation and lead review approve. An APPROVED review then advances to required runtime acceptance, not early completion. Runtime findings return to consolidated remediation and review before retesting.
+- If lead owns aggregate gates, every worker (serial or parallel) runs focused/adjacent tests and required compilation only. Run aggregate gates once per integrated stage, not per worker.
+- User thinking level overrides defaults. For example Sol medium means `thinking: medium`, not high.
+- One task at a time means within each file-owned lane. Parallel workers own separate evidence files; lead alone edits aggregate ledger.
+- Preserve exact-five connected inventory unless an explicit approved plan changes it; per-item emulator walkthrough does not authorize additional instrumentation methods.
+
+These overrides change scheduling/roles only. RED/GREEN, production wiring, complete scope, preserved evidence, and truthful acceptance gates remain mandatory.
 
 You (the lead agent) run this whole runbook yourself, in order, using the
 `subagent` tool (single mode for an individual dispatch, parallel mode
@@ -100,8 +113,8 @@ Resolution rules:
    name — verify with `pi --list-models` per that skill.
 2. **Not named** → ONE `ask_model(reason = "Animoid pipeline: pick the model per role — implement, review, remediate, final-review (or 'same for all')")` call at Stage 3 covering ALL roles. Do not call `ask_model` again for later stages.
 3. **Thinking level**: if the resolved model is `openai-codex/gpt-5.6-luna`,
-   use `max`; if `openai-codex/gpt-5.6-terra`, use `xhigh` (matching the
-   blanket rule in `animoid/SKILL.md`). If the model doesn't take an
+   use `max`; if `openai-codex/gpt-5.6-terra`, use `high` (matching
+   `animoid/SKILL.md`), unless the user explicitly chooses another level. If the model doesn't take an
    explicit thinking level at all (e.g. `deepseek/deepseek-v4-flash`,
    `mimo/mimo-v2.5-pro`) or you're not sure it applies, **omit the
    `thinking:` frontmatter line entirely** rather than forcing a value onto
@@ -113,41 +126,13 @@ Resolution rules:
    stage. Don't insist on it if the user explicitly wants the same model
    throughout.
 
-## Dynamic agent templates (in this skill directory)
+## Stable Animoid agent profiles
 
-Every stage uses one of these three templates — fill `{MODEL}` (and
-`{THINKING}`, or delete that whole frontmatter line per step 3 above) and
-write the result to the matching path in `~/.pi/agent/agents/` before
-dispatching. Each overwrites the previous run's version — that's fine, they're
-per-run scratch, not history:
-
-- `implementer-agent.template.md` → write to
-  `~/.pi/agent/agents/animoid-implement-dynamic.md` (Stage 3)
-- `remediator-agent.template.md` → write to
-  `~/.pi/agent/agents/animoid-remediate-dynamic.md` (Stage 6)
-- `review-agent.template.md` → write to
-  `~/.pi/agent/agents/animoid-review-dynamic.md` (Stage 5 AND Stage 7 — same
-  file, regenerated with that stage's resolved model each time since stages
-  are sequential anyway)
-- `planner-agent.template.md` → write to
-  `~/.pi/agent/agents/animoid-plan-dynamic.md` (not a numbered stage of this
-  pipeline — used for ad hoc "draft/update an Animoid plan document" asks,
-  in or out of a full pipeline run)
-- `investigator-agent.template.md` → write to
-  `~/.pi/agent/agents/animoid-investigate-dynamic.md` (not a numbered stage —
-  used for ad hoc read-only "explore/investigate this" asks)
-
-**These five fixed filenames are the ONLY Animoid agent files that should
-ever exist in `~/.pi/agent/agents/`.** Never invent a new one-off filename
-for an Animoid dispatch (e.g. embedding the model name or task subject into
-the filename like `openai-codex-luna-max-animoid-implementer.md` or
-`animoid-luna-max-onion-plan-explorer.md`) — always overwrite one of these
-five instead, picking the template by role (implement / remediate / review /
-plan / investigate), not by model. This applies to one-off asks outside the
-full pipeline too — see `animoid/SKILL.md`'s "One-off Animoid dispatches"
-section. If you find any other `animoid-*` agent file in that directory that
-isn't one of these five, it's stale debris from before this rule was
-written — safe to delete.
+The five tracked profiles are `animoid-implementer`, `animoid-remediator`,
+`animoid-reviewer`, `animoid-planner`, and `animoid-investigator`. They own
+only role prompt, tools, and timeout. **Never rewrite an agent file to choose
+a model.** Pass the exact `model` and optional `thinking` directly to every
+`subagent` invocation. Omit `thinking` when the resolved model has none.
 
 ---
 
@@ -191,12 +176,9 @@ plan text for the skill's key nouns, e.g. "JNI", "brush", "persistence",
 
 Resolve ALL stage models now per "Choosing a model for a stage" above —
 `IMPLEMENT_MODEL`, `REVIEW_MODEL`, `REMEDIATE_MODEL`, `FINAL_REVIEW_MODEL` in
-one interaction. Then generate the dynamic implementer agent:
-
-1. Read `~/.pi/agent/skills/animoid-full-pipeline/implementer-agent.template.md`.
-2. Replace `{MODEL}` with `IMPLEMENT_MODEL`; fill or delete `{THINKING}` per
-   step 3 above.
-3. Write the result to `~/.pi/agent/agents/animoid-implement-dynamic.md`.
+one interaction. Derive optional `IMPLEMENT_THINKING`, `REVIEW_THINKING`,
+`REMEDIATE_THINKING`, and `FINAL_REVIEW_THINKING` using the rules above, then
+pass each role's model and optional thinking directly in its dispatch.
 
 Group the plan's tasks into dependency waves first (see `parallel-plan-execution`):
 tasks with no unmet dependencies and no file/module overlap with each other
@@ -212,13 +194,13 @@ git status --short
 ```
 
 **If Wave 1 has 2+ independent tasks**, dispatch them together in one
-parallel call, all on `animoid-implement-dynamic`:
+parallel call, all on `animoid-implementer`:
 
 ```
 subagent({
   tasks: [
-    { agent: "animoid-implement-dynamic", task: "PARALLEL WAVE - you are one of N tasks in this wave. Do NOT run the full zig build test --summary all / ReleaseFast / -Drelease=true trio - the orchestrator runs those once after the whole wave lands. Prove only your own scope with focused tests + rg wiring.\n\nAlso read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 1 full text>" },
-    { agent: "animoid-implement-dynamic", task: "PARALLEL WAVE - you are one of N tasks in this wave. Do NOT run the full zig build test --summary all / ReleaseFast / -Drelease=true trio - the orchestrator runs those once after the whole wave lands. Prove only your own scope with focused tests + rg wiring.\n\nAlso read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 2 full text>" },
+    { agent: "animoid-implementer", model: IMPLEMENT_MODEL, task: "PARALLEL WAVE - you are one of N tasks in this wave. Do NOT run the full zig build test --summary all / ReleaseFast / -Drelease=true trio - the orchestrator runs those once after the whole wave lands. Prove only your own scope with focused tests + rg wiring.\n\nAlso read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 1 full text>" },
+    { agent: "animoid-implementer", model: IMPLEMENT_MODEL, task: "PARALLEL WAVE - you are one of N tasks in this wave. Do NOT run the full zig build test --summary all / ReleaseFast / -Drelease=true trio - the orchestrator runs those once after the whole wave lands. Prove only your own scope with focused tests + rg wiring.\n\nAlso read these extra skill(s) first, if any: <list from Stage 2, or 'none'>.\n\nImplement this task from the plan (slug: <slug>), file scope: <exact files>:\n\n<task 2 full text>" },
   ],
 })
 ```
@@ -245,7 +227,7 @@ just dispatch that one task single-mode, same as before:
 
 ```
 subagent(
-  agent = "animoid-implement-dynamic",
+  agent = "animoid-implementer",
   task = "Also read these extra skill(s) before starting, if any: <list from Stage 2, or 'none'>.\n\n"
        + "Implement this Animoid plan in full (slug: <slug>):\n\n<the actual plan text from Stage 1>"
 )
@@ -263,7 +245,7 @@ git diff --stat <BASE_SHA>..HEAD
 
 If there's no ledger file, no real diff, or the diff doesn't match the plan's
 tasks, treat this stage as failed — do not proceed to Stage 4. Either
-re-invoke `animoid-implement-dynamic` with the missing tasks called out
+re-invoke `animoid-implementer` with the missing tasks called out
 explicitly, or hand it back to the user.
 
 Record the current commit/working-tree state as `IMPL_SHA` (or just use the
@@ -286,7 +268,7 @@ Save the raw output (e.g. `docs/plans/<slug>.host-gate-1.log`) — you'll paste
 a summary into the Stage 5 review task instead of asking the reviewer to
 re-run the full suite itself. If any of these fail because of the new
 implementation, treat Stage 3 as incomplete: send the failure back to
-`animoid-implement-dynamic` before moving on to Stage 3.5/4.
+`animoid-implementer` before moving on to Stage 3.5/4.
 
 ## Stage 3.5 — Run emulator tests yourself (orchestrator only, gated)
 
@@ -316,7 +298,7 @@ emulator itself.
 
 If emulator tests fail because of the new implementation (not pre-existing
 flakiness), treat Stage 3 as incomplete: send the failure back to
-`animoid-implement-dynamic` with the specific failure output, or hand it
+`animoid-implementer` with the specific failure output, or hand it
 to the user, before moving on.
 
 ## Stage 4 — Review model (already resolved)
@@ -325,19 +307,17 @@ Use `REVIEW_MODEL` from Stage 3's resolution — do not re-ask.
 
 ## Stage 5 — Run the review
 
-Generate the dynamic reviewer agent:
-
-1. Read `~/.pi/agent/skills/animoid-full-pipeline/review-agent.template.md`.
-2. Replace `{MODEL}` with `REVIEW_MODEL`; fill or delete `{THINKING}` per the
-   "Choosing a model for a stage" rules.
-3. Write the result to `~/.pi/agent/agents/animoid-review-dynamic.md` (this
-   overwrites any previous run's version — that's fine, it's per-run scratch).
+Use the stable `animoid-reviewer` profile. Pass `model = REVIEW_MODEL`
+and optional `thinking = REVIEW_THINKING` directly to `subagent`; never
+rewrite the profile file.
 
 Call:
 
 ```
 subagent(
-  agent = "animoid-review-dynamic",
+  agent = "animoid-reviewer",
+  model = REVIEW_MODEL,
+  thinking = REVIEW_THINKING, // omit when undefined
   task = "Diff range: <BASE_SHA>..<IMPL_SHA-or-HEAD>. "
        + "Requirement to check against:\n\n<the original plan text from Stage 1>\n\n"
        + "Full host-gate output from this session (Stage 3.4 - zig build test / ReleaseFast / release build): <paste your own summary/output here; treat as authoritative, don't ask the reviewer to re-run the full suite>.\n\n"
@@ -363,11 +343,9 @@ Read the resulting `docs/plans/<slug>.review.md` yourself.
 
 ## Stage 6 — Remediate (model already resolved)
 
-Use `REMEDIATE_MODEL` from Stage 3's resolution — do not re-ask. Generate the dynamic remediator agent:
-
-1. Read `~/.pi/agent/skills/animoid-full-pipeline/remediator-agent.template.md`.
-2. Replace `{MODEL}` with `REMEDIATE_MODEL`; fill or delete `{THINKING}`.
-3. Write the result to `~/.pi/agent/agents/animoid-remediate-dynamic.md`.
+Use `REMEDIATE_MODEL` from Stage 3's resolution — do not re-ask. Use the
+stable `animoid-remediator` profile and pass its model and optional thinking
+directly to every remediation dispatch.
 
 Record `PRE_REMEDIATE_SHA` (= your `IMPL_SHA`/current HEAD from Stage 5).
 
@@ -375,7 +353,9 @@ Call:
 
 ```
 subagent(
-  agent = "animoid-remediate-dynamic",
+  agent = "animoid-remediator",
+  model = REMEDIATE_MODEL,
+  thinking = REMEDIATE_THINKING, // omit when undefined
   task = "Prior review file: docs/plans/<slug>.review.md (read it first). "
        + "Remediation plan to execute:\n\n<contents of docs/plans/<slug>.remediation.md>"
 )
@@ -384,7 +364,7 @@ subagent(
 Same rule as Stage 3: verify with `git status --short`, `git log --oneline`,
 `git diff --stat PRE_REMEDIATE_SHA..HEAD` yourself before trusting
 completion, and use parallel waves for independent findings the same way as
-Stage 3 (all on `animoid-remediate-dynamic`, same resolved model, and the
+Stage 3 (all on `animoid-remediator`, same resolved model, and the
 same "PARALLEL WAVE" marker in each task string). Record the
 new commit as `REMEDIATE_SHA`.
 
@@ -424,13 +404,17 @@ Save/keep the output the same way as Stage 3.5
 
 ## Stage 7 — Final review (model already resolved)
 
-Use `FINAL_REVIEW_MODEL` from Stage 3's resolution — do not re-ask. Regenerate the dynamic reviewer agent (same template), overwriting `~/.pi/agent/agents/animoid-review-dynamic.md`.
+Use `FINAL_REVIEW_MODEL` from Stage 3's resolution — do not re-ask. Reuse
+the stable `animoid-reviewer` profile with direct per-call model/thinking
+overrides; never rewrite its profile file.
 
 Call:
 
 ```
 subagent(
-  agent = "animoid-review-dynamic",
+  agent = "animoid-reviewer",
+  model = FINAL_REVIEW_MODEL,
+  thinking = FINAL_REVIEW_THINKING, // omit when undefined
   task = "Diff range: <PRE_REMEDIATE_SHA>..<REMEDIATE_SHA-or-HEAD>. "
        + "This diff is supposed to satisfy the remediation plan below (not the "
        + "whole original feature - judge whether the remediation was actually "

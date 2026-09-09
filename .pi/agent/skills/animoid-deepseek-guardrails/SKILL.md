@@ -10,8 +10,8 @@ You are a fast model. Your known failure is: **you say a plan or task is DONE wh
 Also load and obey: `execute-plan-fully` (the workflow) and `animoid-zig-nightly` (Zig/JNI correctness) and `animoid` (project rules). This skill sits ON TOP of them and only adds hard stops. If they conflict with each other, the plan and the user win; this skill never loosens their gates.
 
 > Dispatching this to a worker? Use the `subagent` tool with the dynamically-generated
-> `animoid-implement-dynamic` agent (see `animoid-full-pipeline`'s
-> `implementer-agent.template.md` — it loads this skill itself regardless of which
+> `animoid-implementer` agent (see `animoid-full-pipeline`'s
+> `animoid-implementer` profile — it loads this skill itself regardless of which
 > model fills the template).
 
 ## THE ONE RULE
@@ -63,7 +63,9 @@ owns the device. If a task needs runtime Android verification,
 you go; note in the ledger that emulator verification is still needed and
 move on.
 
-Then read the WHOLE plan and create a Pi todo list with one item per plan task. Do not create an execution-ledger file or a pre-edit runtime-baseline task. If context is compacted, reread the plan and current todo list before the next edit.
+Then read the WHOLE plan and create a Pi todo list with one item per assigned task. Create/update the plan-required ledger before production edits. In parallel waves, write only your lane's evidence file; lead owns aggregate ledger. Do not create a pre-edit emulator/runtime-baseline task. If context is compacted, reread the plan, lane evidence, and current todo list before the next edit.
+
+The explicit dispatch contract overrides solo/parallel gate defaults: when lead owns aggregate gates, serial workers also run focused/adjacent tests and required compilation only. One-task-at-a-time applies within each assigned lane, not across independent lanes.
 
 ## The loop — repeat for EVERY task, in plan order
 

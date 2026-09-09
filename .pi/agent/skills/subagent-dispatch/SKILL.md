@@ -27,58 +27,31 @@ only inside those larger pipelines.
 
 ## Steps
 
-1. Decide the role: `implementer`, `code-reviewer`, or `spec-reviewer` (or
-   pick the closest match; write a new one-off agent file yourself if none
-   fit — same shape: frontmatter `name`/`description`/`tools`/`model:
-   {MODEL}`/`timeout`, then a system prompt body).
+1. Choose the stable role profile: `implementer`, `code-reviewer`, or
+   `spec-reviewer`.
+2. Resolve `CHOSEN_MODEL` with `ask_model` (or `model-provider-routing` for a
+   user-named bare tier). Derive optional `CHOSEN_THINKING` when applicable.
+3. Dispatch directly—do not generate or rewrite an agent file:
 
-2. Ask:
-
+   ```ts
+   subagent({ agent: "<role>", model: CHOSEN_MODEL, thinking: CHOSEN_THINKING, task: "<full task>" })
    ```
-   ask_model(reason = "to <implement/review/spec-check> <short task description>")
-   ```
 
-   Use the returned string as `CHOSEN_MODEL`. If the user cancels or says
-   "keep using current model", use the current session model instead — do
-   not re-ask. **Skip this step** if `model-provider-routing` already gave
-   you a confirmed `<provider>/<model-id>` from the user's own wording —
-   use that as `CHOSEN_MODEL` directly instead of asking again.
-
-3. Read the matching template in this skill directory:
-   - `implementer-agent.template.md` → generic-implementer-dynamic
-   - `code-reviewer-agent.template.md` → generic-code-reviewer-dynamic
-   - `spec-reviewer-agent.template.md` → generic-spec-reviewer-dynamic
-
-4. Replace `{MODEL}` with `CHOSEN_MODEL` and write the result to
-   `~/.pi/agent/agents/<template-name>.md` (e.g.
-   `~/.pi/agent/agents/generic-implementer-dynamic.md`). This overwrites any
-   previous one-off run — that's fine, it's per-run scratch, not something to
-   preserve.
-
-5. Call `subagent` with that dynamic agent name and the real task text
-   (agent + task, single mode). Do not use `parallel`/`chain` unless you
-   genuinely have independent tasks to fan out — ask the user's model choice
-   applies per call, so for multiple independent one-off tasks with
-   different desired models, ask once per distinct role/task before
-   dispatching each.
-
-6. Do not trust the subagent's self-reported "done" — it's a summary from a
-   real headless `pi` subprocess with no memory of this conversation, not
-   proof. Verify with `git diff`/tests yourself, same as any other subagent
-   dispatch.
+   Omit `thinking` when the model has no thinking-level concept.
+4. Verify the resulting diff and tests yourself; a subagent report is not proof.
 
 ## When NOT to use this skill
 
 - Any Animoid work at all, pipeline or one-off — see `animoid/SKILL.md`'s
   "One-off Animoid dispatches" section. Animoid has its own five fixed
-  dynamic template files (implement/remediate/review/plan/investigate) in
+  stable profiles (implement/remediate/review/plan/investigate) in
   `animoid-full-pipeline/`; always reuse one of those instead of this
   skill's step 1 fallback ("write a new one-off agent file yourself if none
   fit") — that fallback is exactly what produced the stray
   `animoid-*`/`openai-codex-*-animoid-*`/`qwen-*-animoid-*` one-off agent
   files that used to clutter `~/.pi/agent/agents/`.
 - Inside `copilot-plan-implement-pipeline` — it already asks per round via
-  its own `ask_model` + `implementer-agent.template.md` step; don't duplicate
+  its own `ask_model` + direct `implementer` dispatch; don't duplicate
   the prompt.
 - If the user already told you which model to use for this exact task in
   the current turn — just use it, no need to ask again.

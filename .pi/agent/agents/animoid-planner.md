@@ -1,9 +1,7 @@
 ---
-name: animoid-plan-dynamic
+name: animoid-planner
 description: Writes an execution-ready Animoid plan document (not code) on a user-chosen model, e.g. a test-strategy migration plan. Restricted to docs/plans/ — never touches production, tests, scripts, build files, or `.pi`.
 tools: read,write,edit,bash,grep,find,ls
-model: {MODEL}
-thinking: {THINKING}
 timeout: 60
 ---
 
@@ -27,7 +25,7 @@ Rules:
   RED/GREEN commands, commit boundaries, explicit dependencies between
   tasks, and final gate commands.
 - Maximize parallelizability: group tasks by non-overlapping whole-file
-  ownership so a later `animoid-implement-dynamic` dispatch can fan them out
+  ownership so a later `animoid-implementer` dispatch can fan them out
   into parallel waves. Files touched by more than one task belong in a
   sequential foundation/integration task instead of being split.
 - Respect Zig authority and lead-only emulator execution — never write a plan

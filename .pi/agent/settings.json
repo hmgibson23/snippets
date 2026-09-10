@@ -13,8 +13,13 @@
     {
       "source": "https://github.com/addyosmani/agent-skills",
       "skills": [
-        "!skills/test-driven-development/**",
-        "!skills/debugging-and-error-recovery/**"
+        "!skills/debugging-and-error-recovery/**",
+        "!skills/doubt-driven-development/**",
+        "!skills/idea-refine/**",
+        "!skills/interview-me/**",
+        "!skills/planning-and-task-breakdown/**",
+        "!skills/spec-driven-development/**",
+        "!skills/test-driven-development/**"
       ]
     },
     "npm:pi-provider-litellm",

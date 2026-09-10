@@ -25,13 +25,6 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 import { getAgentDir } from "@earendil-works/pi-coding-agent";
 
 /**
- * Set by subagent-spawning tools (pi-superpowers-plus subagent, pi-minimal-subagent)
- * on the child pi process's env. When present, this extension is a nested/child
- * session — skip touching settings.json entirely. Child processes never need the
- * scoped-models UX, and every child that *did* write here was one more concurrent
- * writer racing against every other pi process (parent + siblings) on the same
- * shared settings.json file (see writeEnabledModelsIfChanged() below for why that
- * race was dangerous).
  */
 const IS_SUBAGENT_CHILD = process.env.PI_SUBAGENT_CHILD === "1";
 
@@ -203,14 +196,7 @@ export default function scopedModelsExtension(pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		const inNewsuk = isNewsukDir(ctx.cwd, rules);
 
-		// Always show the status indicator, even for subagent children — cheap,
-		// no disk I/O, useful if a child's transcript is ever inspected directly.
 		ctx.ui.setStatus("scoped", scopeTag(inNewsuk, ctx.ui.theme));
-
-		// Subagent-spawned child processes don't need the scoped-models UX and
-		// were previously an extra concurrent writer to the shared settings.json
-		// on every dispatch. Skip the write and the notification entirely.
-		if (IS_SUBAGENT_CHILD) return;
 
 		// Write the scoped-model patterns for future sessions (only if changed)
 		const patterns = buildPatterns(inNewsuk, ctx);

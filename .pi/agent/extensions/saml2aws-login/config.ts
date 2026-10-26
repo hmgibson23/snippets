@@ -5,6 +5,16 @@ export interface Saml2AwsConfig {
   sessionDuration: number;
   awsRegion: string;
   extraEnv: Record<string, string>;
+  /** Wipe the in-memory credentials after this many idle minutes (0 = never). */
+  idleMinutes: number;
+  /** Run aws_exec commands under the macOS network sandbox (AWS + allowedHosts only). */
+  sandbox: boolean;
+  /** Extra hosts the sandbox lets through (e.g. "*.example.com"). */
+  allowedHosts: string[];
+  /** Extra variables commands may inherit from pi (default: a small safe list). */
+  inheritEnv: string[];
+  /** Account ids shown in red in the status bar (prod). */
+  prodAccounts: string[];
 }
 
 export interface ResolvedSaml2AwsConfig extends Saml2AwsConfig {
@@ -17,7 +27,13 @@ export function loadConfig(path: string): Saml2AwsConfig {
     sessionDuration?: unknown;
     awsRegion?: unknown;
     extraEnv?: Record<string, unknown>;
+    idleMinutes?: unknown;
+    sandbox?: unknown;
+    allowedHosts?: unknown;
+    inheritEnv?: unknown;
+    prodAccounts?: unknown;
   };
+  const strings = (v: unknown): string[] => (Array.isArray(v) ? v.map(String) : []);
 
   return {
     defaultProfile: String(raw.defaultProfile ?? ""),
@@ -26,6 +42,11 @@ export function loadConfig(path: string): Saml2AwsConfig {
     extraEnv: Object.fromEntries(
       Object.entries(raw.extraEnv ?? {}).map(([key, value]) => [key, String(value)]),
     ),
+    idleMinutes: Number(raw.idleMinutes ?? 20),
+    sandbox: raw.sandbox === undefined ? process.platform === "darwin" : Boolean(raw.sandbox),
+    allowedHosts: strings(raw.allowedHosts),
+    inheritEnv: strings(raw.inheritEnv),
+    prodAccounts: strings(raw.prodAccounts),
   };
 }
 

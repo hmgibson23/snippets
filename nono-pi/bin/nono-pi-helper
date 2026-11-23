@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""nono-pi host-side helper (never visible inside the sandbox).
+
+Called by nono (credential_capture / AWS credential_process) and by the user:
+
+  capture <name> [gh-token]   print secret <name> (asks via the supervisor)
+  aws-creds <account>         AWS credential_process JSON (via the supervisor)
+  ls | set <name> | rm <name> manage secrets in the nono-pi keychain
+  status | grants | revoke <key>   talk to the running session
+  aws-refresh                 rebuild the AWS account list from saml2aws list-roles
+  aws-login [account]         log the running session in to AWS now (Okta prompt in the nono-pi tab)
+"""
+from __future__ import annotations
+
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "lib"))
+
+from nonopi import keystore, prompt, proto  # noqa: E402
+from nonopi.paths import load_config, save_config  # noqa: E402
+
+
+def die(msg: str, code: int = 1):
+    print(f"nono-pi: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def ctl(obj: dict) -> dict:
+    try:
+        return proto.call(proto.CTL, obj, timeout=900)
+    except OSError:
+        die("no running nono-pi session (start one with `pis`)")
+
+
+def cmd_capture(name: str, source: str | None) -> None:
+    r = ctl({"op": "secret-get", "name": name, "source": source,
+             "host": os.environ.get("NONO_REQUEST_HOST", "")})
+    if not r.get("ok"):
+        die(f"secret {name} not provided")
+    sys.stdout.write(r["value"])
+
+
+def cmd_aws(account: str) -> None:
+    r = ctl({"op": "aws-creds", "account": account})
+    if not r.get("ok"):
+        die(f"AWS {account}: not authorized or login failed")
+    sys.stdout.write(json.dumps(r["creds"]))
+
+
+def _store():
+    s = keystore.open_store()
+    if not s.exists():
+        die("nono-pi keychain not set up: run `nono-pi setup`")
+    if not s.is_unlocked():
+        pw = prompt.secret("unlock nono-pi keychain", "for nono-pi-key")
+        if not pw or not s.unlock(pw):
+            die("keychain locked")
+    return s
+
+
+def cmd_aws_refresh() -> None:
+    import shutil
+    import subprocess
+    from nonopi import awsdisc
+    if not shutil.which("saml2aws"):
+        die("saml2aws not installed")
+    s = _store()
+    pw = s.get("okta_password") or prompt.secret("Okta password", "to list your AWS roles")
+    if not pw:
+        die("cancelled")
+    bindir = os.path.dirname(os.path.realpath(__file__))
+    env = {k: v for k, v in os.environ.items() if not k.startswith("AWS_")}
+    env.update(SAML2AWS_PASSWORD=pw, PATH=bindir + os.pathsep + env.get("PATH", ""))
+    sock = proto.CTL if os.path.exists(proto.CTL) else ""
+    if sock:
+        env["PI_NONO_CTL"] = sock
+    r = subprocess.run(["saml2aws", "list-roles", "--skip-prompt"] + (["--prompter", "pinentry-nono-pi"] if sock else []),
+                       env=env, capture_output=True, text=True)
+    found = awsdisc.parse_list_roles(r.stdout + "\n" + r.stderr)
+    if not found:
+        die("saml2aws list-roles returned no roles:\n" + r.stderr.strip()[-400:])
+    s.set("okta_password", pw)
+    cfg = load_config()
+    accts = cfg["aws"].get("accounts", {})
+    by_arn = {a["role_arn"]: n for n, a in accts.items()}
+    added = 0
+    for name, a in found.items():
+        if a["role_arn"] in by_arn:
+            continue
+        accts[name] = {"role_arn": a["role_arn"], "region": a["region"]}
+        added += 1
+    cfg["aws"]["accounts"] = accts
+    cfg["aws"]["enabled"] = True
+    save_config(cfg)
+    print(f"{len(found)} roles visible, {added} new accounts added ({len(accts)} total)")
+
+
+def main(argv: list[str]) -> None:
+    if not argv or argv[0] in ("-h", "--help", "help"):
+        print(__doc__)
+        return
+    cmd, rest = argv[0], argv[1:]
+    if cmd == "capture" and rest:
+        cmd_capture(rest[0], rest[1] if len(rest) > 1 else None)
+    elif cmd == "aws-creds" and len(rest) == 1:
+        cmd_aws(rest[0])
+    elif cmd == "ls":
+        print("\n".join(_store().names()))
+    elif cmd == "set" and len(rest) == 1:
+        v = prompt.secret(f"store secret {rest[0]}", "hidden input")
+        if not v:
+            die("cancelled")
+        _store().set(rest[0], v)
+        print(f"stored {rest[0]}")
+    elif cmd == "rm" and len(rest) == 1:
+        print(("removed " if _store().rm(rest[0]) else "not found: ") + rest[0])
+    elif cmd in ("status", "grants"):
+        r = ctl({"op": "status"})
+        print(json.dumps(r, indent=2))
+    elif cmd == "revoke" and len(rest) == 1:
+        print(ctl({"op": "revoke", "key": rest[0]}))
+    elif cmd == "aws-refresh":
+        cmd_aws_refresh()
+    elif cmd in ("aws-login", "login"):
+        # from any host terminal / zellij pane: log the running session in to AWS now
+        acct = rest[0] if rest else None
+        r = ctl({"op": "aws-login", "account": acct or load_config()["aws"].get("default_account")})
+        print("logged in" if r.get("ok") else f"login failed: {r.get('error', 'cancelled')}")
+        sys.exit(0 if r.get("ok") else 1)
+    else:
+        die(f"bad usage: {' '.join(argv)} (see --help)")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""ssh stand-in inside the nono-pi sandbox / VM.
+
+There is no ssh key or agent in here. git (via GIT_SSH_COMMAND) and plain
+`ssh` go through the nono-pi supervisor, which checks grants (push needs one,
+fetch is automatic, interactive ssh asks every time) and runs the real ssh on
+the host with a private, time-limited agent.
+"""
+import os
+import select
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import nonopi_client  # noqa: E402
+
+GIT_CMDS = ("git-upload-pack", "git-receive-pack", "git-upload-archive")
+# ssh flags that take an argument (we accept & mostly ignore them; host config is the host's)
+ARG_FLAGS = set("bcDEeFIiJLlmOopQRSWw")
+
+
+def parse(argv):
+    port, user, dest, rest, tty = "22", None, None, [], None
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if dest is None and a.startswith("-") and len(a) > 1:
+            if a == "--":
+                i += 1
+                continue
+            flag = a[1]
+            if flag in ARG_FLAGS:
+                val = a[2:] if len(a) > 2 else (argv[i + 1] if i + 1 < len(argv) else "")
+                if len(a) == 2:
+                    i += 1
+                if flag == "p":
+                    port = val
+                elif flag == "l":
+                    user = val
+                elif flag == "o" and val.lower().startswith("port="):
+                    port = val.split("=", 1)[1]
+            else:
+                for c in a[1:]:
+                    if c == "t":
+                        tty = True
+                    elif c == "T":
+                        tty = False
+            i += 1
+            continue
+        if dest is None:
+            dest = a
+        else:
+            rest.append(a)
+        i += 1
+    if dest and user and "@" not in dest:
+        dest = f"{user}@{dest}"
+    return dest, port, rest, tty
+
+
+def main():
+    dest, port, rest, tty = parse(sys.argv[1:])
+    if not dest:
+        sys.exit("usage: ssh [options] destination [command]")
+    is_git = len(rest) >= 1 and rest[0].split(" ", 1)[0] in GIT_CMDS
+    if is_git and len(rest) == 1:
+        rest = rest[0].split(" ", 1)
+    if tty is None:
+        tty = not rest and sys.stdin.isatty()
+    op = "git" if is_git else "ssh"
+    s, f, r = nonopi_client.request({"op": op, "dest": dest, "port": port, "argv": rest, "tty": bool(tty)})
+    if not r.get("ok"):
+        sys.stderr.write((r.get("error") or "nono-pi: denied") + "\n")
+        sys.exit(255)
+    old = None
+    if tty and sys.stdin.isatty():
+        import termios
+        import tty as ttymod
+        old = termios.tcgetattr(0)
+        ttymod.setraw(0)
+    try:
+        ins = [0, s]
+        while True:
+            rd, _, _ = select.select(ins, [], [])
+            if s in rd:
+                d = s.recv(65536)
+                if not d:
+                    break
+                os.write(1, d)
+            if 0 in rd:
+                d = os.read(0, 65536)
+                if not d:
+                    ins.remove(0)
+                    try:
+                        s.shutdown(1)
+                    except OSError:
+                        pass
+                else:
+                    s.sendall(d)
+    finally:
+        if old:
+            import termios
+            termios.tcsetattr(0, termios.TCSADRAIN, old)
+
+
+if __name__ == "__main__":
+    main()

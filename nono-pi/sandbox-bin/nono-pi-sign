@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""git ssh-signing stand-in (gpg.ssh.program) inside the nono-pi sandbox.
+
+git runs:  <prog> -Y sign -n git -f <pubkey-or-file> [-U] <tmpfile>
+and expects <tmpfile>.sig. We send the commit/tag object to the supervisor,
+which signs it on the host with the private agent (namespace "git" only) and
+returns only the signature. Verification (-Y verify / find-principals /
+check-novalidate) needs no secret and runs the real ssh-keygen.
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import nonopi_client  # noqa: E402
+
+REAL = "/usr/bin/ssh-keygen" if os.path.exists("/usr/bin/ssh-keygen") else "ssh-keygen"
+
+
+def main():
+    a = sys.argv[1:]
+    if "-Y" not in a or a[a.index("-Y") + 1] != "sign":
+        os.execvp(REAL, [REAL] + a)
+    ns = a[a.index("-n") + 1] if "-n" in a else ""
+    if ns != "git":
+        sys.exit("nono-pi: only namespace 'git' signatures are brokered")
+    keyarg = a[a.index("-f") + 1]
+    pub = keyarg
+    if os.path.exists(keyarg):
+        p = keyarg if keyarg.endswith(".pub") else keyarg + ".pub"
+        try:
+            pub = open(p).read().strip()
+        except OSError:
+            pub = open(keyarg).read().strip()   # literal key file
+    elif keyarg.startswith("key::"):
+        pub = keyarg[5:]
+    msgfile = a[-1]
+    payload = open(msgfile, "rb").read().decode("latin-1")
+    r = nonopi_client.call({"op": "sign", "payload": payload, "pubkey": pub})
+    if not r.get("ok"):
+        sys.exit(r.get("error") or "nono-pi: signing refused")
+    with open(msgfile + ".sig", "w") as f:
+        f.write(r["sig"])
+
+
+if __name__ == "__main__":
+    main()

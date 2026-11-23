@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""nono-pi client inside the sandbox / VM (no credentials, ever).
+
+  nono-pi status                         grants, AWS, keychain state
+  nono-pi aws-login [account]            log in to an AWS account now (prompts on the host)
+  nono-pi request-secret NAME https://api.host [--header H] [--format 'Bearer {}'] [--env VAR] [--reason TEXT]
+                                         ask the user for a new API credential (restarts pi, keeps session)
+  nono-pi request-access PATH [--write] [--reason TEXT]
+  nono-pi revoke KEY
+"""
+import json
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import nonopi_client  # noqa: E402
+
+
+def opt(args, name, default=None):
+    if name in args:
+        i = args.index(name)
+        v = args[i + 1] if i + 1 < len(args) else default
+        del args[i:i + 2]
+        return v
+    return default
+
+
+def main():
+    a = sys.argv[1:]
+    if not a or a[0] in ("-h", "--help"):
+        print(__doc__)
+        return
+    cmd = a.pop(0)
+    if cmd == "status":
+        r = nonopi_client.call({"op": "status"})
+    elif cmd == "aws-login":
+        r = nonopi_client.call({"op": "aws-login", "account": a[0] if a else None})
+    elif cmd == "request-secret":
+        header, fmt, env, reason = opt(a, "--header"), opt(a, "--format"), opt(a, "--env"), opt(a, "--reason")
+        if len(a) != 2:
+            sys.exit("usage: nono-pi request-secret NAME https://host [...]")
+        r = nonopi_client.call({"op": "request-secret", "name": a[0], "upstream": a[1], "header": header,
+                                "format": fmt, "env_var": env, "reason": reason})
+    elif cmd == "request-access":
+        write = "--write" in a
+        if write:
+            a.remove("--write")
+        reason = opt(a, "--reason")
+        r = nonopi_client.call({"op": "request-access", "path": a[0], "write": write, "reason": reason})
+    elif cmd == "revoke":
+        r = nonopi_client.call({"op": "revoke", "key": a[0]})
+    else:
+        sys.exit(f"unknown command {cmd}")
+    print(json.dumps(r, indent=2))
+    sys.exit(0 if r.get("ok") else 1)
+
+
+if __name__ == "__main__":
+    main()

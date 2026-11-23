@@ -1,0 +1,549 @@
+"""nono-pi launcher (trusted side).
+
+Flow:
+  pis [args]            outer: pick access (remembered per project), then
+                        start/attach zellij session `pi-<project>` running
+                        `nono-pi --inner`. Already inside zellij: run inner in place.
+  nono-pi --inner       supervisor + agent tier (nono or VM), restart loop.
+"""
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+
+from . import profile as prof
+from . import proto
+from .paths import BIN, HOME, PI_EXT, PROJECTS_DIR, RUN_DIR, SANDBOX_BIN, STATE_DIR, load_config, project_id, write_private
+
+RESTART_EXIT = 75
+CHILD: dict = {}   # current agent-tier process (nono run / VM driver)
+
+
+def call_child(args: list[str], **kw) -> int:
+    p = subprocess.Popen(args, **kw)
+    CHILD["p"] = p
+    try:
+        return p.wait()
+    except KeyboardInterrupt:
+        return p.wait()
+    finally:
+        CHILD.pop("p", None)
+
+
+def die(msg: str):
+    sys.exit(f"nono-pi: {msg}")
+
+
+# ------------------------------------------------------------------ choices
+def choices_path(pid: str) -> str:
+    return os.path.join(PROJECTS_DIR, pid, "choices.json")
+
+
+def load_choices(pid: str) -> dict | None:
+    try:
+        return json.load(open(choices_path(pid)))
+    except (OSError, ValueError):
+        return None
+
+
+def pick_accounts(cfg: dict, preset: list[str] | None) -> list[str]:
+    aws = cfg["aws"]
+    accounts = sorted(aws.get("accounts", {}))
+    if not aws.get("enabled") or not accounts:
+        return []
+    prod = set(aws.get("prod_accounts", []))
+    label = lambda n: n + ("  [PROD]" if aws["accounts"][n]["role_arn"].split(":")[4] in prod else "")
+    default = aws.get("default_account") if aws.get("default_account") in accounts else accounts[0]
+    first = [a for a in (preset or [default]) if a in accounts] or [default]
+    ordered = first + [a for a in accounts if a not in first]
+    if shutil.which("fzf"):
+        r = subprocess.run(["fzf", "--multi", "--height=~50%", "--reverse", "--prompt=AWS> ",
+                            "--header=nono-pi: AWS account(s) to pre-approve (TAB = several, Enter = top, ESC = none).\n"
+                                      "Others still work: they ask on first use."],
+                           input="\n".join(label(a) for a in ordered), stdout=subprocess.PIPE, text=True)
+        return [l.split()[0] for l in r.stdout.splitlines() if l.strip()]
+    print("nono-pi: AWS account(s) to pre-approve (others ask on first use):", file=sys.stderr)
+    for i, a in enumerate(ordered, 1):
+        print(f"  {i}) {label(a)}", file=sys.stderr)
+    print("  0) none", file=sys.stderr)
+    ans = input("choose [1, e.g. 1,3]: ").strip() or "1"
+    if ans == "0":
+        return []
+    try:
+        return [ordered[int(x) - 1] for x in ans.replace(" ", "").split(",")]
+    except (ValueError, IndexError):
+        die("invalid choice")
+
+
+def resolve_choices(cfg: dict, pid: str, argv: list[str]) -> tuple[dict, list[str]]:
+    """--aws a,b|none, --vm, -c/--configure. Remembered per project."""
+    rest, aws_arg, configure, vm = [], None, False, None
+    it = iter(argv)
+    for a in it:
+        if a == "--aws":
+            aws_arg = next(it, "")
+        elif a.startswith("--aws="):
+            aws_arg = a.split("=", 1)[1]
+        elif a in ("--configure", "--pick"):
+            configure = True
+        elif a == "--vm":
+            vm = True
+        elif a in ("--no-vm", "--nono"):
+            vm = False
+        else:
+            rest.append(a)
+    saved = load_choices(pid) or {}
+    ch = dict(saved)
+    accounts = cfg["aws"].get("accounts", {})
+    if aws_arg is not None:
+        picked = [] if aws_arg in ("none", "") else [x for x in aws_arg.split(",") if x]
+        bad = [x for x in picked if x not in accounts]
+        if bad:
+            die(f"unknown AWS account(s): {', '.join(bad)} (have: {', '.join(sorted(accounts))})")
+        ch["aws"] = picked
+    elif configure or "aws" not in saved:
+        if sys.stdin.isatty() and sys.stderr.isatty():
+            ch["aws"] = pick_accounts(cfg, saved.get("aws"))
+        else:
+            d = cfg["aws"].get("default_account")
+            ch["aws"] = [d] if d in accounts else []
+    if vm is not None:
+        ch["vm"] = vm
+    ch["aws"] = [a for a in ch.get("aws", []) if a in accounts]
+    if ch != saved:
+        write_private(choices_path(pid), json.dumps(ch, indent=2))
+    return ch, rest
+
+
+# ------------------------------------------------------------------ outer
+def outer(argv: list[str]) -> None:
+    if os.environ.get("PI_SANDBOX") == "nono-pi":
+        die("already inside a nono-pi sandbox")
+    if not shutil.which("nono"):
+        die("nono is not installed (https://nono.sh)")
+    cfg = load_config()
+    cwd = os.getcwd()
+    bad = _bad_workdir(cwd)
+    if bad:
+        die(bad)
+    pid = project_id(cwd)
+    if argv[:1] == ["--print-profile"]:
+        ch, _ = resolve_choices(cfg, pid, argv[1:] + ([] if "--aws" in argv else ["--aws", ",".join((load_choices(pid) or {}).get("aws", [])) or "none"]))
+        p, _ = prof.build(cfg, {"aws": ch["aws"]})
+        print(json.dumps(p, indent=2))
+        return
+    ch, rest = resolve_choices(cfg, pid, argv)
+    use_vm = ch.get("vm", cfg.get("vm", {}).get("default", True))
+    if use_vm:
+        from .vm import kvm_ok
+        ok, why = kvm_ok()
+        if not ok:
+            print(f"nono-pi: no microVM here ({why}); using the nono sandbox", file=sys.stderr)
+            use_vm = False
+    inner_cmd = [sys.executable, os.path.join(BIN, "nono-pi"), "--inner", "--project", pid,
+                 "--aws", ",".join(ch["aws"]) or "none"] + (["--vm"] if use_vm else []) + ["--"] + rest
+    use_zellij = cfg.get("zellij", True) and shutil.which("zellij") and sys.stdout.isatty() \
+        and not any(a in rest for a in ("-p", "--print", "--mode", "--export", "--version", "-v", "--help", "-h"))
+    if not use_zellij:
+        os.execv(sys.executable, inner_cmd)
+    sess = "pi-" + pid
+    if os.environ.get("ZELLIJ"):
+        # already in a zellij session: run inner here; requests show in this session's panel
+        os.environ["NONO_PI_ZELLIJ_SESSION"] = os.environ.get("ZELLIJ_SESSION_NAME", "")
+        os.environ["NONO_PI_IN_USER_ZELLIJ"] = "1"
+        os.execv(sys.executable, inner_cmd)
+    if _zellij_alive(sess):
+        os.execvp("zellij", ["zellij", "attach", sess])
+    layout = os.path.join(RUN_DIR, f"layout-{pid}.kdl")
+    os.makedirs(RUN_DIR, mode=0o700, exist_ok=True)
+    q = lambda xs: " ".join(json.dumps(a) for a in xs)
+    me = [sys.executable, os.path.join(BIN, "nono-pi")]
+    # Same look as your normal zellij: the shared zjstatus bar (if you have it)
+    # with nono-pi's state in its {pipe_nonopi} slot; otherwise stock bars plus a
+    # 1-line nono-pi status pane.
+    bar = _zjstatus_bar()
+    if bar:
+        template = bar + "\n        children"
+        status_pane = ""
+    else:
+        template = """pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }"""
+        status_pane = f"""
+            pane size=1 borderless=true name="nono-pi status" command={json.dumps(me[0])} {{
+                args {q(me[1:] + ["--status-pane", pid])}
+            }}"""
+    env_args = f'"NONO_PI_ZELLIJ_SESSION={sess}" "NONO_PI_HOLD_ON_ERROR=1" "NONO_PI_ZJSTATUS={'1' if bar else ''}"'
+    if use_vm:
+        # every new pane / tab in this session = another fish shell in the same VM
+        vm_shell = os.path.join(RUN_DIR, "vm-shell")
+        write_private(vm_shell, f"#!/bin/sh\nexec {json.dumps(sys.executable)} {json.dumps(os.path.join(BIN, 'nono-pi'))} --vm-shell\n")
+        os.chmod(vm_shell, 0o700)
+        write_private(layout, f"""layout {{
+    default_tab_template {{
+        {template}
+    }}
+    tab name="shell" focus=true {{
+        pane name="⬡ vm" focus=true command="env" {{
+            args {env_args} {q(inner_cmd)}
+            close_on_exit true
+        }}
+    }}
+    tab name="pi" {{
+        pane name="pi" command="env" {{
+            args {env_args} {q(me + ["--vm-pi", "--"] + rest)}
+            close_on_exit true
+        }}
+    }}
+    tab name="nono-pi" {{
+        pane name="🔒 nono-pi control" command={json.dumps(me[0])} {{
+            args {q(me[1:] + ["--panel"])}
+        }}
+    }}
+}}
+""")
+        _zellij_forget(sess)
+        os.execvp("zellij", ["zellij", "--session", sess, "--new-session-with-layout", layout,
+                             "options", "--show-startup-tips", "false", "--show-release-notes", "false",
+                             "--default-mode", "normal", "--default-shell", vm_shell])
+    write_private(layout, f"""layout {{
+    default_tab_template {{
+        {template}
+    }}
+    tab name="pi" focus=true {{
+        pane split_direction="horizontal" {{
+            pane name="pi" focus=true command="env" {{
+                args "NONO_PI_ZELLIJ_SESSION={sess}" "NONO_PI_HOLD_ON_ERROR=1" "NONO_PI_ZJSTATUS={'1' if bar else ''}" {q(inner_cmd)}
+                close_on_exit true
+            }}{status_pane}
+        }}
+    }}
+    tab name="nono-pi" {{
+        pane name="🔒 nono-pi control" command={json.dumps(me[0])} {{
+            args {q(me[1:] + ["--panel"])}
+        }}
+    }}
+}}
+""")
+
+
+    _zellij_forget(sess)
+    os.execvp("zellij", ["zellij", "--session", sess, "--new-session-with-layout", layout,
+                         "options", "--show-startup-tips", "false", "--show-release-notes", "false",
+                         "--default-mode", "normal"])
+
+
+ZJSTATUS_PART = os.path.join(HOME, ".config", "zellij", "parts", "zjstatus-bar.kdl")
+ZJSTATUS_WASM = os.path.join(HOME, ".config", "zellij", "plugins", "zjstatus.wasm")
+
+
+def _zjstatus_bar() -> str | None:
+    """Your zjstatus bar (shared with ~/.config/zellij/layouts/hugo.kdl), if installed."""
+    if not (os.path.exists(ZJSTATUS_PART) and os.path.exists(ZJSTATUS_WASM)):
+        return None
+    lines = [l for l in open(ZJSTATUS_PART).read().splitlines() if not l.lstrip().startswith("//")]
+    return "\n        ".join(lines).strip()
+
+
+def _bad_workdir(cwd: str) -> str | None:
+    real = os.path.realpath(cwd)
+    home = os.path.realpath(HOME)
+    if real in ("/", home) or home.startswith(real + os.sep):
+        return (f"run pis inside a project directory, not {cwd} "
+                "(pi gets read-write access to the current directory; nono refuses your whole home)")
+    return None
+
+
+def _zellij_alive(sess: str) -> bool:
+    r = subprocess.run(["zellij", "list-sessions", "--short", "--no-formatting"], capture_output=True, text=True)
+    live = subprocess.run(["zellij", "list-sessions", "--no-formatting"], capture_output=True, text=True).stdout
+    return any(l.split()[0] == sess and "EXITED" not in l for l in live.splitlines() if l.strip()) and sess in r.stdout
+
+
+def _zellij_forget(sess: str) -> None:
+    subprocess.run(["zellij", "delete-session", sess], capture_output=True)
+
+
+# ------------------------------------------------------------------ status pane
+def status_pane(pid: str) -> None:
+    from .grants import fmt_left
+    sys.stdout.write("\033[?25l")
+    while True:
+        try:
+            st = proto.call(proto.CTL, {"op": "status"}, timeout=3)
+            aws = st.get("aws_picked") or []
+            live = st.get("aws_logged_in") or {}
+            if aws:
+                a0 = aws[0]
+                a = a0 + (f" ✓{fmt_left(live[a0])}" if live.get(a0) else " (not logged in)") \
+                    + (f" +{len(aws) - 1}" if len(aws) > 1 else "")
+            else:
+                a = "off"
+            pushes = [g["key"].split(":", 1)[1] for g in st.get("grants", [])
+                      if g["key"].startswith("git-push:") and g["scope"] != "deny"]
+            pl = ", ".join(p.split("/", 1)[-1] for p in pushes[:2]) + ("…" if len(pushes) > 2 else "") if pushes else "–"
+            line = (f" 🔒 nono-pi{' VM' if st.get('vm') else ''} │ {'🔓' if st.get('keychain_unlocked') else '🔐'}"
+                    f" │ AWS {a} │ push {pl} │ ✍ {st.get('signed', 0)}")
+            n = st.get("pending_count", 0)
+            if n:
+                line = f" ⚠ {n} waiting · Alt-2 │" + line
+            else:
+                line += " │ Alt-2 nono-pi · Alt-1 pi · Ctrl-d quit"
+        except OSError:
+            line = " 🔒 nono-pi │ supervisor not running"
+        warn = line.startswith(" ⚠")
+        sys.stdout.write("\r\033[K" + ("\033[30;43m" if warn else "\033[7m")
+                         + line[: shutil.get_terminal_size().columns - 1] + "\033[0m")
+        sys.stdout.flush()
+        time.sleep(1 if warn else 2)
+
+
+# ------------------------------------------------------------------ inner
+def inner(argv: list[str]) -> None:
+    from .supervisor import Supervisor
+    pid, aws, vm, rest = None, [], False, []
+    it = iter(argv)
+    for a in it:
+        if a == "--project":
+            pid = next(it)
+        elif a == "--aws":
+            v = next(it)
+            aws = [] if v == "none" else v.split(",")
+        elif a == "--vm":
+            vm = True
+        elif a == "--":
+            rest = list(it)
+    cwd = os.getcwd()
+    pid = pid or project_id(cwd)
+    cfg = load_config()
+    other = _supervisor_running()
+    if other:
+        where = other.get("project", "?")
+        zs = other.get("zellij_session") or ""
+        hint = f"`pis` in that project, or `zellij attach {zs}`" if zs else "`pis` in that project"
+        print(f"nono-pi: another nono-pi session is running for project '{where}' (pid {other.get('pid', '?')}); "
+              f"one at a time for now. Reattach with {hint}, or quit it there.", file=sys.stderr)
+        _hold_if_error(1)
+        sys.exit(1)
+    sup = Supervisor(pid, cwd, os.path.basename(cwd), vm=vm)
+    sup.picked_aws = aws
+    sup.serve()
+    if vm:
+        return _inner_vm(sup, cfg, aws, rest)
+    stop = {"flag": False}
+
+    def _term(*_):
+        # zellij closing the pane / session sends SIGHUP: end the agent tier, then us
+        stop["flag"] = True
+        child = CHILD.get("p")
+        if child and child.poll() is None:
+            child.terminate()
+    signal.signal(signal.SIGTERM, _term)
+    signal.signal(signal.SIGHUP, _term)
+    first = True
+    rc = 0
+    try:
+        while not stop["flag"]:
+            sup.cfg = load_config()
+            pi_args = list(rest)
+            if not first and not any(a in pi_args for a in ("-c", "--continue", "--session", "-r", "--resume")):
+                pi_args = ["--continue"] + _drop_initial_prompts(pi_args)
+            rc = run_nono(sup.cfg, {"aws": aws}, pi_args)
+            first = False
+            if stop["flag"]:
+                break
+            if rc == RESTART_EXIT or sup.pending_restart:
+                why = (sup.pending_restart or {}).get("why", "")
+                sup.pending_restart = None
+                print(f"\nnono-pi: restarting pi (same session){': ' + why if why else ''}…", file=sys.stderr)
+                continue
+            _hold_if_error(rc)
+            break
+    except SystemExit:
+        raise
+    except BaseException as e:
+        print(f"nono-pi: {type(e).__name__}: {e}", file=sys.stderr)
+        _hold_if_error(1)
+        rc = 1
+    finally:
+        sup.shutdown()
+    # pi has exited (Ctrl-D / quit / error acknowledged): close the whole session
+    _end_zellij_session()
+    sys.exit(rc)
+
+
+
+def _inner_vm(sup, cfg: dict, aws: list[str], rest: list[str]) -> None:
+    """VM devbox: the supervisor + the session's VM live in this process (the
+    main shell pane). In zellij you land in fish inside the VM; pi runs in tab 2
+    and every other pane is another shell in the same VM. Exiting this shell
+    ends the session. Outside zellij (scripts, -p): just pi in the VM."""
+    from . import attach
+    from .vm import VmHost
+
+    def _bye(*_):
+        raise SystemExit(0)
+    signal.signal(signal.SIGTERM, _bye)
+    signal.signal(signal.SIGHUP, _bye)
+    host = VmHost(sup, cfg, {"aws": aws})
+    sup.vmhost = host
+    rc = 0
+    try:
+        if sys.stderr.isatty():
+            sys.stderr.write("\033[38;2;110;115;141m⬡ starting the nono-pi VM…\033[0m")
+            sys.stderr.flush()
+        host.start()
+        if sys.stderr.isatty():
+            sys.stderr.write("\r\033[K")
+        if os.environ.get("NONO_PI_ZELLIJ_SESSION") and not os.environ.get("NONO_PI_IN_USER_ZELLIJ"):
+            rc = attach.shell_loop(main=True)
+        else:
+            rc, _ = attach.run("pi", rest)
+    except SystemExit as e:
+        rc = e.code if isinstance(e.code, int) else 0
+    except BaseException as e:
+        print(f"\nnono-pi: {type(e).__name__}: {e}", file=sys.stderr)
+        _hold_if_error(1)
+        rc = 1
+    finally:
+        host.stop()
+        sup.shutdown()
+    _end_zellij_session()
+    sys.exit(rc)
+
+
+# pi options that take a value (so their value is not mistaken for a prompt)
+_PI_VALUE_OPTS = {"--provider", "--model", "--api-key", "--system-prompt", "--append-system-prompt",
+                  "--thinking", "--mode", "--session", "--session-id", "--fork", "--session-dir",
+                  "--name", "-n", "--export", "-e", "--extension", "--tools", "--models",
+                  "--prompt-template", "--skill", "--theme"}
+
+
+def _end_zellij_session() -> None:
+    """pi exited normally (Ctrl-D, /quit, Ctrl-C twice): close the whole nono-pi
+    zellij session too, so quitting pi feels like quitting a normal program.
+    Detaching (zellij session mode `d`) keeps everything running instead."""
+    sess = os.environ.get("NONO_PI_ZELLIJ_SESSION", "")
+    if sess.startswith("pi-") and not os.environ.get("NONO_PI_IN_USER_ZELLIJ"):
+        subprocess.Popen(["zellij", "kill-session", sess], stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+
+
+def _hold_if_error(rc: int) -> None:
+    """Inside zellij the pane would just vanish; keep the error on screen."""
+    if rc not in (0, None) and os.environ.get("NONO_PI_HOLD_ON_ERROR") and sys.stdin.isatty():
+        print(f"\nnono-pi: pi exited with status {rc}. Press Enter to close this session.", file=sys.stderr)
+        try:
+            input()
+        except (EOFError, KeyboardInterrupt):
+            pass
+
+
+def _drop_initial_prompts(args: list[str]) -> list[str]:
+    """On restart (--continue) keep all options, drop positional prompt text."""
+    out, i = [], 0
+    while i < len(args):
+        a = args[i]
+        if a in _PI_VALUE_OPTS and i + 1 < len(args):
+            out += [a, args[i + 1]]
+            i += 2
+            continue
+        if a.startswith("-"):
+            out.append(a)
+        i += 1
+    return out
+
+
+def _zellij_alive(name: str) -> bool:
+    try:
+        out = subprocess.run(["zellij", "list-sessions", "--no-formatting", "--short"],
+                             capture_output=True, text=True, timeout=5).stdout.split()
+    except (OSError, subprocess.SubprocessError):
+        return True     # can't tell: assume alive, never kill a live session
+    return name in out
+
+
+def _supervisor_running() -> dict | None:
+    """The status of the live supervisor, or None. A supervisor whose zellij session is gone
+    (crashed / killed from outside) is an orphan: ask it to stop, then report free."""
+    try:
+        st = proto.call(proto.CTL, {"op": "status"}, timeout=2)
+    except OSError:
+        return None
+    if not st.get("ok"):
+        return None
+    zs = st.get("zellij_session") or ""
+    if zs.startswith("pi-") and not _zellij_alive(zs):
+        print(f"nono-pi: cleaning up an orphaned session for '{st.get('project')}' "
+              f"(its zellij session {zs} is gone)…", file=sys.stderr)
+        try:
+            proto.call(proto.CTL, {"op": "shutdown-orphan"}, timeout=5)
+        except OSError:
+            pass
+        for _ in range(50):
+            time.sleep(0.1)
+            try:
+                proto.call(proto.CTL, {"op": "status"}, timeout=1)
+            except OSError:
+                return None
+        pid = st.get("pid")
+        if pid:
+            try:
+                os.kill(int(pid), signal.SIGTERM)
+                time.sleep(1)
+            except OSError:
+                pass
+        try:
+            proto.call(proto.CTL, {"op": "status"}, timeout=1)
+        except OSError:
+            return None
+    return st
+
+
+def run_nono(cfg: dict, session: dict, pi_args: list[str]) -> int:
+    p, nono_env = prof.build(cfg, session)
+    prof_path = os.path.join(STATE_DIR, "profile.json")
+    write_private(prof_path, json.dumps(p, indent=2) + "\n")
+    pi = shutil.which("pi") or os.path.join(HOME, ".pi", "agent", "bin", "pi")
+    env = {k: v for k, v in os.environ.items()
+           if not k.startswith(("AWS_", "SAML2AWS_", "ZELLIJ")) and k not in ("SSH_AUTH_SOCK",)}
+    env.update(nono_env)
+    args = ["nono", "run", "--silent", "--profile", prof_path, "--allow-cwd", "--no-rollback-prompt",
+            "--name", f"pi:{os.path.basename(os.getcwd())}", "--",
+            os.path.join(SANDBOX_BIN, "nono-pi-entry"), pi, "-e", PI_EXT, *pi_args]
+    return call_child(args, env=env)
+
+
+def main(argv: list[str]) -> None:
+    if argv[:1] == ["--inner"]:
+        return inner(argv[1:])
+    if argv[:1] == ["--status-pane"]:
+        return status_pane(argv[1])
+    if argv[:1] == ["--vm-shell"]:
+        from . import attach
+        sys.exit(attach.shell_loop())
+    if argv[:1] == ["--vm-pi"]:
+        from . import attach
+        rest = argv[1:]
+        while rest[:1] == ["--"]:
+            rest = rest[1:]
+        sys.exit(attach.pi_loop(rest))
+    if argv[:1] == ["--panel"]:
+        from . import panel
+        return panel.main()
+    if argv[:1] in (["setup"], ["--setup"]):
+        from . import setup
+        return setup.main(argv[1:])
+    if argv[:1] == ["--init-config"]:
+        load_config()
+        return
+    return outer(argv)

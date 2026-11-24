@@ -62,6 +62,7 @@ class Supervisor:
         self.vm_apply_lock = threading.Lock()
         self.vm_token = secrets.token_hex(24)
         self.picked_aws: list[str] = []
+        self.aws_current: str | None = None   # the VM's default profile follows this (vmd resolves it)
         self.servers: list[socketserver.BaseServer] = []
         self.signed = 0
         self.denied_until = 0.0
@@ -226,12 +227,14 @@ class Supervisor:
                     self.bar.push_now()
             return c
 
-    def _aws_sessions(self) -> dict:
+    def _aws_sessions(self, all_accounts: bool = False) -> dict:
         """account -> seconds left, for cached STS sessions (no unlock prompt)."""
         out = {}
         if not (self.store.exists() and self.store.is_unlocked()):
             return out
-        for name in self.picked_aws:
+        names = sorted(self.cfg["aws"].get("accounts", {})) if all_accounts else \
+            list(dict.fromkeys(self.picked_aws + ([self.aws_current] if self.aws_current else [])))
+        for name in names:
             try:
                 c = self.store.get(f"aws_session_{name}")
                 if c:
@@ -256,6 +259,43 @@ class Supervisor:
                 except keystore.Locked:
                     pass
         self.audit.log("aws-logout", account=account or "all")
+
+    def aws_accounts(self) -> list[dict]:
+        """For pickers (fzf in the VM, the panel): never contains credentials."""
+        prod = set(self.cfg["aws"].get("prod_accounts", []))
+        live = self._aws_sessions(all_accounts=True)
+        out = []
+        for name, a in sorted(self.cfg["aws"].get("accounts", {}).items()):
+            parts = a["role_arn"].split(":")
+            out.append({"name": name, "account_id": parts[4], "role": a["role_arn"].rsplit("/", 1)[-1],
+                        "region": a.get("region", "eu-west-2"), "prod": parts[4] in prod,
+                        "current": name == self.aws_current, "session_left": live.get(name)})
+        return out
+
+    def aws_use(self, account: str, via: str) -> dict:
+        """Make `account` the VM's current AWS account (plain `aws`, SDKs, terraform follow it),
+        logging in if needed. From the VM it needs your OK in the panel once per window; from
+        the panel / host it is your own action."""
+        accts = self.cfg["aws"].get("accounts", {})
+        if account not in accts:
+            return {"ok": False, "error": f"unknown account {account} (have: {', '.join(sorted(accts))})"}
+        if via == "vm" and account != self.aws_current:
+            acct = accts[account]
+            ok = self.decide("aws-use", account, f"to switch AWS to {account}",
+                             f"role {acct['role_arn']}\nevery plain `aws` in the VM will use it", always_ok=False)
+            if not ok:
+                return {"ok": False, "error": "denied in the nono-pi panel"}
+        if account not in self.picked_aws:
+            self.picked_aws.append(account)
+        c = self.aws_creds(account)
+        if not c:
+            return {"ok": False, "error": f"AWS login for {account} failed or was cancelled"}
+        prev, self.aws_current = self.aws_current, account
+        self.audit.log("aws-use", account=account, via=via, previous=prev or "")
+        if self.bar:
+            self.bar.push_now()
+        ident = self.aws_identity(account)
+        return {"ok": True, "account": account, **ident}
 
     def _saml2aws(self, account: str, acct: dict) -> dict | None:
         for attempt in range(2):
@@ -584,6 +624,7 @@ class Supervisor:
                     pass
             parts = a["role_arn"].split(":")
             aws.append({"name": name, "picked": name in self.picked_aws, "session_left": left,
+                        "current": name == self.aws_current,
                         "prod": parts[4] in prod, "account_id": parts[4],
                         "role": a["role_arn"].rsplit("/", 1)[-1]})
         st["aws"] = aws
@@ -597,7 +638,7 @@ class Supervisor:
     def status(self) -> dict:
         return {"ok": True, "project": self.label, "vm": self.vm, "pid": os.getpid(),
                 "zellij_session": os.environ.get("NONO_PI_ZELLIJ_SESSION", ""),
-                "aws_picked": self.picked_aws,
+                "aws_picked": self.picked_aws, "aws_current": self.aws_current,
                 "aws_accounts": sorted(self.cfg["aws"].get("accounts", {})),
                 "grants": self.grants.active(), "signed": self.signed,
                 "keychain_unlocked": self.store.exists() and self.store.is_unlocked(),
@@ -769,6 +810,12 @@ class CtlHandler(_Base):
         elif op == "aws-logout":
             s.aws_logout(req.get("account") or "")
             self.reply({"ok": True})
+        elif op == "aws-use":                # panel / nono-pi-key: your own action
+            self.reply(s.aws_use(str(req.get("account", "")), via="host"))
+        elif op == "aws-accounts":
+            self.reply({"ok": True, "accounts": s.aws_accounts(), "current": s.aws_current})
+        elif op == "aws-current":            # vmd: which account the "current" placeholder key means
+            self.reply({"ok": True, "account": s.aws_current})
         elif op == "secret-set":
             n = re.sub(r"[^A-Za-z0-9_.:-]", "_", req.get("name", ""))[:80]
             if not n or not req.get("value"):
@@ -830,6 +877,11 @@ class BrokerHandler(_Base):
             return self.reply(s.request_secret(req))
         if op == "request-access":
             return self.reply(s.request_access(req))
+        if op == "aws-use":                  # from the VM: asks you in the panel (once per window)
+            r = s.aws_use(str(req.get("account", "")), via="vm")
+            return self.reply({k: v for k, v in r.items() if k in ("ok", "error", "account", "arn", "account_id", "expires", "verified")})
+        if op == "aws-accounts":
+            return self.reply({"ok": True, "accounts": s.aws_accounts(), "current": s.aws_current})
         if op == "aws-login":
             acct = req.get("account") or s.cfg["aws"].get("default_account")
             c = s.aws_creds(acct) if acct else None

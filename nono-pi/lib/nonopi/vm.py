@@ -122,6 +122,9 @@ set -gx PATH /nono-pi/bin /nono-pi-cache/mise/shims /nono-pi-cache/cargo/bin /us
 command -q mise; and mise activate fish | source
 command -q direnv; and direnv hook fish | source
 command -q zoxide; and zoxide init fish | source
+# aws-use: switch the AWS account the whole VM uses (fzf picker without arguments)
+complete -c aws-use -f -a "(aws-use --list 2>/dev/null | string trim -l -c '*')" -d "AWS account"
+complete -c aws-use -l current -d "print the current account"
 # pure: the VM tag replaces its container/ssh user@host segment
 set -g pure_enable_container_detection false
 functions -q fish_prompt; and functions -c fish_prompt __nonopi_orig_prompt
@@ -147,9 +150,9 @@ if status is-interactive; and test "$NONO_PI_VM_SESSION" = 1
     set_color 6e738d
     echo "⬡ nono-pi VM · $NONO_PI_PROJECT · throwaway Linux devbox · no secrets in here"
     if set -q NONO_PI_ZELLIJ
-        echo "  type pi to start pi · git / gh / aws / npm just work · requests wait in the nono-pi tab (Alt-2)"
+        echo "  type pi to start pi · aws-use picks the AWS account · requests wait in the nono-pi tab (Alt-2)"
     else
-        echo "  type pi to start pi · git / gh / aws / npm just work · answer requests with: nono-pi panel (on the host)"
+        echo "  type pi to start pi · aws-use picks the AWS account · answer requests with: nono-pi panel (on the host)"
     end
     set_color normal
 end

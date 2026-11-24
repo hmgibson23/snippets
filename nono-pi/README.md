@@ -48,19 +48,22 @@ cd ~/some/project && pis
 - First `pi` after a change to your pi packages: the VM installs them for Linux
   (~30s, cached; the host's copies have macOS-only native binaries).
 
-## Logging in to AWS
+## AWS: pick an account on demand
 
-Nothing to do up front: the first `aws …` the agent runs logs in by itself
-(prompts for the Okta password once, then the 6-digit code when Okta asks).
-To log in ahead of time or switch accounts:
+No picker at launch. The whole VM (plain `aws`, terraform, SDKs, pi) uses one
+**current account**, switched on demand:
 
-- **nono-pi tab → AWS** → select the account → Enter (`R` re-login, `o` log out).
-  The password / code prompts appear right there under *Requests*.
-- in pi: `/aws login [account]` or the old `/saml2aws-login [account]`.
-- any host terminal: `nono-pi-key aws-login [account]`.
+- **Alt-a** anywhere in the session: a floating fzf picker (✓ = live session, PROD tagged).
+- `aws-use` in any VM shell (same picker), `aws-use <account>` (tab-completes),
+  `aws-use --current`. In pi: `/aws use [account]`.
+- nono-pi tab → AWS → Enter (`l` log in only, `R` re-login, `o` log out).
 
-The status line shows `AWS nuk-digital-dev-architecture ✓58m` while a session is live.
-Inside nono-pi the old `aws_exec` tool is disabled: the agent just runs `aws`.
+Switching logs in if needed: the Okta password and 6-digit code are asked in the
+nono-pi tab. A switch started inside the VM also needs one Enter there per 4h
+window (the VM can't prove it was you and not pi); switches in the panel don't.
+`aws --profile <account>` still targets one call at a specific account (first use
+asks too). The bar shows `☁ <account> ✓48m`. `pis --aws a,b` pre-approves accounts
+and makes `a` current from the start.
 
 ## Control panel (tab `nono-pi`)
 
@@ -69,7 +72,7 @@ Inside nono-pi the old `aws_exec` tool is disabled: the agent just runs `aws`.
 | Requests | Enter = allow (default scope) · 1-5 = pick · d = deny |
 | Grants | x = revoke |
 | Network | a = add host to the allowlist (takes effect immediately) · x = remove |
-| AWS | Enter/l = log in · R = re-login · o = log out · p = pre-approve (shows ✓ session time left) |
+| AWS | Enter = use (switch the VM's account, logs in if needed) · l = log in only · R = re-login · o = log out (● = current, ✓ = session time left) |
 | Secrets | s = add/replace (hidden input) · x = delete |
 | Log | recent decisions and credential use |
 | any | ←/→ tabs · u = unlock keychain · L = lock now (+ drop ssh key) · P = deny all new requests 10 min · q = back to pi |
@@ -86,14 +89,15 @@ answer, add, or revoke anything here.
 | `pis --no-zellij` | the VM shell right here; requests via `nono-pi panel` |
 | `pis -- <pi args>` | just pi in the VM, no zellij (scripts: `pis -- -p "…"`) |
 | `nono-pi panel` | the control panel in any terminal |
-| `pis --aws a,b` / `--aws none` | pre-approve AWS accounts (others ask on first use) |
+| `pis --aws a,b` | pre-approve AWS accounts; `a` is current from the start |
+| `aws-use [account]` (in the VM), Alt-a | switch the VM's AWS account (fzf picker) |
 | `nono-pi --print-policy` | the generated network/credential policy (placeholders only) |
 | `pis --configure` | re-pick remembered choices |
 | `nono-pi setup` | create keychain, migrate secrets, passphrase ssh keys |
 | `nono-pi-key ls / set N / rm N` | manage stored secrets (host terminal) |
 | `nono-pi-key status / revoke KEY` | live session grants |
 | `nono-pi-key aws-refresh` | import every AWS account/role from `saml2aws list-roles` |
-| in pi: `/grants`, `/grants revoke KEY`, `/aws`, `/aws login ACCT`, `/secret NAME https://host [Header] [format]` | |
+| in pi: `/grants`, `/grants revoke KEY`, `/aws`, `/aws use [ACCT]`, `/aws login ACCT`, `/secret NAME https://host [Header] [format]` | |
 
 pi can also file requests itself (`nono_request` tool): a new API credential
 (you approve the exact host + header and type the value), read/write access to

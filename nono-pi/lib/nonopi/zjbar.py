@@ -26,13 +26,12 @@ def render(st: dict) -> str:
     n = st.get("pending_count", 0)
     if n:
         return _seg(YELLOW, "\uf071", f"{n} waiting · Alt-2")
-    aws = st.get("aws_picked") or []
+    cur = st.get("aws_current")
     live = st.get("aws_logged_in") or {}
-    if aws:
-        a0 = aws[0]
-        aws_txt = a0 + (f" ✓{fmt_left(live[a0])}" if live.get(a0) else " ✗")
+    if cur:
+        aws_txt = "\uf0c2 " + cur + (f" ✓{fmt_left(live[cur])}" if live.get(cur) else " ✗")
     else:
-        aws_txt = "AWS off"
+        aws_txt = "\uf0c2 –  (Alt-a)"
     lock = "\uf09c" if st.get("keychain_unlocked") else "\uf023"   # unlock / lock
     color = GREEN if st.get("keychain_unlocked") else MAUVE
     pushes = sum(1 for g in st.get("grants", []) if g["key"].startswith("git-push:") and g["scope"] != "deny")

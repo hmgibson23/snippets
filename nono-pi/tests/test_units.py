@@ -78,9 +78,11 @@ class Policy(unittest.TestCase):
         self.assertEqual(env["GH_TOKEN"], gh["placeholder"])
         self.assertTrue(env["GH_TOKEN"].startswith("nonopi_github_"))
         self.assertEqual(sorted(spec["aws"]["profiles"].values()), ["a", "b"])
-        self.assertEqual(env["AWS_PROFILE"], "b")
+        self.assertNotIn("AWS_PROFILE", env, "[default] follows the current account instead")
         guest = open(os.path.join(paths.SANDBOX_DIR, "aws-config")).read()
-        self.assertTrue(guest.startswith("[default]\nregion = us-east-1"))
+        self.assertTrue(guest.startswith(f"[default]\nregion = eu-west-2\naws_access_key_id = {policy.CURRENT_KEY}"))
+        self.assertEqual(spec["aws"]["currentKey"], policy.CURRENT_KEY)
+        self.assertNotIn(policy.CURRENT_KEY, spec["aws"]["profiles"])
         self.assertNotIn("credential_process", guest)
         self.assertEqual(policy.build(cfg, {})[1]["GH_TOKEN"], env["GH_TOKEN"], "stable within a session")
         policy._SESSION_PLACEHOLDERS.clear()
@@ -96,6 +98,42 @@ class Policy(unittest.TestCase):
         r = subprocess.run(["node", os.path.join(here, "..", "vm", "netpolicy.test.mjs")],
                            capture_output=True, text=True, timeout=60)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+
+class AwsUse(unittest.TestCase):
+    """aws-use: from the VM it needs the panel's OK; from the host it is your own action."""
+
+    def _sup(self, answer):
+        from nonopi import grants as G2
+        os.environ["NONO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "%s"}}' % answer
+        s = Supervisor("u-%s" % time.time(), "/tmp", "u")
+        s.cfg["aws"] = {"enabled": True, "accounts": {"a": {"role_arn": "arn:aws:iam::1:role/r"},
+                                                      "b": {"role_arn": "arn:aws:iam::2:role/r"}},
+                        "prod_accounts": ["2"]}
+        s.aws_creds = lambda acct: {"AccessKeyId": "x"}       # no real login in tests
+        s.aws_identity = lambda acct: {"account_id": "1"}
+        return s
+
+    def test_vm_needs_panel_ok(self):
+        s = self._sup("deny")
+        r = s.aws_use("a", via="vm")
+        self.assertFalse(r["ok"])
+        self.assertIsNone(s.aws_current)
+        s = self._sup("window")
+        self.assertTrue(s.aws_use("a", via="vm")["ok"])
+        self.assertEqual(s.aws_current, "a")
+        os.environ["NONO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "deny"}}'
+        self.assertTrue(s.aws_use("a", via="vm")["ok"], "already current: no prompt")
+
+    def test_host_switch_and_listing(self):
+        s = self._sup("deny")                                     # a prompt would deny: must not ask
+        self.assertTrue(s.aws_use("b", via="host")["ok"])
+        self.assertEqual(s.aws_current, "b")
+        listing = {a["name"]: a for a in s.aws_accounts()}
+        self.assertTrue(listing["b"]["current"] and listing["b"]["prod"])
+        self.assertFalse(s.aws_use("zzz", via="host")["ok"])
+        self.assertNotIn("AccessKeyId", repr(s.aws_accounts()), "listings never carry credentials")
+        os.environ.pop("NONO_PI_PROMPT_AUTO", None)
 
 
 class ConfigMerge(unittest.TestCase):

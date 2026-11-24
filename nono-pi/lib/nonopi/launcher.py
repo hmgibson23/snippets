@@ -96,12 +96,9 @@ def resolve_choices(cfg: dict, pid: str, argv: list[str]) -> tuple[dict, list[st
         if bad:
             die(f"unknown AWS account(s): {', '.join(bad)} (have: {', '.join(sorted(accounts))})")
         ch["aws"] = picked
-    elif configure or "aws" not in saved:
-        if sys.stdin.isatty() and sys.stderr.isatty():
-            ch["aws"] = pick_accounts(cfg, saved.get("aws"))
-        else:
-            d = cfg["aws"].get("default_account")
-            ch["aws"] = [d] if d in accounts else []
+    elif configure and sys.stdin.isatty() and sys.stderr.isatty():
+        ch["aws"] = pick_accounts(cfg, saved.get("aws"))
+    # no picker at launch: accounts are chosen on demand (`aws-use` in the VM, or the panel)
     ch.pop("vm", None)
     ch["aws"] = [a for a in ch.get("aws", []) if a in accounts]
     if ch != saved:
@@ -186,13 +183,46 @@ def outer(argv: list[str]) -> None:
 }}
 """)
     _zellij_forget(sess)
-    os.execvp("zellij", ["zellij", "--session", sess, "--new-session-with-layout", layout,
-                         "options", "--show-startup-tips", "false", "--show-release-notes", "false",
-                         "--default-mode", "normal", "--default-shell", vm_shell])
+    zj = ["zellij"]
+    cfgfile = _session_zellij_config(pid, vm_shell)
+    if cfgfile:
+        zj += ["--config", cfgfile]
+    os.execvp("zellij", zj + ["--session", sess, "--new-session-with-layout", layout,
+                              "options", "--show-startup-tips", "false", "--show-release-notes", "false",
+                              "--default-mode", "normal", "--default-shell", vm_shell])
 
 
 ZJSTATUS_PART = os.path.join(HOME, ".config", "zellij", "parts", "zjstatus-bar.kdl")
 ZJSTATUS_WASM = os.path.join(HOME, ".config", "zellij", "plugins", "zjstatus.wasm")
+
+
+# Alt-a in a nono-pi session: the AWS account picker (fzf) in a floating pane, in the VM.
+_AWS_BIND = ('        bind "Alt a" {{ Run {cmd} {{ floating true; close_on_exit true; name "AWS account"; '
+             'width "80%"; height "50%"; x "10%"; y "15%"; }}; }}')
+
+
+def _session_zellij_config(pid: str, vm_shell: str) -> str | None:
+    """Your zellij config + nono-pi's session keys (Alt-a = aws-use), for this session only.
+    Your own config file is never changed. Returns None if there is nothing to extend."""
+    src = os.environ.get("ZELLIJ_CONFIG_FILE") or os.path.join(HOME, ".config", "zellij", "config.kdl")
+    try:
+        text = open(src).read()
+    except OSError:
+        text = ""
+    cmd = " ".join(json.dumps(a) for a in [sys.executable, os.path.join(BIN, "nono-pi"), "--vm-run", "aws-use"])
+    bind = _AWS_BIND.format(cmd=cmd)
+    if 'bind "Alt a"' in text:
+        return None                    # you bound Alt-a yourself: leave it alone
+    marker = 'shared_except "locked" {'
+    if marker in text:
+        text = text.replace(marker, marker + "\n" + bind, 1)
+    elif "keybinds" in text:
+        return None                    # unusual layout of the file: don't guess
+    else:
+        text += "\nkeybinds {\n    shared_except \"locked\" {\n" + bind + "\n    }\n}\n"
+    out = os.path.join(RUN_DIR, f"zellij-{pid}.kdl")
+    write_private(out, text)
+    return out
 
 
 def _zjstatus_bar() -> str | None:
@@ -245,6 +275,7 @@ def inner(argv: list[str]) -> None:
         sys.exit(1)
     sup = Supervisor(pid, cwd, os.path.basename(cwd), vm=True)
     sup.picked_aws = aws
+    sup.aws_current = aws[0] if aws else None       # pis --aws a,b: a is current from the start
     sup.serve()
     return _inner_vm(sup, cfg, aws, rest, run_pi)
 
@@ -386,6 +417,13 @@ def main(argv: list[str]) -> None:
     if argv[:1] == ["--vm-shell"]:
         from . import attach
         sys.exit(attach.shell_loop())
+    if argv[:1] == ["--vm-run"] and argv[1:]:
+        # one command in the session's VM, e.g. `aws-use` from Alt-a (fish -lc: your env + PATH)
+        from . import attach
+        if not attach.wait_for_vm(30):
+            sys.exit("nono-pi: the VM is not running")
+        rc, _ = attach.run("cmd", ["fish", "-lc", " ".join(argv[1:])])
+        sys.exit(rc)
     if argv[:1] in (["--panel"], ["panel"]):
         from . import panel
         return panel.main()

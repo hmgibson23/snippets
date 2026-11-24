@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""aws-use: pick the AWS account the whole VM uses (plain `aws`, SDKs, terraform, pi).
+
+  aws-use                 fzf picker (your FZF_DEFAULT_OPTS), ✓ = live session
+  aws-use <account>       switch directly (tab-completes in fish)
+  aws-use --list          names (for completion), current marked with *
+  aws-use --current       print the current account
+
+Switching logs in if needed (Okta password / 6-digit code in the nono-pi tab, Alt-2).
+A switch started here needs one Enter in the nono-pi tab per 4h window: the VM can't
+prove it was you and not pi. Credentials never enter the VM; this only changes which
+account the host signs `[default]` requests for. `--profile X` keeps targeting X.
+"""
+import os
+import shutil
+import subprocess
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import nonopi_client  # noqa: E402
+
+DIM, GREEN, RED, YEL, BOLD, RST = "\033[38;2;110;115;141m", "\033[38;2;166;218;149m", "\033[38;2;237;135;150m", "\033[38;2;238;212;159m", "\033[1m", "\033[0m"
+
+
+def left(s):
+    if not s:
+        return ""
+    h, m = divmod(int(s) // 60, 60)
+    return f"{h}h{m:02d}m" if h else f"{m}m"
+
+
+def accounts():
+    r = nonopi_client.call({"op": "aws-accounts"})
+    if not r.get("ok"):
+        sys.exit(f"aws-use: {r.get('error', 'nono-pi supervisor unreachable')}")
+    return r["accounts"], r.get("current")
+
+
+def row(a, color=True):
+    live = a.get("session_left")
+    mark = "●" if a.get("current") else " "
+    sess = f"✓ {left(live)}" if live else "–"
+    prod = "PROD" if a.get("prod") else ""
+    if not color:
+        return f"{a['name']}\t{mark} {a['name']:<30} {a['role']} @ {a['account_id']}  {sess}  {prod}"
+    return (f"{a['name']}\t{GREEN if a.get('current') else DIM}{mark}{RST} {BOLD}{a['name']:<30}{RST} "
+            f"{DIM}{a['role']} @ {a['account_id']}{RST}  "
+            f"{GREEN + sess if live else DIM + sess}{RST}  {RED + prod + RST if prod else ''}")
+
+
+def pick(accts, current):
+    if not shutil.which("fzf"):
+        for i, a in enumerate(accts, 1):
+            print(f"{i:>2}) {row(a).split(chr(9), 1)[1]}", file=sys.stderr)
+        ans = input("account number: ").strip()
+        try:
+            return accts[int(ans) - 1]["name"]
+        except (ValueError, IndexError):
+            return None
+    me = os.path.realpath(__file__)
+    lines = "\n".join(row(a) for a in accts)
+    start = next((i for i, a in enumerate(accts) if a.get("current")), 0)
+    # inline like your other fzf pickers (FZF_DEFAULT_OPTS, e.g. --height 40%); first column hidden
+    args = ["fzf", "--ansi", "--delimiter", "\t", "--with-nth", "2..", "--reverse", "--no-multi",
+            "--prompt", "AWS ❯ ", "--header", f"current: {current or 'none'} · enter = switch (logs in if needed) · esc = cancel",
+            "--preview", f"{sys.executable} {me} --preview {{1}}", "--preview-window", "down,4,wrap",
+            "--bind", f"load:pos({start + 1})"]
+    if not os.environ.get("FZF_DEFAULT_OPTS"):
+        args += ["--height", "40%"]
+    r = subprocess.run(args, input=lines, stdout=subprocess.PIPE, text=True)
+    out = r.stdout.strip()
+    return out.split("\t", 1)[0] if out else None
+
+
+def preview(name):
+    accts, _ = accounts()
+    a = next((x for x in accts if x["name"] == name), None)
+    if not a:
+        return
+    live = a.get("session_left")
+    print(f"{BOLD}{a['name']}{RST}  {a['role']} @ {a['account_id']}  region {a['region']}"
+          + (f"  {RED}PROD{RST}" if a.get("prod") else ""))
+    print(f"{GREEN}session ✓ {left(live)} left{RST}" if live else f"{YEL}no session: switching logs in (Okta in the nono-pi tab){RST}")
+    if a.get("current"):
+        print(f"{GREEN}● current: plain `aws` uses this account{RST}")
+
+
+def use(name):
+    print(f"{DIM}aws-use: switching to {name}… (if asked: Alt-2 → nono-pi tab){RST}", file=sys.stderr)
+    r = nonopi_client.call({"op": "aws-use", "account": name})
+    if not r.get("ok"):
+        sys.exit(f"{RED}aws-use: {r.get('error', 'failed')}{RST}")
+    who = (r.get("arn") or "").split(":assumed-role/")[-1]
+    print(f"{GREEN}✓ AWS → {name}{RST}  {DIM}{who or '?'} @ {r.get('account_id') or '?'}"
+          f"{'' if r.get('verified', True) else ' (unverified)'}{RST}", file=sys.stderr)
+
+
+def main():
+    a = sys.argv[1:]
+    if a[:1] in (["-h"], ["--help"]):
+        print(__doc__)
+        return
+    if a[:1] == ["--preview"]:
+        return preview(a[1] if len(a) > 1 else "")
+    if a[:1] == ["--list"]:
+        accts, _ = accounts()
+        for x in accts:
+            print(("*" if x.get("current") else "") + x["name"])
+        return
+    if a[:1] == ["--current"]:
+        _, cur = accounts()
+        if cur:
+            print(cur)
+        sys.exit(0 if cur else 1)
+    accts, current = accounts()
+    name = a[0] if a else pick(accts, current)
+    if not name:
+        sys.exit(130)
+    if name not in {x["name"] for x in accts}:
+        sys.exit(f"aws-use: unknown account {name} (have: {', '.join(x['name'] for x in accts)})")
+    use(name)
+
+
+if __name__ == "__main__":
+    main()

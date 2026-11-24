@@ -70,7 +70,10 @@ typing a secret into it leaks it to pi. Secrets go only to the panel.
   - credential routes: the guest's per-session placeholder in the route's header
     is replaced with the real token, only on the route's host/paths; any other
     token (e.g. pi's Copilot login) passes through untouched;
-  - AWS: requests signed with a placeholder key are re-signed (SigV4,
+  - AWS: the guest's `[default]` profile carries a "current account" key that
+    vmd resolves per request (`aws-current`); `aws-use` / the panel switch it on
+    the host (from the VM: needs the panel's OK once per window). Requests
+    signed with a placeholder key are re-signed (SigV4,
     `@smithy/signature-v4`) with the real STS session from the supervisor;
     aws-chunked bodies are decoded and signed whole; `AssumeRole*`,
     `GetSessionToken`, `GetFederationToken`, ECR `GetAuthorizationToken`,

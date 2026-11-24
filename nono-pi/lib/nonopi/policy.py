@@ -21,6 +21,11 @@ def placeholder_key(i: int) -> str:
     return f"NONOPI{i:014d}"
 
 
+# The guest's [default] profile: "whatever account is current" (`aws-use` / the panel switch
+# it on the host; vmd resolves this key per request). Explicit --profile X keeps its own key.
+CURRENT_KEY = placeholder_key(0)
+
+
 _SESSION_PLACEHOLDERS: dict[str, str] = {}   # stable for the life of the process (= the session)
 
 
@@ -54,26 +59,22 @@ def aws(cfg: dict, session: dict) -> tuple[dict, dict, str | None]:
     accounts = a.get("accounts", {})
     if not a.get("enabled") or not accounts:
         return {"enabled": False}, {}, None
-    profiles, lines, head = {}, [], []
-    default = (session.get("aws") or [None])[0]
+    profiles, lines = {}, []
     for i, (name, acct) in enumerate(sorted(accounts.items()), start=1):
         key = placeholder_key(i)
         profiles[key] = name
-        region = acct.get("region", "eu-west-2")
-        block = [f"region = {region}", f"aws_access_key_id = {key}",
-                 "aws_secret_access_key = nono-pi-placeholder-not-a-secret"]
-        lines += [f"[profile {name}]", *block, ""]
-        if name == default:
-            head = ["[default]", *block, ""]
-    lines = head + lines
+        lines += [f"[profile {name}]", f"region = {acct.get('region', 'eu-west-2')}",
+                  f"aws_access_key_id = {key}", "aws_secret_access_key = nono-pi-placeholder-not-a-secret", ""]
+    # region of [default] is only a starting point: the re-signer uses the request's real region
+    region = accounts.get(a.get("default_account", ""), {}).get("region", "eu-west-2")
+    lines = ["[default]", f"region = {region}", f"aws_access_key_id = {CURRENT_KEY}",
+             "aws_secret_access_key = nono-pi-placeholder-not-a-secret", ""] + lines
     env = {"AWS_SHARED_CREDENTIALS_FILE": "/dev/null", "AWS_EC2_METADATA_DISABLED": "true",
            "AWS_SDK_UA_APP_ID": "nono-pi",
            # SDKs default to chunked-signed uploads; vmd re-signs whole bodies, so ask for that
            "AWS_REQUEST_CHECKSUM_CALCULATION": "when_required",
            "AWS_RESPONSE_CHECKSUM_VALIDATION": "when_required"}
-    if default:
-        env["AWS_PROFILE"] = default
-    return {"enabled": True, "profiles": profiles}, env, "\n".join(lines)
+    return {"enabled": True, "profiles": profiles, "currentKey": CURRENT_KEY}, env, "\n".join(lines)
 
 
 def build(cfg: dict, session: dict) -> tuple[dict, dict]:

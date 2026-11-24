@@ -9,16 +9,18 @@ import { Sha256 } from "@aws-crypto/sha256-js";
 const REAL = { AccessKeyId: "AKIAREALREALREALREAL", SecretAccessKey: "realsecretrealsecretrealsecretrealsecret", SessionToken: "realsession" };
 const PH = "NONOPI00000000000001";
 const spec = {
-	aws: { enabled: true, profiles: { [PH]: "acct-a" } },
+	aws: { enabled: true, profiles: { [PH]: "acct-a" }, currentKey: "NONOPI00000000000000" },
 	routes: { github: { host: "api.github.com", placeholder: "nonopi_github_x", format: "token {}", header: "authorization", excludePaths: ["/copilot_internal"] } },
 	net: { allow: ["registry.npmjs.org", "*.pythonhosted.org"], ask: true },
 };
 const asked = [];
+let current = null;
 const pol = createPolicy({
 	getSpec: () => spec,
 	log: () => {},
 	ctl: async (o) => {
 		if (o.op === "aws-creds") return o.account === "acct-a" ? { ok: true, creds: REAL } : { ok: false };
+		if (o.op === "aws-current") return { ok: true, account: current };
 		if (o.op === "route-secret") return o.name === "github" && o.host === "api.github.com" ? { ok: true, value: "gho_REAL" } : { ok: false };
 		if (o.op === "net-approve") { asked.push(o.host); return { ok: o.host === "ok.example.com" }; }
 		return { ok: false };
@@ -60,6 +62,23 @@ for (const [url, method, headers, body, service, region] of [
 	assert.ok(out instanceof Request, `${url} -> Request`);
 	assert.equal(out.url, url);
 	await verify(out, service, region);
+}
+
+// --- AWS: [default] (current-account key) follows the current account; none selected -> 403 hint
+{
+	const mk = async () => {
+		const u = new URL("https://sts.eu-west-2.amazonaws.com/");
+		const sg = new SignatureV4({ credentials: { accessKeyId: "NONOPI00000000000000", secretAccessKey: "x" }, region: "eu-west-2", service: "sts", sha256: Sha256 });
+		const signed = await sg.sign({ method: "POST", protocol: u.protocol, hostname: u.hostname, path: "/", query: {}, headers: { host: u.host, "content-type": "application/x-www-form-urlencoded" }, body: "Action=GetCallerIdentity&Version=2011-06-15" });
+		return new Request(u, { method: "POST", headers: signed.headers, body: "Action=GetCallerIdentity&Version=2011-06-15", duplex: "half" });
+	};
+	current = null;
+	const none = await pol.onRequest(await mk());
+	assert.ok(none instanceof Response && none.status === 403 && /aws-use/.test(await none.text()), "no account selected: hint");
+	current = "acct-a";
+	const out = await pol.onRequest(await mk());
+	assert.ok(out instanceof Request, "current account: re-signed");
+	await verify(out, "sts", "eu-west-2");
 }
 
 // --- AWS: credential-minting operations are blocked

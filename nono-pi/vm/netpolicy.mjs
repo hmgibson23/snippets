@@ -13,7 +13,7 @@ import { Sha256 } from "@aws-crypto/sha256-js";
 
 const AWS_DENY_OPS = new Set(["AssumeRole", "AssumeRoleWithSAML", "AssumeRoleWithWebIdentity", "GetSessionToken",
 	"GetFederationToken", "GetAuthorizationToken", "CreateAccessKey", "GetCredentialsForIdentity"]);
-const AWS_PLACEHOLDER = /^NONOPI\d{14}$/;
+const AWS_PLACEHOLDER = /^NONOPI\d{14}$/;   // NONOPI00000000000000 = "the current account"
 const SIGNED_STREAM = /^STREAMING-(AWS4-HMAC-SHA256|UNSIGNED)-PAYLOAD/;
 const SERVICE_ALIAS = { "api.ecr": "ecr", "bedrock-runtime": "bedrock", "bedrock-agent": "bedrock",
 	"bedrock-agent-runtime": "bedrock", "runtime.sagemaker": "sagemaker" };
@@ -125,7 +125,13 @@ export function createPolicy({ ctl, getSpec, log }) {
 		const key = placeholderKey(req.headers.get("authorization"));
 		if (!key) return null; // unsigned / presigned / real creds the user typed: not ours
 		const spec = getSpec();
-		const account = spec.aws?.profiles?.[key];
+		let account = spec.aws?.profiles?.[key];
+		if (!account && key === spec.aws?.currentKey) {
+			// [default] = the current account, switched on the host (`aws-use`, the panel)
+			const r = await ctl({ op: "aws-current" });
+			account = r.ok ? r.account : null;
+			if (!account) return new Response("nono-pi: no AWS account selected yet: run `aws-use` (or pick one in the nono-pi tab), or use --profile <account>\n", { status: 403 });
+		}
 		if (!account) return new Response("nono-pi: unknown AWS profile placeholder\n", { status: 403 });
 
 		const contentSha = req.headers.get("x-amz-content-sha256");

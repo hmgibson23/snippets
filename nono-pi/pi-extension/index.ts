@@ -59,7 +59,7 @@ async function refreshStatus(ctx: ExtensionContext) {
 		ctx.ui.setStatus("nono-pi", "🔒 nono-pi: supervisor unreachable");
 		return st;
 	}
-	const aws = st.aws_picked?.length ? `AWS ${st.aws_picked[0]}${st.aws_picked.length > 1 ? `+${st.aws_picked.length - 1}` : ""}` : "AWS off";
+	const aws = st.aws_current ? `AWS ${st.aws_current}` : "AWS –";
 	const pushes = (st.grants ?? []).filter((g: any) => g.key.startsWith("git-push:") && g.scope !== "deny").length;
 	const parts = [`🔒 nono-pi${st.vm ? " VM" : ""}`, aws, `push ${pushes}`, st.keychain_unlocked ? "🔓" : "🔐"];
 	ctx.ui.setStatus("nono-pi", parts.join(" · "));
@@ -101,7 +101,8 @@ export default function nonoPi(pi: ExtensionAPI) {
 		const st = await brokerCall({ op: "status" }, 3000);
 		const aws = st.ok
 			? `AWS: run plain \`aws ...\` / terraform / SDKs; credentials are injected outside the sandbox. ` +
-			  `Default profile: ${st.aws_picked?.[0] ?? "none"}. Other accounts: \`aws --profile <name>\` ` +
+			  `Current account (what plain \`aws\` uses): ${st.aws_current ?? "none selected"}. ` +
+			  `Switch with \`aws-use <account>\` (asks the user to confirm in the nono-pi tab) or target one call with \`aws --profile <name>\` ` +
 			  `(names: ${(st.aws_accounts ?? []).join(", ")}). The first call to an account may wait for the user to approve / log in ` +
 			  `(Okta) in the nono-pi tab; do NOT ask the user to run /saml2aws-login and never use aws_exec.`
 			: "";
@@ -143,7 +144,7 @@ export default function nonoPi(pi: ExtensionAPI) {
 				[
 					`nono-pi ${st.vm ? "(VM) " : ""}· ${st.project}`,
 					`keychain: ${st.keychain_unlocked ? "unlocked" : "locked"} · ssh key loaded: ${st.ssh_key_loaded_for ? left(st.ssh_key_loaded_for) : "no"} · commits signed: ${st.signed}`,
-					`AWS picked: ${st.aws_picked.join(", ") || "none"} (others ask on first use)`,
+					`AWS current: ${st.aws_current ?? "none"} (switch: /aws use)`,
 					"grants:",
 					...(g.length ? g : ["  (none)"]),
 					"recent:",
@@ -156,9 +157,26 @@ export default function nonoPi(pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("aws", {
-		description: "nono-pi: AWS status, or `/aws login [account]` to log in now",
+		description: "nono-pi: AWS: `/aws use [account]` switches the VM's account (picker without a name), `/aws login [account]`",
 		handler: async (args, ctx) => {
 			const [sub, acct] = args.trim().split(/\s+/);
+			if (sub === "use") {
+				let name = acct;
+				if (!name) {
+					const r = await brokerCall({ op: "aws-accounts" });
+					if (!r.ok) return ctx.ui.notify(`nono-pi: ${r.error ?? "supervisor unreachable"}`, "error");
+					const left = (s: number | null) => (s ? ` ✓${Math.floor(s / 3600) ? `${Math.floor(s / 3600)}h` : ""}${Math.floor((s % 3600) / 60)}m` : "");
+					const labels = r.accounts.map((a: any) => `${a.current ? "● " : "  "}${a.name}  ${a.role}@${a.account_id}${left(a.session_left)}${a.prod ? "  PROD" : ""}`);
+					const pick = await ctx.ui.select("AWS account for this VM", labels);
+					if (pick == null) return;
+					name = r.accounts[labels.indexOf(pick)]?.name;
+					if (!name) return;
+				}
+				ctx.ui.notify(`nono-pi: switching AWS to ${name} (confirm / log in in the nono-pi tab, Alt-2)`, "info");
+				const r = await brokerCall({ op: "aws-use", account: name });
+				ctx.ui.notify(r.ok ? `AWS → ${name}: plain \`aws\` now uses it (${r.account_id ?? "?"})` : `AWS switch failed: ${r.error ?? "denied"}`, r.ok ? "info" : "error");
+				return refreshStatus(ctx);
+			}
 			if (sub === "login") {
 				ctx.ui.notify(`nono-pi: AWS login${acct ? ` ${acct}` : ""}: answer the prompt on the nono-pi pane`, "info");
 				const r = await brokerCall({ op: "aws-login", account: acct || null });
@@ -166,7 +184,7 @@ export default function nonoPi(pi: ExtensionAPI) {
 				return refreshStatus(ctx);
 			}
 			const st = await refreshStatus(ctx);
-			ctx.ui.notify(`AWS picked: ${st.aws_picked?.join(", ") || "none"}\nall: ${st.aws_accounts?.join(", ")}\nUse: aws --profile <account> …  (or /aws login <account>)`, "info");
+			ctx.ui.notify(`AWS current: ${st.aws_current ?? "none"}\nall: ${st.aws_accounts?.join(", ")}\nSwitch: /aws use [account] · aws-use in a shell · Alt-a · one call: aws --profile <account> …`, "info");
 		},
 	});
 

@@ -255,7 +255,12 @@ class Panel:
             elif key in ("x", "\x7f") and cur:
                 r = call({"op": "net-remove", "host": cur["host"]})
         elif t == "AWS" and cur:
-            if key in ("\n", "\r", "l", "R"):
+            if key in ("\n", "\r"):
+                def done_use(r, name=cur["name"]):
+                    who = (r.get("arn") or "").split(":assumed-role/")[-1].split("/")[0]
+                    return f"AWS → {name}: plain `aws` in the VM now uses it · {who or '?'} @ {r.get('account_id') or '?'}"
+                self.run_bg(f"AWS switch to {cur['name']}", {"op": "aws-use", "account": cur["name"]}, done_use)
+            elif key in ("l", "R"):
                 force = key == "R"
                 def done(r, name=cur["name"]):
                     who = (r.get("arn") or "").split(":assumed-role/")[-1].split("/")[0]
@@ -339,7 +344,7 @@ class Panel:
         h, w = self.s.getmaxyx()
         tab_keys = {"Overview": [], "Requests": [("⏎", "allow"), ("1-5", "choose"), ("d", "deny")],
                     "Grants": [("x", "revoke")], "Network": [("a", "add host"), ("x", "remove")],
-                    "AWS": [("⏎", "log in"), ("R", "re-login"), ("o", "log out"), ("p", "pre-approve")],
+                    "AWS": [("⏎", "use (switch)"), ("l", "log in only"), ("R", "re-login"), ("o", "log out")],
                     "Secrets": [("s", "add"), ("x", "delete")], "Log": []}[TABS[self.tab]]
         common = [("←→", "tabs"), ("u", "unlock"), ("L", "lock"), ("P", "deny new 10m"), ("Alt-1", "shell")]
         # toast (above the hints)
@@ -376,8 +381,9 @@ class Panel:
         unlocked = st.get("keychain_unlocked")
         ssh = st.get("ssh_key_loaded_for") or 0
         aws = st.get("aws") or []
-        live = [a for a in aws if a.get("session_left")]
-        picked = [a for a in aws if a.get("picked")]
+        cur = next((a for a in aws if a.get("current")), None)
+        live = [cur] if cur and cur.get("session_left") else []
+        picked = [cur] if cur else []
         n = len(st.get("pending", []))
         pushes = [g["key"].split(":", 1)[1].split("/", 1)[-1] for g in st.get("grants", [])
                   if g["key"].startswith("git-push:") and g["scope"] != "deny"]
@@ -387,9 +393,9 @@ class Panel:
             aws_s = f"{a.get('role', '')} @ {a.get('account_id', '')} · {fmt_left(a['session_left'])} left"
             aws_c = "green"
         elif picked:
-            aws_v, aws_s, aws_c = picked[0]["name"], "not logged in — Enter on tab 5", "yellow"
+            aws_v, aws_s, aws_c = picked[0]["name"], "session expired: Enter on tab 5", "yellow"
         else:
-            aws_v, aws_s, aws_c = "off", "no account picked", "overlay0"
+            aws_v, aws_s, aws_c = "none yet", "aws-use in the VM · Alt-a · or Enter on tab 5", "overlay0"
         signed = st.get("signed", 0)
         cards = [
             ("\uf09c" if unlocked else "\uf023", "Keychain", "unlocked" if unlocked else "locked",
@@ -519,8 +525,8 @@ class Panel:
             elif tab == "AWS":
                 live = it.get("session_left")
                 state = f"✓ {fmt_left(live)}" if live else "— not logged in"
-                tag = ("● picked " if it.get("picked") else "") + ("PROD" if it.get("prod") else "")
-                cols = [(it["name"], "text", 32, True),
+                tag = ("PROD" if it.get("prod") else "")
+                cols = [(("● " if it.get("current") else "  ") + it["name"], "green" if it.get("current") else "text", 32, True),
                         (f"{it.get('role', '?')} @ {it.get('account_id', '?')}", "subtext", 30, False),
                         (state, "green" if live else "overlay0", 16, bool(live)),
                         (tag, "red" if it.get("prod") else "blue", 12, False)]

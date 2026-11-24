@@ -594,4 +594,9 @@ def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
     import os
     os.environ.setdefault("ESCDELAY", "25")
+    # terminals whose terminfo isn't installed here (xterm-kitty, xterm-ghostty over ssh, ...)
+    try:
+        curses.setupterm(os.environ.get("TERM", "unknown"))
+    except curses.error:
+        os.environ["TERM"] = "xterm-256color"
     curses.wrapper(lambda scr: Panel(scr).run())

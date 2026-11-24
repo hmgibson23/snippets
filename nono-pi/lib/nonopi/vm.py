@@ -156,7 +156,8 @@ end
 '''
 
 GUEST_SETUP = r'''set -e
-hostname nono-pi-vm 2>/dev/null || true; echo nono-pi-vm > /etc/hostname 2>/dev/null || true
+echo nono-pi-vm > /proc/sys/kernel/hostname 2>/dev/null || hostname nono-pi-vm 2>/dev/null || true
+echo nono-pi-vm > /etc/hostname 2>/dev/null || true
 grep -q nono-pi-vm /etc/hosts 2>/dev/null || echo "127.0.1.1 nono-pi-vm" >> /etc/hosts
 mkdir -p /home/pi/.config /home/pi/.local/bin
 rm -rf /home/pi/.config/fish && cp -R /nono-pi/fish /home/pi/.config/fish

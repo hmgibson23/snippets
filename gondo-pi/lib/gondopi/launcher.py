@@ -245,7 +245,7 @@ def _bad_workdir(cwd: str) -> str | None:
 
 
 def _zellij_forget(sess: str) -> None:
-    subprocess.run(["zellij", "delete-session", sess], capture_output=True)
+    subprocess.run(["zellij", "delete-session", "--force", sess], capture_output=True)
 
 
 # ------------------------------------------------------------------ inner
@@ -396,12 +396,14 @@ def _drop_initial_prompts(args: list[str]) -> list[str]:
 
 
 def _zellij_alive(name: str) -> bool:
+    """A running session (an EXITED one is a resurrect point, not alive: its saved layout may
+    point at old code, so a new session is created over it)."""
     try:
-        out = subprocess.run(["zellij", "list-sessions", "--no-formatting", "--short"],
-                             capture_output=True, text=True, timeout=5).stdout.split()
+        out = subprocess.run(["zellij", "list-sessions", "--no-formatting"],
+                             capture_output=True, text=True, timeout=5).stdout
     except (OSError, subprocess.SubprocessError):
         return True     # can't tell: assume alive, never kill a live session
-    return name in out
+    return any(l.split()[:1] == [name] and "EXITED" not in l for l in out.splitlines())
 
 
 def _supervisor_running() -> dict | None:

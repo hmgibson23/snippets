@@ -2,8 +2,10 @@
 # Built rootless with podman, then turned into a Gondolin image (vm/image-x86_64-arch.json).
 # Everything here is public software: no secrets, no host config.
 FROM docker.io/library/archlinux:base-devel
+ARG PARALLEL=5
 
-RUN pacman -Syu --noconfirm --needed \
+RUN sed -i "s/^#\?ParallelDownloads.*/ParallelDownloads = ${PARALLEL}/" /etc/pacman.conf \
+ && pacman -Syu --noconfirm --needed \
       fish git git-lfs git-delta openssh zellij neovim vim tmux \
       zig clang cmake ninja python uv mise just direnv \
       ripgrep fd fzf bat eza zoxide jq go-yq tree wget unzip less man-db which \
@@ -17,4 +19,7 @@ RUN npm install -g --no-audit --no-fund @earendil-works/pi-coding-agent@1.6.0 &&
 
 # fish as the login shell; home is /home/pi (the VM runs commands as root)
 RUN sed -i 's#^root:x:0:0:root:/root:.*#root:x:0:0:root:/home/pi:/usr/bin/fish#' /etc/passwd \
- && mkdir -p /home/pi && echo nono-pi-vm > /etc/hostname
+ && mkdir -p /home/pi && echo nono-pi-vm > /etc/hostname \
+ # rootless image builds extract this as your user: read-only dirs (e.g. 0555 cadir) would be
+ # unwritable/undeletable there. Inside the VM everything runs as root, so this changes nothing.
+ && find / -xdev -type d ! -perm -u+w -exec chmod u+w {} +

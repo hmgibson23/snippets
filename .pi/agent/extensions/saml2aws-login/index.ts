@@ -116,9 +116,9 @@ function statusText(ui: Ui, label: string, prod: boolean): string {
 }
 
 export default function saml2awsLogin(pi: ExtensionAPI) {
-  // Inside nono-pi AWS credentials never enter pi's process; the nono-pi extension
+  // Inside gondo-pi AWS credentials never enter pi's process; the gondo-pi extension
   // provides /saml2aws-login and plain `aws` works through the proxy.
-  if (process.env.PI_SANDBOX === "nono-pi") return;
+  if (process.env.PI_SANDBOX === "gondo-pi" || process.env.PI_SANDBOX === "nono-pi") return;
   pi.registerTool(awsExecTool);
 
   // idle wipe: checked every 30 s; the UI handle comes from the last /saml2aws-login

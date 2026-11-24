@@ -134,38 +134,3 @@ def shell_loop(main: bool = False) -> int:
             wait_for_vm()
             continue
         return code
-
-
-def pi_loop(pi_args: list[str]) -> int:
-    """pi in the VM. Restarts with --continue after new access (exit 75) or a VM
-    restart; after a normal quit it waits for Enter so the tab stays useful."""
-    from .launcher import RESTART_EXIT, _drop_initial_prompts
-    args, first = list(pi_args), True
-    while True:
-        if not wait_for_vm():
-            sys.stderr.write("nono-pi: the VM is not running\n")
-            return 1
-        if not first and not any(a in args for a in ("-c", "--continue", "--session", "-r", "--resume")):
-            args = ["--continue"] + _drop_initial_prompts(args)
-        first = False
-        code, reason = run("pi", args)
-        if reason == "vm-stop" or reason == "lost" and not os.path.exists(VMD_SOCK):
-            return 0
-        if reason == "vm-restart":
-            continue
-        if code == RESTART_EXIT:
-            try:
-                r = proto.call(proto.CTL, {"op": "vm-apply"}, timeout=180)
-                why = (r.get("applied") or {}).get("why", "")
-            except OSError:
-                why = ""
-            sys.stderr.write(f"\r\n{DIM}nono-pi: restarting pi (same session){': ' + why if why else ''}…{RST}\r\n")
-            continue
-        sys.stderr.write(f"\r\n{DIM}pi exited{f' (status {code})' if code else ''}. "
-                         f"Enter = start pi again (same session) · your shell is tab 1{RST}\r\n")
-        try:
-            input()
-        except (EOFError, KeyboardInterrupt):
-            return code
-        args = list(pi_args)
-        first = False

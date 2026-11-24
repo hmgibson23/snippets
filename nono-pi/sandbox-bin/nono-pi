@@ -7,6 +7,7 @@
                                          ask the user for a new API credential (restarts pi, keeps session)
   nono-pi request-access PATH [--write] [--reason TEXT]
   nono-pi revoke KEY
+  nono-pi apply                          apply granted access that needs a VM restart (new directory)
 """
 import json
 import os
@@ -47,6 +48,8 @@ def main():
             a.remove("--write")
         reason = opt(a, "--reason")
         r = nonopi_client.call({"op": "request-access", "path": a[0], "write": write, "reason": reason})
+    elif cmd == "apply":
+        r = nonopi_client.call({"op": "vm-apply"})
     elif cmd == "revoke":
         r = nonopi_client.call({"op": "revoke", "key": a[0]})
     else:

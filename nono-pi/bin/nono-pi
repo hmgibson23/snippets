@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""nono-pi: run pi so that it never holds a credential, and just works.
+"""nono-pi: an isolated microVM devbox per project; pi runs in it and never holds a credential.
 
-  pis / nono-pi [pi args]      start or reattach the session for this project
-                               (zellij `pi-<project>`: pi + status line; prompts float)
+  pis / nono-pi [pi args]      start or reattach this project's session: zellij
+                               `pi-<project>` with tabs shell (fish in the VM) / pi / nono-pi
   nono-pi --aws a,b | none     pre-approve AWS accounts (others ask on first use)
   nono-pi --configure          re-pick the remembered choices for this project
-  nono-pi --vm / --no-vm       run the agent in a Gondolin microVM (remembered)
-  nono-pi --print-profile      show the generated nono profile
+  nono-pi --print-policy       show the generated network/credential policy
   nono-pi setup                one-time: nono-pi keychain, ssh key passphrase, migration
   nono-pi-key ls|set|rm|status|grants|revoke|aws-refresh
 
-See DESIGN.md for the model: the trusted side (this machine / the devbox)
-holds every credential; pi and its tools (nono sandbox or microVM) get only
-placeholders and brokers that ask the user, once per scoped time window.
+See DESIGN.md: the trusted side (this machine) holds every credential; the VM
+gets only placeholders and brokers that ask you once per scoped time window.
 """
 import os
 import sys

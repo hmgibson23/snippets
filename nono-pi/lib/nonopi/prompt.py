@@ -18,6 +18,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 
 from .paths import LINUX, MAC, RUN_DIR
 
@@ -110,19 +111,31 @@ def _has_gui() -> bool:
 
 # Set by the supervisor when running inside zellij with the control panel.
 QUEUE = None            # pending.Pending
-PANEL_TIMEOUT = 900     # a request waits this long in the nono-pi tab, then counts as denied
+PANEL_TIMEOUT = 900     # a request waits this long in the panel, then counts as denied
 ON_QUEUE = None         # callback(count) -> nudge the status line
+PANEL_ALIVE = None      # callback() -> a panel is (or will be) showing the queue
+PANEL_GRACE = 20        # no zellij + no panel open: wait this long for one, then a dialog
 
 
 def _via_panel(spec: dict) -> tuple[bool, dict | None]:
-    """In a zellij session every request waits in the nono-pi tab (no pop-ups):
-    the bar shows "N waiting · Alt-2", you answer there. Returns (handled, answer)."""
+    """Every request waits in the panel (zellij tab, or `nono-pi panel` in any terminal);
+    no pop-ups while a panel is around. Returns (handled, answer); not handled =
+    no panel showed up within PANEL_GRACE (caller falls back to a dialog)."""
     if QUEUE is None:
         return False, None
     i = QUEUE.add(spec)
     try:
         if ON_QUEUE:
             ON_QUEUE(QUEUE.count())
+        if PANEL_ALIVE and not PANEL_ALIVE():
+            sys.stderr.write(f"\r\nnono-pi: waiting for you: {spec['title']}  (run `nono-pi panel` in another terminal)\r\n")
+            t0 = time.time()
+            while time.time() - t0 < PANEL_GRACE and not PANEL_ALIVE():
+                got, ans = QUEUE.wait(i, 0.5)
+                if got:
+                    return True, ans
+            if not PANEL_ALIVE():
+                return False, None
         got, ans = QUEUE.wait(i, PANEL_TIMEOUT)
         return True, (ans if got else None)
     finally:
@@ -135,27 +148,36 @@ def ask(spec: dict) -> dict | None:
     if os.environ.get("NONO_PI_PROMPT_AUTO"):        # tests: canned answers
         import json as _j
         return _j.loads(os.environ["NONO_PI_PROMPT_AUTO"]).get(spec.get("id", spec["kind"]))
-    if _zellij_session() and QUEUE is not None:
+    if QUEUE is not None:
         handled, ans = _via_panel(spec)   # several requests can wait in the panel at once
         if handled:
             return ans
+        # no panel: the terminal belongs to the VM shell, so only a desktop dialog is safe
+        if _has_gui():
+            with _lock:
+                return _dialog(spec)
+        return None
     with _lock:
-        # outside a nono-pi zellij session (e.g. `nono-pi-key` in a plain terminal)
+        # no supervisor queue (e.g. `nono-pi-key` in a plain terminal)
         if sys.stdin.isatty() or os.path.exists("/dev/tty"):
             r = _tty(spec)
             if r is not None or not _has_gui():
                 return r
         if _has_gui():
-            if spec["kind"] == "secret":
-                v = _osascript_secret(spec["title"], spec.get("body", "")) if MAC else _zenity_secret(spec["title"], spec.get("body", ""))
-                return {"value": v} if v else None
-            labels = [label for _, label in spec["options"]]
-            dlabel = dict(spec["options"])[spec["default"]]
-            pick = (_osascript_choose if MAC else _zenity_choose)(spec["title"], spec.get("body", ""), labels, dlabel)
-            if pick is None:
-                return {"choice": "deny"} if MAC else None
-            return {"choice": next(k for k, l in spec["options"] if l == pick)}
+            return _dialog(spec)
         return None
+
+
+def _dialog(spec: dict) -> dict | None:
+    if spec["kind"] == "secret":
+        v = _osascript_secret(spec["title"], spec.get("body", "")) if MAC else _zenity_secret(spec["title"], spec.get("body", ""))
+        return {"value": v} if v else None
+    labels = [label for _, label in spec["options"]]
+    dlabel = dict(spec["options"])[spec["default"]]
+    pick = (_osascript_choose if MAC else _zenity_choose)(spec["title"], spec.get("body", ""), labels, dlabel)
+    if pick is None:
+        return {"choice": "deny"} if MAC else None
+    return {"choice": next(k for k, l in spec["options"] if l == pick)}
 
 
 def choose(title: str, body: str, options: list[tuple[str, str]], default: str, pid: str = "") -> str | None:

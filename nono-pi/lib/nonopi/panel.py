@@ -9,7 +9,7 @@ Catppuccin-macchiato curses UI, styled like the zjstatus bar. Tabs:
   5 AWS       accounts with login state; Enter logs in and shows progress
   6 Secrets   stored secret names (never values); add / replace / delete
   7 Log       audit trail
-Global: Alt-1 / Alt-2 (zellij) switch pi <-> nono-pi; here: ←/→ or 1-7 tabs, ↑/↓ or j/k,
+Global: Alt-1 / Alt-2 (zellij) switch shell <-> nono-pi; here: ←/→ or 1-7 tabs, ↑/↓ or j/k,
 u unlock, L lock now, P deny-all-new 10 min, q back to pi.
 
 Trusted side only: talks to the supervisor over ctl.sock; the agent can reach
@@ -341,7 +341,7 @@ class Panel:
                     "Grants": [("x", "revoke")], "Network": [("a", "add host"), ("x", "remove")],
                     "AWS": [("⏎", "log in"), ("R", "re-login"), ("o", "log out"), ("p", "pre-approve")],
                     "Secrets": [("s", "add"), ("x", "delete")], "Log": []}[TABS[self.tab]]
-        common = [("←→", "tabs"), ("u", "unlock"), ("L", "lock"), ("P", "deny new 10m"), ("Alt-1", "pi")]
+        common = [("←→", "tabs"), ("u", "unlock"), ("L", "lock"), ("P", "deny new 10m"), ("Alt-1", "shell")]
         # toast (above the hints)
         if self.msg and time.time() - self.msg_at < 8:
             color = {"ok": "green", "err": "red", "info": "blue"}[self.msg_kind]

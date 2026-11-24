@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""nono-pi host-side helper (never visible inside the sandbox).
+"""nono-pi host-side helper (never visible inside the VM).
 
-Called by nono (credential_capture / AWS credential_process) and by the user:
-
-  capture <name> [gh-token]   print secret <name> (asks via the supervisor)
-  aws-creds <account>         AWS credential_process JSON (via the supervisor)
   ls | set <name> | rm <name> manage secrets in the nono-pi keychain
   status | grants | revoke <key>   talk to the running session
   aws-refresh                 rebuild the AWS account list from saml2aws list-roles
@@ -32,32 +28,6 @@ def ctl(obj: dict) -> dict:
         return proto.call(proto.CTL, obj, timeout=900)
     except OSError:
         die("no running nono-pi session (start one with `pis`)")
-
-
-def cmd_capture(name: str, source: str | None) -> None:
-    r = ctl({"op": "secret-get", "name": name, "source": source,
-             "host": os.environ.get("NONO_REQUEST_HOST", "")})
-    if not r.get("ok"):
-        die(f"secret {name} not provided")
-    sys.stdout.write(r["value"])
-
-
-def cmd_aws(account: str) -> None:
-    r = ctl({"op": "aws-creds", "account": account})
-    if not r.get("ok"):
-        die(f"AWS {account}: not authorized or login failed")
-    sys.stdout.write(json.dumps(r["creds"]))
-
-
-def _store():
-    s = keystore.open_store()
-    if not s.exists():
-        die("nono-pi keychain not set up: run `nono-pi setup`")
-    if not s.is_unlocked():
-        pw = prompt.secret("unlock nono-pi keychain", "for nono-pi-key")
-        if not pw or not s.unlock(pw):
-            die("keychain locked")
-    return s
 
 
 def cmd_aws_refresh() -> None:
@@ -102,11 +72,7 @@ def main(argv: list[str]) -> None:
         print(__doc__)
         return
     cmd, rest = argv[0], argv[1:]
-    if cmd == "capture" and rest:
-        cmd_capture(rest[0], rest[1] if len(rest) > 1 else None)
-    elif cmd == "aws-creds" and len(rest) == 1:
-        cmd_aws(rest[0])
-    elif cmd == "ls":
+    if cmd == "ls":
         print("\n".join(_store().names()))
     elif cmd == "set" and len(rest) == 1:
         v = prompt.secret(f"store secret {rest[0]}", "hidden input")

@@ -1,14 +1,17 @@
 #!/bin/sh
 # Install nono-pi (macOS / Linux): links commands into ~/.local/bin, adds the
-# `pis` alias, installs the VM driver deps, writes a starter config.
+# `pis` alias, installs the VM deps (Gondolin), writes a starter config.
 # Then run `nono-pi setup` once (keychain + ssh key passphrase).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 BIN=${NONO_PI_BIN:-$HOME/.local/bin}
 
-command -v nono >/dev/null || { echo "nono is not installed: https://nono.sh" >&2; exit 1; }
+command -v node >/dev/null || { echo "node (>= 22) is required for the microVM daemon" >&2; exit 1; }
+if [ "$(uname)" = Linux ] && [ ! -w /dev/kvm ]; then
+  echo "note: /dev/kvm is not writable: the microVM needs KVM (add yourself to the kvm group)" >&2
+fi
 command -v python3 >/dev/null || { echo "python3 is required" >&2; exit 1; }
-command -v zellij >/dev/null || echo "note: zellij not found; nono-pi works without it (prompts use dialogs/terminal)" >&2
+command -v zellij >/dev/null || echo "note: zellij not found; without it pis runs just pi in the VM (prompts use dialogs/terminal)" >&2
 if [ "$(uname)" = Linux ] && ! command -v secret-tool >/dev/null; then
   echo "note: secret-tool (libsecret) not found: secrets live only for the session on Linux" >&2
 fi
@@ -30,7 +33,8 @@ add_line "$HOME/.bashrc" 'alias pis="nono-pi"'
 add_line "$HOME/.zshrc" 'alias pis="nono-pi"'
 
 if command -v npm >/dev/null; then
-  (cd "$HERE/vm" && npm install --ignore-scripts --no-audit --no-fund --silent) && echo "VM driver deps installed (nono-pi --vm)"
+  (cd "$HERE/vm" && npm ci --ignore-scripts --no-audit --no-fund --silent && node patch-gondolin.mjs) \
+    && echo "VM deps installed (Gondolin)"
 fi
 
 python3 "$HERE/bin/nono-pi" --init-config

@@ -3,8 +3,8 @@
 // over a host-only unix socket. Every zellij pane is a thin client of this.
 //
 // Guest egress: NOTHING except
-//   - one host-mapped TCP port -> host `nono proxy` (allowlist, approvals,
-//     credential injection, AWS SigV4 signing; the guest only has placeholders)
+//   - HTTP(S) through Gondolin's userspace stack + vm/netpolicy.mjs (allowlist, approvals
+//     in the panel, credential injection, AWS SigV4 re-signing; the guest only has placeholders)
 //   - one host-mapped TCP port -> supervisor broker (token-auth; sign, requests, status)
 //   - ssh to allowlisted git hosts via Gondolin's host-side ssh proxy, using the
 //     supervisor's PRIVATE agent; every exec request is checked by the supervisor
@@ -18,7 +18,8 @@
 //             {"op":"status"}  {"op":"stop"}
 import { createConnection, createServer } from "node:net";
 import { readFileSync, unlinkSync } from "node:fs";
-import { VM, RealFSProvider, ReadonlyProvider, createHttpHooks } from "@earendil-works/gondolin";
+import { VM, RealFSProvider, ReadonlyProvider } from "@earendil-works/gondolin";
+import { createPolicy } from "./netpolicy.mjs";
 
 const specPath = process.argv[2];
 let spec = JSON.parse(readFileSync(specPath, "utf8"));
@@ -41,13 +42,23 @@ function ctl(obj) {
 	});
 }
 
+const netLog = [];
+const policy = createPolicy({
+	ctl,
+	getSpec: () => spec,
+	log: (m) => { netLog.push(m); if (netLog.length > 200) netLog.shift(); if (process.env.NONO_PI_NET_DEBUG) log("net", m); },
+});
+
 async function createVm() {
-	const { httpHooks } = createHttpHooks({ allowedHosts: [] }); // deny all mediated HTTP(S): only the mapped proxy
+	const httpHooks = { isRequestAllowed: policy.isRequestAllowed, onRequest: policy.onRequest };
 	const mounts = {
 		"/workspace": new RealFSProvider(spec.workspace),
 		[spec.guestHome + "/.pi"]: new RealFSProvider(spec.piDir),
+		...(spec.cacheDir ? { "/nono-pi-cache": new RealFSProvider(spec.cacheDir) } : {}),
 		"/nono-pi": new ReadonlyProvider(new RealFSProvider(spec.shareDir)),
 	};
+	for (const [g, h] of Object.entries(spec.piLinks ?? {})) mounts[g] = new RealFSProvider(h);
+	if (spec.piNpm) mounts["/nono-pi-npm"] = new RealFSProvider(spec.piNpm);
 	for (const [g, h] of Object.entries(spec.extraRead ?? {})) mounts[g] = new ReadonlyProvider(new RealFSProvider(h));
 	for (const [g, h] of Object.entries(spec.extraAllow ?? {})) mounts[g] = new RealFSProvider(h);
 	const vm = await VM.create({
@@ -55,12 +66,7 @@ async function createVm() {
 		rootfs: { mode: "cow" }, // throwaway: every session starts from the clean image
 		httpHooks,
 		dns: { mode: "synthetic", syntheticHostMapping: "per-host" },
-		tcp: {
-			hosts: {
-				"nono-proxy.internal:3128": `127.0.0.1:${spec.proxyPort}`,
-				"nono-broker.internal:7070": `127.0.0.1:${spec.brokerPort}`,
-			},
-		},
+		tcp: { hosts: { "nono-broker.internal:7070": `127.0.0.1:${spec.brokerPort}` } },
 		ssh: {
 			allowedHosts: spec.sshHosts,
 			agent: spec.agentSocket,
@@ -81,7 +87,46 @@ async function createVm() {
 		const r = await vm.exec(["/bin/sh", "-c", spec.setup], { stdout: "buffer", stderr: "buffer", env: spec.env });
 		if (r.exitCode !== 0) log("guest setup failed:", r.stderr?.toString().slice(-300));
 	}
+	// pi's npm packages for Linux: the host tree has macOS native binaries (fff, ffi-rs).
+	// Built once per lockfile inside the VM, in the background (first run: a minute or two);
+	// the guest `pi` wrapper waits for /run/nono-pi-npm.done.
+	if (spec.piNpm) void ensurePiNpm(vm).catch((e) => log("pi npm:", e?.message ?? e));
 	return vm;
+}
+
+async function ensurePiNpm(vm) {
+	const script = `set -e
+src=${spec.guestHome}/.pi/agent/npm
+[ -f "$src/package-lock.json" ] || exit 0
+key=$(cat "$src/package.json" "$src/package-lock.json" | sha256sum | cut -c1-16)-$(uname -m)
+dst=/nono-pi-npm/$key
+if [ ! -f "$dst/.ok" ]; then
+  rm -rf "$dst.tmp" && mkdir -p "$dst.tmp"
+  cp "$src/package.json" "$src/package-lock.json" "$dst.tmp/"
+  [ -d "$src/scripts" ] && cp -R "$src/scripts" "$dst.tmp/"
+  # same flags pi's own installer uses; the postinstall script (host peers patch) runs after
+  (cd "$dst.tmp" && npm ci --ignore-scripts --legacy-peer-deps --include=optional --no-audit --no-fund --loglevel=error \
+     && npm run --if-present --silent postinstall) >&2
+  touch "$dst.tmp/.ok" && rm -rf "$dst" && mv "$dst.tmp" "$dst"
+  ls /nono-pi-npm | grep -vx "$key" | grep -v '\.tmp$' | while read old; do rm -rf "/nono-pi-npm/$old"; done
+fi
+echo "$dst"`;
+	const t0 = Date.now();
+	const mark = (txt) => vm.exec(["/bin/sh", "-c", `printf '%s\n' "$1" > /run/nono-pi-npm.done`, "sh", txt], { stdout: "buffer", stderr: "buffer" });
+	const r = await vm.exec(["/bin/sh", "-c", script], { stdout: "buffer", stderr: "buffer", env: spec.env });
+	const dir = r.stdout.toString().trim();
+	if (r.exitCode !== 0 || !dir) {
+		const err = r.stderr.toString().slice(-400);
+		log("pi npm packages for linux failed:", err);
+		await mark("failed: " + err.split("\n").filter(Boolean).pop());
+		return;
+	}
+	// overlay: bind the linux tree over ~/.pi/agent/npm inside the guest (host tree untouched)
+	const b = await vm.exec(["/bin/sh", "-c", `mount --bind "${dir}" ${spec.guestHome}/.pi/agent/npm`], { stdout: "buffer", stderr: "buffer" });
+	if (b.exitCode !== 0) log("bind ~/.pi/agent/npm failed:", b.stderr.toString().slice(-300));
+	await mark(b.exitCode === 0 ? "ok" : "failed: bind");
+	const took = Date.now() - t0;
+	if (took > 3000) log(`pi npm packages for linux ready (${Math.round(took / 1000)}s)`);
 }
 
 // ---------------------------------------------------------------- sessions
@@ -159,6 +204,7 @@ async function startSession(sock, req, rest) {
 async function restartVm(why) {
 	log(`restarting the VM (${why})…`);
 	spec = JSON.parse(readFileSync(specPath, "utf8"));
+	policy.forget();
 	vmReady = (async () => {
 		for (const s of sessions.values()) s.finish?.(0, "vm-restart");
 		const old = vm;
@@ -194,7 +240,8 @@ const server = createServer((sock) => {
 		const reply = (o) => sock.end(JSON.stringify(o) + "\n");
 		if (req.op === "exec") return void startSession(sock, req, rest);
 		if (req.op === "status") return reply({ ok: true, sessions: [...sessions.values()].map((s) => ({ id: s.id, kind: s.kind })) });
-		if (req.op === "reload") { spec = JSON.parse(readFileSync(specPath, "utf8")); return reply({ ok: true }); }
+		if (req.op === "reload") { spec = JSON.parse(readFileSync(specPath, "utf8")); policy.forget(); return reply({ ok: true }); }
+		if (req.op === "net-log") return reply({ ok: true, log: netLog.slice(-50) });
 		if (req.op === "restart") return void restartVm(req.why ?? "new access").then(() => reply({ ok: true }), (e) => reply({ ok: false, error: String(e) }));
 		if (req.op === "stop") { reply({ ok: true }); return void shutdown(0); }
 		reply({ ok: false, error: `unknown op ${req.op}` });

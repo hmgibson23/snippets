@@ -63,30 +63,39 @@ class ListRoles(unittest.TestCase):
 
 
 
-class ProfileValidates(unittest.TestCase):
-    """Every generated profile variant must pass `nono profile validate` (catches reserved
-    NONO_* env names, schema drift, bad routes) before a user ever launches it."""
+class Policy(unittest.TestCase):
+    """The VM policy spec: placeholders only, per-session random, each route bound to its host."""
 
-    def test_variants(self):
-        import json, shutil, subprocess
-        from nonopi import paths, profile
-        if not shutil.which("nono"):
-            self.skipTest("nono not installed")
+    def test_routes_and_aws(self):
+        from nonopi import paths, policy
         cfg = paths.load_config()
-        accounts = sorted(cfg["aws"].get("accounts", {}))
-        for zj in ("", "1"):
-            for aws in ([], accounts[:1]):
-                with self.subTest(zjstatus=zj, aws=aws):
-                    os.environ["NONO_PI_ZJSTATUS"] = zj
-                    p, _ = profile.build(cfg, {"aws": aws})
-                    reserved = [k for k in p["environment"]["set_vars"] if k.upper().startswith("NONO_")]
-                    self.assertEqual(reserved, [], "NONO_* is reserved by nono")
-                    f = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
-                    json.dump(p, f); f.close()
-                    r = subprocess.run(["nono", "profile", "validate", f.name], capture_output=True, text=True)
-                    os.unlink(f.name)
-                    self.assertIn("Result: valid", r.stdout + r.stderr, r.stdout + r.stderr)
-        os.environ.pop("NONO_PI_ZJSTATUS", None)
+        cfg["aws"] = {"enabled": True, "accounts": {"a": {"role_arn": "arn:aws:iam::1:role/x"},
+                                                    "b": {"role_arn": "arn:aws:iam::2:role/x", "region": "us-east-1"}}}
+        spec, env = policy.build(cfg, {"aws": ["b"]})
+        gh = spec["routes"]["github"]
+        self.assertEqual(gh["host"], "api.github.com")
+        self.assertIn("/copilot_internal", gh["excludePaths"])
+        self.assertEqual(env["GH_TOKEN"], gh["placeholder"])
+        self.assertTrue(env["GH_TOKEN"].startswith("nonopi_github_"))
+        self.assertEqual(sorted(spec["aws"]["profiles"].values()), ["a", "b"])
+        self.assertEqual(env["AWS_PROFILE"], "b")
+        guest = open(os.path.join(paths.SANDBOX_DIR, "aws-config")).read()
+        self.assertTrue(guest.startswith("[default]\nregion = us-east-1"))
+        self.assertNotIn("credential_process", guest)
+        self.assertEqual(policy.build(cfg, {})[1]["GH_TOKEN"], env["GH_TOKEN"], "stable within a session")
+        policy._SESSION_PLACEHOLDERS.clear()
+        self.assertNotEqual(policy.build(cfg, {})[1]["GH_TOKEN"], env["GH_TOKEN"], "new session, new placeholders")
+        for k in env:
+            self.assertFalse(k.upper().startswith("NONO_"), k)
+
+    def test_netpolicy_js(self):
+        import shutil, subprocess
+        if not shutil.which("node"):
+            self.skipTest("node not installed")
+        here = os.path.dirname(os.path.abspath(__file__))
+        r = subprocess.run(["node", os.path.join(here, "..", "vm", "netpolicy.test.mjs")],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
 
 class ConfigMerge(unittest.TestCase):

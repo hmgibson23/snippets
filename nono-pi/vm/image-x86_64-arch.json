@@ -1,0 +1,16 @@
+{
+  "arch": "x86_64",
+  "distro": "alpine",
+  "alpine": {
+    "version": "3.23.7",
+    "kernelPackage": "linux-virt",
+    "kernelImage": "vmlinuz-virt",
+    "krunfwVersion": "v5.2.1"
+  },
+  "oci": {
+    "image": "localhost/nono-pi-arch:2",
+    "runtime": "podman",
+    "pullPolicy": "never"
+  },
+  "rootfs": { "label": "gondolin-root" }
+}

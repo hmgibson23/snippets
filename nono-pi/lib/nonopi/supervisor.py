@@ -5,7 +5,7 @@ brokers. Started by the launcher before the agent tier; lives as long as the
 session.
 
 Servers:
-  ctl.sock     (host only)  secret-get, aws-creds, approve-net (nono webhook),
+  ctl.sock     (host only)  route-secret, aws-creds, net-approve (vmd), secret-get,
                             pin (saml2aws pinentry), status, grants, revoke
   broker.sock  (sandbox)    git, ssh, sign, request-secret, request-aws, status, grants
   tcp 127.0.0.1:<port>      VM mode: same broker protocol, token-authenticated
@@ -67,8 +67,11 @@ class Supervisor:
         self.denied_until = 0.0
         self.pending = pending.Pending()
         self.bar = None
-        if os.environ.get("NONO_PI_ZELLIJ_SESSION"):
-            prompt.QUEUE = self.pending
+        self.panel_seen = 0.0          # last time a `nono-pi panel` polled (no-zellij mode)
+        # requests always queue for the panel (zellij tab, or `nono-pi panel` in any terminal);
+        # without zellij and no panel open, they fall back to a desktop dialog (prompt.py)
+        prompt.QUEUE = self.pending
+        prompt.PANEL_ALIVE = lambda: bool(os.environ.get("NONO_PI_ZELLIJ_SESSION")) or time.time() - self.panel_seen < 5
 
     # ------------------------------------------------------------ helpers
     def who(self) -> str:
@@ -144,7 +147,7 @@ class Supervisor:
             if self.ensure_unlocked(f"store {name}"):
                 self.store.set(name, value)
 
-    # ------------------------------------------------------------ secrets (nono cmd:// capture)
+    # ------------------------------------------------------------ secrets
     def secret_get(self, name: str, host: str) -> str | None:
         v = self.ks_get(name, f"API credential '{name}' for {host}")
         if v is not None:
@@ -408,22 +411,33 @@ class Supervisor:
         self.audit.log("sign", what=(m.group(0).decode(errors="replace")[1:80] if m else "tag"))
         return True, sig
 
-    # ------------------------------------------------------------ net approvals (nono webhook)
+    # ------------------------------------------------------------ net approvals (from vmd)
     def _host_allowed(self, host: str) -> bool:
         import fnmatch
         return any(host == p or (p.startswith("*.") and fnmatch.fnmatchcase(host, p))
                    for p in load_config()["network"].get("allow", []))
 
-    def approve_net(self, req: dict) -> str:
-        host, port = req.get("host", "?"), req.get("port", 443)
+    def approve_net(self, host: str) -> bool:
+        host = str(host)[:253].lower()
         if self._host_allowed(host):       # added live from the panel
             self.audit.log("net-allowlist", host=host)
-            return "allow_session"
+            return True
         if not self.cfg["network"].get("ask", True):
-            return "deny"
-        ok = self.decide("net", host, f"network access to {host}:{port}",
-                         "host is not on the allowlist")
-        return "allow_session" if ok else "deny"
+            return False
+        return self.decide("net", host, f"network access to {host}", "host is not on the allowlist")
+
+    def route_secret(self, name: str, host: str) -> str | None:
+        """vmd asks for the real value behind a route placeholder (never sent to the guest)."""
+        svc = self.cfg["services"].get(name)
+        if not svc:
+            return None
+        up_host = svc["upstream"].split("://", 1)[-1].split("/", 1)[0].split(":", 1)[0]
+        if host != up_host:            # a route's secret only ever goes to its own host
+            self.audit.log("route-mismatch", name=name, host=host)
+            return None
+        if svc.get("source") == "gh-token":
+            return self.gh_token()
+        return self.secret_get(svc.get("secret", name), host)
 
     # ------------------------------------------------------------ credential requests (restart)
     def request_secret(self, req: dict) -> dict:
@@ -453,10 +467,14 @@ class Supervisor:
                                  **({"header": header} if header != "Authorization" else {})}
         from .paths import save_config
         save_config(cfg)
-        self.pending_restart = {"why": f"credential {name}"}
-        self._vm_apply_soon()
+        # a credential route only changes the network policy + guest env: reload vmd in
+        # place (shells keep running; `pi` restarts itself with --continue to pick up $ENV)
+        if self.vmhost:
+            self.vmhost.reload()
+        self.audit.log("policy-reload", why=f"credential {name}")
         return {"ok": True, "restart": True, "env_var": env_var,
-                "note": "pi restarts in a few seconds with the same session; then use $" + env_var}
+                "note": "pi restarts in a moment with the same session; then use $" + env_var +
+                        " (new shells have it too; in an open shell: exec fish)"}
 
     def request_access(self, req: dict) -> dict:
         path = os.path.realpath(os.path.expanduser(req.get("path", "")))
@@ -475,13 +493,15 @@ class Supervisor:
         cfg[key] = sorted(set(cfg.get(key, []) + [path]))
         from .paths import save_config
         save_config(cfg)
+        # a new directory needs a new VM mount: the VM restarts (shells reopen fresh,
+        # pi resumes) once pi is idle - `pi` in the VM calls `nono-pi apply` - or after 20s
         self.pending_restart = {"why": f"{mode} {path}"}
         self._vm_apply_soon()
         return {"ok": True, "restart": True}
 
     # ------------------------------------------------------------ VM: new access
     def vm_apply(self) -> dict | None:
-        """VM mode: a new credential route / mount needs a new proxy profile and a
+        """A new credential route / mount needs a new policy spec and a
         recreated VM. Idempotent; returns what was applied (None if nothing)."""
         with self.vm_apply_lock:
             why = self.pending_restart
@@ -538,6 +558,11 @@ class Supervisor:
         if not add:
             self.grants.revoke(f"net:{host}")
         self.audit.log("net-allow" if add else "net-remove", host=host, via="panel")
+        if self.vmhost:
+            try:
+                self.vmhost.reload()      # vmd picks up the new allowlist for the next request
+            except OSError:
+                pass
         return {"ok": True}
 
     def panel_state(self) -> dict:
@@ -654,7 +679,7 @@ class _Base(socketserver.StreamRequestHandler):
 
 
 class CtlHandler(_Base):
-    """Host-side only. Also accepts nono's approval webhook (HTTP POST)."""
+    """Host-side only (vmd, panel, nono-pi-key, pinentry)."""
 
     def handle(self):
         try:
@@ -668,14 +693,17 @@ class CtlHandler(_Base):
 
     def _handle(self):
         first = self.rfile.readline(proto.MAX_LINE)
-        if first.startswith(b"POST "):
-            return self._webhook(first)
         try:
             req = json.loads(first)
         except ValueError:
             return
         op, s = req.get("op"), self.sup
-        if op == "secret-get":
+        if op == "route-secret":            # vmd: real value for a credential route
+            v = s.route_secret(str(req.get("name", "")), str(req.get("host", "")))
+            self.reply({"ok": v is not None, "value": v})
+        elif op == "net-approve":           # vmd: host not on the allowlist
+            self.reply({"ok": s.approve_net(req.get("host", ""))})
+        elif op == "secret-get":
             v = s.gh_token() if req.get("source") == "gh-token" else s.secret_get(req["name"], req.get("host", ""))
             self.reply({"ok": v is not None, "value": v})
         elif op == "aws-creds":
@@ -712,6 +740,7 @@ class CtlHandler(_Base):
         elif op == "revoke":
             self.reply({"ok": s.grants.revoke(req["key"])})
         elif op == "panel-state":
+            s.panel_seen = time.time()
             self.reply(s.panel_state())
         elif op == "answer":
             ans = {"choice": req["choice"]} if "choice" in req else ({"value": req["value"]} if req.get("value") else None)
@@ -764,28 +793,10 @@ class CtlHandler(_Base):
             s.audit.log("panic", via="panel")
             self.reply({"ok": True})
         elif op == "panel-hide":
-            s.zellij(["action", "go-to-tab-name", "pi"] if s.vm else ["action", "go-to-tab", "1"])
+            s.zellij(["action", "go-to-tab", "1"])
             self.reply({"ok": True})
         else:
             self.reply({"ok": False, "error": f"unknown op {op}"})
-
-    def _webhook(self, first: bytes):
-        headers = {}
-        while True:
-            line = self.rfile.readline(65536)
-            if line in (b"\r\n", b"\n", b""):
-                break
-            k, _, v = line.decode().partition(":")
-            headers[k.strip().lower()] = v.strip()
-        body = self.rfile.read(int(headers.get("content-length", "0") or 0))
-        try:
-            req = json.loads(body).get("request", {})
-        except ValueError:
-            req = {}
-        decision = self.sup.approve_net(req) if req.get("capability_type") == "network" else "deny"
-        out = json.dumps({"decision": decision}).encode()
-        self.wfile.write(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nConnection: close\r\n"
-                         b"Content-Length: " + str(len(out)).encode() + b"\r\n\r\n" + out)
 
 
 class BrokerHandler(_Base):
@@ -829,6 +840,8 @@ class BrokerHandler(_Base):
             return self.reply({"ok": s.grants.revoke(req.get("key", ""))})
         if op == "restart-pending":
             return self.reply({"ok": True, "pending": s.pending_restart})
+        if op == "vm-apply":       # only applies what the user already granted
+            return self.reply({"ok": True, "applied": s.vm_apply()})
         self.reply({"ok": False, "error": f"unknown op {op}"})
 
     def _ssh(self, req: dict):

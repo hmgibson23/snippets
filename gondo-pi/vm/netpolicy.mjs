@@ -1,4 +1,4 @@
-// nono-pi network policy for the Gondolin VM (trusted side, runs inside vmd).
+// gondo-pi network policy for the Gondolin VM (trusted side, runs inside vmd).
 //
 // Every HTTP(S) request from the guest goes through Gondolin's userspace network
 // stack, which terminates TLS with its own CA. Here we decide, per request:
@@ -14,7 +14,7 @@ import { classifyGraphql, classifyRest } from "./github-guard.mjs";
 
 const AWS_DENY_OPS = new Set(["AssumeRole", "AssumeRoleWithSAML", "AssumeRoleWithWebIdentity", "GetSessionToken",
 	"GetFederationToken", "GetAuthorizationToken", "CreateAccessKey", "GetCredentialsForIdentity"]);
-const AWS_PLACEHOLDER = /^NONOPI\d{14}$/;   // NONOPI00000000000000 = "the current account"
+const AWS_PLACEHOLDER = /^GONDOP\d{14}$/;   // GONDOP00000000000000 = "the current account"
 const SIGNED_STREAM = /^STREAMING-(AWS4-HMAC-SHA256|UNSIGNED)-PAYLOAD/;
 const SERVICE_ALIAS = { "api.ecr": "ecr", "bedrock-runtime": "bedrock", "bedrock-agent": "bedrock",
 	"bedrock-agent-runtime": "bedrock", "runtime.sagemaker": "sagemaker" };
@@ -74,12 +74,22 @@ export function createPolicy({ ctl, getSpec, log }) {
 		const sent = req.headers.get(header) ?? "";
 		// only replace OUR placeholder: a real token the guest brought itself (e.g. pi's
 		// Copilot login) passes through untouched
-		if (!sent.includes(route.placeholder)) return null;
+		if (!sent.includes(route.placeholder)) {
+			// a credential the VM brought itself: pi's Copilot login is expected on its own paths;
+			// anything else (a token pasted into the VM, or one minted inside it) asks once per host+window
+			if (sent && route.guard === "github" && !route.excludePaths?.some((p) => url.pathname.startsWith(p))) {
+				const r = await ctl({ op: "net-ask", kind: "foreign-token", resource: url.hostname,
+					title: `to call ${url.hostname} with a token that is NOT yours (brought into the VM)`,
+					body: `${req.method} ${url.pathname.slice(0, 120)}` });
+				if (!r.ok) return new Response(JSON.stringify({ message: "gondo-pi: foreign token denied in the panel" }), { status: 403 });
+			}
+			return null;
+		}
 		const value = await cached(`route:${route.name}`, async () => {
 			const r = await ctl({ op: "route-secret", name: route.name, host: url.hostname });
 			return r.ok ? r.value : null;
 		});
-		if (!value) return new Response(`nono-pi: no credential for ${route.name}\n`, { status: 401 });
+		if (!value) return new Response(`gondo-pi: no credential for ${route.name}\n`, { status: 401 });
 		if (route.guard === "github") {
 			const blocked = await guardGithub(req, url);
 			if (blocked) return blocked;
@@ -101,14 +111,21 @@ export function createPolicy({ ctl, getSpec, log }) {
 		if (c.action === "allow") return null;
 		if (c.action === "deny") {
 			log(`github deny ${c.why}`);
-			return new Response(JSON.stringify({ message: `nono-pi: blocked: ${c.why} (account/repo admin changes with your token are not allowed from the VM)` }),
+			return new Response(JSON.stringify({ message: `gondo-pi: blocked: ${c.why} (account/repo admin changes with your token are not allowed from the VM)` }),
 				{ status: 403, headers: { "content-type": "application/json" } });
+		}
+		if (c.action === "ask") {
+			const r = await ctl({ op: "net-ask", kind: "gh-publish", resource: c.why, title: `to publish via GitHub with your token: ${c.why}`,
+				body: "gists and new repositories can be readable by anyone" });
+			if (r.ok) return null;
+			log(`github ask denied ${c.why}`);
+			return new Response(JSON.stringify({ message: "gondo-pi: denied in the panel" }), { status: 403, headers: { "content-type": "application/json" } });
 		}
 		// content writes through the API = a push: same grant as `git push` (asks in the panel)
 		const r = await ctl({ op: "gh-push-check", host: "github.com", repo: c.repo ?? "", what: c.what ?? `${req.method} ${url.pathname}` });
 		if (r.ok) return null;
 		log(`github push denied ${c.repo ?? c.what}`);
-		return new Response(JSON.stringify({ message: r.error ?? "nono-pi: push denied" }), { status: 403, headers: { "content-type": "application/json" } });
+		return new Response(JSON.stringify({ message: r.error ?? "gondo-pi: push denied" }), { status: 403, headers: { "content-type": "application/json" } });
 	}
 
 	// ---------------------------------------------------------------- 3. AWS re-signing
@@ -149,16 +166,29 @@ export function createPolicy({ ctl, getSpec, log }) {
 
 	async function resignAws(req, url, target) {
 		const key = placeholderKey(req.headers.get("authorization"));
-		if (!key) return null; // unsigned / presigned / real creds the user typed: not ours
+		if (!key) {
+			// signed with keys that are not ours (pasted into the VM, or an attacker's account:
+			// e.g. uploading your data to THEIR bucket): ask once per window
+			const auth = req.headers.get("authorization") ?? "";
+			const presigned = url.searchParams.has("X-Amz-Credential");
+			if (/^AWS4-HMAC-SHA256 /.test(auth) || presigned) {
+				const ak = (/Credential=([^/,\s]+)/.exec(auth) ?? [])[1] ?? url.searchParams.get("X-Amz-Credential")?.split("/")[0] ?? "?";
+				const r = await ctl({ op: "net-ask", kind: "foreign-aws", resource: `${target.service}:${ak.slice(0, 8)}`,
+					title: `to call AWS ${target.service} with keys that are NOT yours (${ak.slice(0, 8)}…)`,
+					body: `${req.method} ${url.hostname}${url.pathname.slice(0, 80)}` });
+				if (!r.ok) return new Response("gondo-pi: foreign AWS credentials denied in the panel\n", { status: 403 });
+			}
+			return null;
+		}
 		const spec = getSpec();
 		let account = spec.aws?.profiles?.[key];
 		if (!account && key === spec.aws?.currentKey) {
 			// [default] = the current account, switched on the host (`aws-use`, the panel)
 			const r = await ctl({ op: "aws-current" });
 			account = r.ok ? r.account : null;
-			if (!account) return new Response("nono-pi: no AWS account selected yet: run `aws-use` (or pick one in the nono-pi tab), or use --profile <account>\n", { status: 403 });
+			if (!account) return new Response("gondo-pi: no AWS account selected yet: run `aws-use` (or pick one in the gondo-pi tab), or use --profile <account>\n", { status: 403 });
 		}
-		if (!account) return new Response("nono-pi: unknown AWS profile placeholder\n", { status: 403 });
+		if (!account) return new Response("gondo-pi: unknown AWS profile placeholder\n", { status: 403 });
 
 		const contentSha = req.headers.get("x-amz-content-sha256");
 		let body = req.body ? new Uint8Array(await req.clone().arrayBuffer()) : undefined;
@@ -166,13 +196,13 @@ export function createPolicy({ ctl, getSpec, log }) {
 		const op = await awsOperation(req, url, bodyText);
 		if (["sts", "iam", "ecr", "cognito-identity"].includes(target.service) && op && AWS_DENY_OPS.has(op)) {
 			log(`aws deny ${target.service}:${op} (${account})`);
-			return new Response(`nono-pi: ${op} is blocked (it would hand real credentials to the VM)\n`, { status: 403 });
+			return new Response(`gondo-pi: ${op} is blocked (it would hand real credentials to the VM)\n`, { status: 403 });
 		}
 		const creds = await cached(`aws:${account}`, async () => {
 			const r = await ctl({ op: "aws-creds", account });
 			return r.ok ? r.creds : null;
 		}, 120_000);
-		if (!creds) return new Response(`nono-pi: no AWS session for ${account} (denied or login failed)\n`, { status: 403 });
+		if (!creds) return new Response(`gondo-pi: no AWS session for ${account} (denied or login failed)\n`, { status: 403 });
 
 		// headers to sign: everything the client sent except its own auth/date/token
 		const headers = {};

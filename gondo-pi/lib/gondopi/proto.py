@@ -1,4 +1,4 @@
-"""Wire protocol between nono-pi components.
+"""Wire protocol between gondo-pi components.
 
 Unix stream socket, one JSON object per line (request), one JSON object per
 line (response). For streaming ops (git/ssh) the first response line is

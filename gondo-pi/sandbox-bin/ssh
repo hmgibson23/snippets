@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""ssh stand-in inside the nono-pi sandbox / VM.
+"""ssh stand-in inside the gondo-pi sandbox / VM.
 
 There is no ssh key or agent in here. git (via GIT_SSH_COMMAND) and plain
-`ssh` go through the nono-pi supervisor, which checks grants (push needs one,
+`ssh` go through the gondo-pi supervisor, which checks grants (push needs one,
 fetch is automatic, interactive ssh asks every time) and runs the real ssh on
 the host with a private, time-limited agent.
 """
@@ -11,7 +11,7 @@ import select
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import nonopi_client  # noqa: E402
+import gondopi_client  # noqa: E402
 
 GIT_CMDS = ("git-upload-pack", "git-receive-pack", "git-upload-archive")
 # ssh flags that take an argument (we accept & mostly ignore them; host config is the host's)
@@ -66,9 +66,9 @@ def main():
     if tty is None:
         tty = not rest and sys.stdin.isatty()
     op = "git" if is_git else "ssh"
-    s, f, r = nonopi_client.request({"op": op, "dest": dest, "port": port, "argv": rest, "tty": bool(tty)})
+    s, f, r = gondopi_client.request({"op": op, "dest": dest, "port": port, "argv": rest, "tty": bool(tty)})
     if not r.get("ok"):
-        sys.stderr.write((r.get("error") or "nono-pi: denied") + "\n")
+        sys.stderr.write((r.get("error") or "gondo-pi: denied") + "\n")
         sys.exit(255)
     old = None
     if tty and sys.stdin.isatty():

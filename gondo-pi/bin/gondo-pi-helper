@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""nono-pi host-side helper (never visible inside the VM).
+"""gondo-pi host-side helper (never visible inside the VM).
 
-  ls | set <name> | rm <name> manage secrets in the nono-pi keychain
+  ls | set <name> | rm <name> manage secrets in the gondo-pi keychain
   status | grants | revoke <key>   talk to the running session
   aws-refresh                 rebuild the AWS account list from saml2aws list-roles
-  aws-login [account]         log the running session in to AWS now (Okta prompt in the nono-pi tab)
+  aws-login [account]         log the running session in to AWS now (Okta prompt in the gondo-pi tab)
 """
 from __future__ import annotations
 
@@ -14,12 +14,12 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "lib"))
 
-from nonopi import keystore, prompt, proto  # noqa: E402
-from nonopi.paths import load_config, save_config  # noqa: E402
+from gondopi import keystore, prompt, proto  # noqa: E402
+from gondopi.paths import load_config, save_config  # noqa: E402
 
 
 def die(msg: str, code: int = 1):
-    print(f"nono-pi: {msg}", file=sys.stderr)
+    print(f"gondo-pi: {msg}", file=sys.stderr)
     sys.exit(code)
 
 
@@ -27,13 +27,13 @@ def ctl(obj: dict) -> dict:
     try:
         return proto.call(proto.CTL, obj, timeout=900)
     except OSError:
-        die("no running nono-pi session (start one with `pis`)")
+        die("no running gondo-pi session (start one with `pis`)")
 
 
 def cmd_aws_refresh() -> None:
     import shutil
     import subprocess
-    from nonopi import awsdisc
+    from gondopi import awsdisc
     if not shutil.which("saml2aws"):
         die("saml2aws not installed")
     s = _store()
@@ -45,8 +45,8 @@ def cmd_aws_refresh() -> None:
     env.update(SAML2AWS_PASSWORD=pw, PATH=bindir + os.pathsep + env.get("PATH", ""))
     sock = proto.CTL if os.path.exists(proto.CTL) else ""
     if sock:
-        env["PI_NONO_CTL"] = sock
-    r = subprocess.run(["saml2aws", "list-roles", "--skip-prompt"] + (["--prompter", "pinentry-nono-pi"] if sock else []),
+        env["PI_GONDO_CTL"] = sock
+    r = subprocess.run(["saml2aws", "list-roles", "--skip-prompt"] + (["--prompter", "pinentry-gondo-pi"] if sock else []),
                        env=env, capture_output=True, text=True)
     found = awsdisc.parse_list_roles(r.stdout + "\n" + r.stderr)
     if not found:

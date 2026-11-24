@@ -1,4 +1,4 @@
-"""Client side of the nono-pi broker (runs INSIDE the agent tier).
+"""Client side of the gondo-pi broker (runs INSIDE the agent tier).
 
 Holds no credentials. Talks to the supervisor over:
   - unix socket  $PI_BROKER           (nono mode)

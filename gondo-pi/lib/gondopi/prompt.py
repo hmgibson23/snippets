@@ -1,5 +1,5 @@
-"""Trusted prompts. In a nono-pi zellij session: queued in the nono-pi tab
-(answered there, no pop-ups). Elsewhere (nono-pi-key in a plain terminal):
+"""Trusted prompts. In a gondo-pi zellij session: queued in the gondo-pi tab
+(answered there, no pop-ups). Elsewhere (gondo-pi-key in a plain terminal):
 /dev/tty, else an OS dialog.
 
 Only the supervisor (trusted side) calls this. The agent cannot reach the
@@ -27,7 +27,7 @@ PROMPT_TIMEOUT = 300
 
 
 def _zellij_session() -> str | None:
-    return os.environ.get("NONO_PI_ZELLIJ_SESSION")
+    return os.environ.get("GONDO_PI_ZELLIJ_SESSION")
 
 
 def _osascript_choose(title: str, body: str, labels: list[str], default: str) -> str | None:
@@ -82,7 +82,7 @@ def _tty(spec: dict) -> dict | None:
     except OSError:
         return None
     with tty:
-        tty.write(f"\n🔒 nono-pi: {spec['title']}\n{spec.get('body', '')}\n")
+        tty.write(f"\n🔒 gondo-pi: {spec['title']}\n{spec.get('body', '')}\n")
         if spec["kind"] == "secret":
             import getpass
             try:
@@ -118,7 +118,7 @@ PANEL_GRACE = 20        # no zellij + no panel open: wait this long for one, the
 
 
 def _via_panel(spec: dict) -> tuple[bool, dict | None]:
-    """Every request waits in the panel (zellij tab, or `nono-pi panel` in any terminal);
+    """Every request waits in the panel (zellij tab, or `gondo-pi panel` in any terminal);
     no pop-ups while a panel is around. Returns (handled, answer); not handled =
     no panel showed up within PANEL_GRACE (caller falls back to a dialog)."""
     if QUEUE is None:
@@ -128,7 +128,7 @@ def _via_panel(spec: dict) -> tuple[bool, dict | None]:
         if ON_QUEUE:
             ON_QUEUE(QUEUE.count())
         if PANEL_ALIVE and not PANEL_ALIVE():
-            sys.stderr.write(f"\r\nnono-pi: waiting for you: {spec['title']}  (run `nono-pi panel` in another terminal)\r\n")
+            sys.stderr.write(f"\r\ngondo-pi: waiting for you: {spec['title']}  (run `gondo-pi panel` in another terminal)\r\n")
             t0 = time.time()
             while time.time() - t0 < PANEL_GRACE and not PANEL_ALIVE():
                 got, ans = QUEUE.wait(i, 0.5)
@@ -145,9 +145,9 @@ def _via_panel(spec: dict) -> tuple[bool, dict | None]:
 
 
 def ask(spec: dict) -> dict | None:
-    if os.environ.get("NONO_PI_PROMPT_AUTO"):        # tests: canned answers
+    if os.environ.get("GONDO_PI_PROMPT_AUTO"):        # tests: canned answers
         import json as _j
-        return _j.loads(os.environ["NONO_PI_PROMPT_AUTO"]).get(spec.get("id", spec["kind"]))
+        return _j.loads(os.environ["GONDO_PI_PROMPT_AUTO"]).get(spec.get("id", spec["kind"]))
     if QUEUE is not None:
         handled, ans = _via_panel(spec)   # several requests can wait in the panel at once
         if handled:
@@ -158,7 +158,7 @@ def ask(spec: dict) -> dict | None:
                 return _dialog(spec)
         return None
     with _lock:
-        # no supervisor queue (e.g. `nono-pi-key` in a plain terminal)
+        # no supervisor queue (e.g. `gondo-pi-key` in a plain terminal)
         if sys.stdin.isatty() or os.path.exists("/dev/tty"):
             r = _tty(spec)
             if r is not None or not _has_gui():

@@ -1,7 +1,7 @@
-"""Push nono-pi state into the zjstatus bar ({pipe_nonopi} slot) via `zellij pipe`.
+"""Push gondo-pi state into the zjstatus bar ({pipe_gondopi} slot) via `zellij pipe`.
 
 Runs on the trusted side (supervisor thread). Uses zjstatus's line protocol:
-    zjstatus::pipe::pipe_nonopi::<text with #[...] colours>
+    zjstatus::pipe::pipe_gondopi::<text with #[...] colours>
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def render(st: dict) -> str:
     pushes = sum(1 for g in st.get("grants", []) if g["key"].startswith("git-push:") and g["scope"] != "deny")
     extra = f" · ⇡{pushes}" if pushes else ""
     vm = " VM" if st.get("vm") else ""
-    return _seg(color, lock, f"nono-pi{vm} · {aws_txt}{extra}")
+    return _seg(color, lock, f"gondo-pi{vm} · {aws_txt}{extra}")
 
 
 class BarPusher:
@@ -50,7 +50,7 @@ class BarPusher:
         self.kick.set()
 
     def _send(self, text: str) -> None:
-        subprocess.run(["zellij", "-s", self.session, "pipe", f"zjstatus::pipe::pipe_nonopi::{text}"],
+        subprocess.run(["zellij", "-s", self.session, "pipe", f"zjstatus::pipe::pipe_gondopi::{text}"],
                        stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
 
     def run(self) -> None:
@@ -71,8 +71,8 @@ class BarPusher:
 
 
 def maybe_start(sup) -> BarPusher | None:
-    sess = os.environ.get("NONO_PI_ZELLIJ_SESSION")
-    if not sess or not os.environ.get("NONO_PI_ZJSTATUS"):
+    sess = os.environ.get("GONDO_PI_ZELLIJ_SESSION")
+    if not sess or not os.environ.get("GONDO_PI_ZJSTATUS"):
         return None
     b = BarPusher(sup, sess)
     b.start()

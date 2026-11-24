@@ -1,13 +1,13 @@
 """Secret storage (trusted side only).
 
-macOS: a dedicated keychain file `nono-pi.keychain-db`, driven through
+macOS: a dedicated keychain file `gondo-pi.keychain-db`, driven through
 Security.framework with user interaction disabled (no system dialogs: the
 `security` CLI on a locked custom keychain pops an un-typeable modal). The
-keychain auto-locks after the grant window and on sleep; nono-pi unlocks it
-with a password the user types into a nono-pi prompt.
+keychain auto-locks after the grant window and on sleep; gondo-pi unlocks it
+with a password the user types into a gondo-pi prompt.
 
-Linux: Secret Service via `secret-tool` (attribute service=nono-pi). Devbox
-fallback (no Secret Service) TBD; `NONO_PI_KEYSTORE=file` uses an in-memory
+Linux: Secret Service via `secret-tool` (attribute service=gondo-pi). Devbox
+fallback (no Secret Service) TBD; `GONDO_PI_KEYSTORE=file` uses an in-memory
 store for tests.
 """
 from __future__ import annotations
@@ -20,8 +20,10 @@ import subprocess
 
 from .paths import HOME, MAC
 
-SERVICE = b"nono-pi"
-KEYCHAIN = os.path.join(HOME, "Library", "Keychains", "nono-pi.keychain-db")
+SERVICE = b"gondo-pi"
+LEGACY_SERVICE = b"nono-pi"     # items written before the rename (read, then rewritten under SERVICE)
+KEYCHAIN = os.path.join(HOME, "Library", "Keychains", "gondo-pi.keychain-db")
+LEGACY_KEYCHAIN = os.path.join(HOME, "Library", "Keychains", "nono-pi.keychain-db")
 
 errSecItemNotFound = -25300
 errSecInteractionNotAllowed = -25308
@@ -85,10 +87,10 @@ class _Mac:
             self.S.SecKeychainLock(self._open())
 
     # --- items
-    def get(self, name: str) -> str | None:
+    def _get(self, svc: bytes, name: str) -> str | None:
         a = name.encode()
         n, d = ctypes.c_uint32(), ctypes.c_void_p()
-        rc = self.S.SecKeychainFindGenericPassword(self._open(), len(SERVICE), SERVICE, len(a), a,
+        rc = self.S.SecKeychainFindGenericPassword(self._open(), len(svc), svc, len(a), a,
                                                    ctypes.byref(n), ctypes.byref(d), None)
         if rc == 0:
             v = ctypes.string_at(d, n.value).decode()
@@ -98,10 +100,19 @@ class _Mac:
             raise Locked()
         return None
 
-    def _item(self, name: str):
+    def get(self, name: str) -> str | None:
+        v = self._get(SERVICE, name)
+        if v is None:
+            v = self._get(LEGACY_SERVICE, name)
+            if v is not None:            # migrate on first use after the rename
+                self.set(name, v)
+                self._rm(LEGACY_SERVICE, name)
+        return v
+
+    def _item(self, name: str, svc: bytes = SERVICE):
         a = name.encode()
         item = ctypes.c_void_p()
-        rc = self.S.SecKeychainFindGenericPassword(self._open(), len(SERVICE), SERVICE, len(a), a,
+        rc = self.S.SecKeychainFindGenericPassword(self._open(), len(svc), svc, len(a), a,
                                                    None, None, ctypes.byref(item))
         if rc in (errSecInteractionNotAllowed, errSecAuthFailed):
             raise Locked()
@@ -120,9 +131,14 @@ class _Mac:
         if rc != 0:
             raise OSError(f"keychain write {rc}")
 
-    def rm(self, name: str) -> bool:
-        item = self._item(name)
+    def _rm(self, svc: bytes, name: str) -> bool:
+        item = self._item(name, svc)
         return bool(item) and self.S.SecKeychainItemDelete(item) == 0
+
+    def rm(self, name: str) -> bool:
+        a = self._rm(SERVICE, name)
+        b = self._rm(LEGACY_SERVICE, name)
+        return a or b
 
     def names(self) -> list[str]:
         r = subprocess.run(["/usr/bin/security", "dump-keychain", self.path.decode()],
@@ -134,7 +150,7 @@ class _Mac:
                 acct = None
             elif line.startswith('"acct"<blob>='):
                 acct = line.split("=", 1)[1].strip('"')
-            elif line == '"svce"<blob>="nono-pi"' and acct:
+            elif line in ('"svce"<blob>="gondo-pi"', '"svce"<blob>="nono-pi"') and acct:
                 names.add(acct)
         return sorted(names)
 
@@ -158,26 +174,38 @@ class _SecretTool:
     def set_lock_after(self, secs: int) -> None:
         pass
 
-    def get(self, name):
-        r = subprocess.run(["secret-tool", "lookup", "service", "nono-pi", "account", name],
+    def _get(self, svc, name):
+        r = subprocess.run(["secret-tool", "lookup", "service", svc, "account", name],
                            capture_output=True, text=True)
         return r.stdout if r.returncode == 0 and r.stdout else None
 
+    def get(self, name):
+        v = self._get("gondo-pi", name)
+        if v is None:
+            v = self._get("nono-pi", name)          # written before the rename: migrate
+            if v is not None:
+                self.set(name, v)
+                subprocess.run(["secret-tool", "clear", "service", "nono-pi", "account", name], capture_output=True)
+        return v
+
     def set(self, name, value):
-        r = subprocess.run(["secret-tool", "store", f"--label=nono-pi {name}", "service", "nono-pi",
+        r = subprocess.run(["secret-tool", "store", f"--label=gondo-pi {name}", "service", "gondo-pi",
                             "account", name], input=value, capture_output=True, text=True)
         if r.returncode != 0:
             raise OSError(r.stderr.strip())
 
     def rm(self, name):
-        return subprocess.run(["secret-tool", "clear", "service", "nono-pi", "account", name],
-                              capture_output=True).returncode == 0
+        old = subprocess.run(["secret-tool", "clear", "service", "nono-pi", "account", name], capture_output=True)
+        return subprocess.run(["secret-tool", "clear", "service", "gondo-pi", "account", name],
+                              capture_output=True).returncode == 0 or old.returncode == 0
 
     def names(self):
-        r = subprocess.run(["secret-tool", "search", "--all", "service", "nono-pi"],
-                           capture_output=True, text=True)
-        return sorted({l.split("=", 1)[1].strip() for l in (r.stdout + r.stderr).splitlines()
-                       if l.strip().startswith("attribute.account = ")})
+        out = set()
+        for svc in ("gondo-pi", "nono-pi"):
+            r = subprocess.run(["secret-tool", "search", "--all", "service", svc], capture_output=True, text=True)
+            out |= {l.split("=", 1)[1].strip() for l in (r.stdout + r.stderr).splitlines()
+                    if l.strip().startswith("attribute.account = ")}
+        return sorted(out)
 
 
 class _Memory:
@@ -208,11 +236,14 @@ class _Memory:
 
 
 def open_store():
-    kind = os.environ.get("NONO_PI_KEYSTORE")
+    kind = os.environ.get("GONDO_PI_KEYSTORE")
     if kind == "memory":
         return _Memory()
     if MAC and kind != "secret-tool":
-        return _Mac(os.environ.get("NONO_PI_KEYCHAIN", KEYCHAIN))
+        path = os.environ.get("GONDO_PI_KEYCHAIN", KEYCHAIN)
+        if path == KEYCHAIN and not os.path.exists(KEYCHAIN) and os.path.exists(LEGACY_KEYCHAIN):
+            path = LEGACY_KEYCHAIN       # created before the rename; `gondo-pi setup` renames it
+        return _Mac(path)
     if shutil.which("secret-tool"):
         return _SecretTool()
     return _Memory()

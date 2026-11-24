@@ -1,4 +1,4 @@
-"""nono-pi shared paths and config (trusted side only)."""
+"""gondo-pi shared paths and config (trusted side only)."""
 from __future__ import annotations
 
 import json
@@ -10,16 +10,33 @@ HOME = os.path.expanduser("~")
 MAC = platform.system() == "Darwin"
 LINUX = platform.system() == "Linux"
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # ~/snippets/nono-pi
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))  # ~/snippets/gondo-pi
 BIN = os.path.join(ROOT, "bin")
-SANDBOX_BIN = os.path.join(ROOT, "sandbox-bin")   # the only nono-pi code visible inside the sandbox
+SANDBOX_BIN = os.path.join(ROOT, "sandbox-bin")   # the only gondo-pi code visible inside the sandbox
 PI_EXT = os.path.join(ROOT, "pi-extension")
 VM_DIR = os.path.join(ROOT, "vm")
 
-CONFIG_DIR = os.environ.get("NONO_PI_CONFIG") or os.path.join(
-    os.environ.get("XDG_CONFIG_HOME", os.path.join(HOME, ".config")), "nono-pi")
-# Not under XDG_STATE_HOME: nono keeps its own state there and refuses overlapping grants.
-STATE_DIR = os.environ.get("NONO_PI_STATE") or os.path.join(HOME, ".local", "state", "nono-pi")
+_CFG_BASE = os.environ.get("XDG_CONFIG_HOME", os.path.join(HOME, ".config"))
+_STATE_BASE = os.path.join(HOME, ".local", "state")
+
+
+def _migrate(base: str, old: str, new: str) -> None:
+    """One-time rename from nono-pi: move the directory, leave a symlink at the old path."""
+    o, n = os.path.join(base, old), os.path.join(base, new)
+    if os.path.isdir(o) and not os.path.islink(o) and not os.path.exists(n):
+        try:
+            os.rename(o, n)
+            os.symlink(new, o)
+        except OSError:
+            pass
+
+
+if not os.environ.get("GONDO_PI_CONFIG"):
+    _migrate(_CFG_BASE, "nono-pi", "gondo-pi")
+if not os.environ.get("GONDO_PI_STATE"):
+    _migrate(_STATE_BASE, "nono-pi", "gondo-pi")
+CONFIG_DIR = os.environ.get("GONDO_PI_CONFIG") or os.path.join(_CFG_BASE, "gondo-pi")
+STATE_DIR = os.environ.get("GONDO_PI_STATE") or os.path.join(_STATE_BASE, "gondo-pi")
 HOST_DIR = os.path.join(STATE_DIR, "host")          # never readable from the sandbox
 SANDBOX_DIR = os.path.join(STATE_DIR, "sandbox")    # read-only in the sandbox
 PROJECTS_DIR = os.path.join(STATE_DIR, "projects")  # per-project remembered choices + grants
@@ -53,7 +70,9 @@ DEFAULT_CONFIG: dict = {
             "opencode.ai", "*.opencode.ai", "generativelanguage.googleapis.com",
             "*.kiro.dev", "*.amazoncognito.com", "oidc.*.amazonaws.com",
             # pi itself (update check, package registry, docs)
-            "pi.dev", "*.pi.dev",
+            "pi.dev", "*.pi.dev", "models.dev",
+            # neovim plugin tooling (Mason registry, treesitter parsers come from github)
+            "api.mason-registry.dev",
         ],
         "ask": True,
     },
@@ -79,7 +98,7 @@ def _merge(base: dict, over: dict) -> dict:
     return out
 
 
-# list settings where the user's entries ADD to nono-pi's defaults (so a config that
+# list settings where the user's entries ADD to gondo-pi's defaults (so a config that
 # lists one extra host doesn't silently drop the whole default allowlist)
 _ADDITIVE = {("network", "allow")}
 

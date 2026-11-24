@@ -8,7 +8,7 @@
     "krunfwVersion": "v5.2.1"
   },
   "oci": {
-    "image": "localhost/nono-pi-arch:2",
+    "image": "localhost/gondo-pi-arch:2",
     "runtime": "podman",
     "pullPolicy": "never"
   },

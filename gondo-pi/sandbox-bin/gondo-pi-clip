@@ -1,0 +1,16 @@
+#!/bin/sh
+# gondo-pi clipboard (VM): copy stdin to your HOST clipboard via OSC 52 (your terminal + zellij
+# pass it on). Installed as pbcopy, wl-copy, xclip, xsel and clip in the VM.
+# Paste is not supported (terminals don't answer OSC 52 reads): pbpaste/wl-paste print nothing.
+case "$(basename "$0")" in
+  pbpaste|wl-paste) exit 0 ;;
+esac
+# xclip -o / xsel -o = paste: nothing to give
+for a in "$@"; do case "$a" in -o|--output|-out) exit 0 ;; esac; done
+data=$(base64 | tr -d '\n')
+# OSC 52 to the controlling terminal (not stdout: may be a pipe)
+if { : > /dev/tty; } 2>/dev/null; then
+  printf '\033]52;c;%s\a' "$data" > /dev/tty
+else
+  printf '\033]52;c;%s\a' "$data" >&2      # no controlling tty (e.g. run by pi's bash tool)
+fi

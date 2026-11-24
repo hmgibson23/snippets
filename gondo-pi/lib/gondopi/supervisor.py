@@ -1,4 +1,4 @@
-"""nono-pi supervisor: the trusted side of a session.
+"""gondo-pi supervisor: the trusted side of a session.
 
 Owns grants, prompts, audit, the keystore, a private ssh-agent, and the
 brokers. Started by the launcher before the agent tier; lives as long as the
@@ -59,6 +59,8 @@ class Supervisor:
         self.agent_loaded_until = 0.0
         self.pending_restart: dict | None = None
         self.vmhost = None            # VM mode: the session's VmHost (proxy + vmd)
+        self.wsguard = None           # .git/config, hooks, .envrc ... (host-exec files in the project)
+        self.forwarded: dict[int, int] = {}   # guest port -> host port (127.0.0.1)
         self.vm_apply_lock = threading.Lock()
         self.vm_token = secrets.token_hex(24)
         self.picked_aws: list[str] = []
@@ -68,11 +70,11 @@ class Supervisor:
         self.denied_until = 0.0
         self.pending = pending.Pending()
         self.bar = None
-        self.panel_seen = 0.0          # last time a `nono-pi panel` polled (no-zellij mode)
-        # requests always queue for the panel (zellij tab, or `nono-pi panel` in any terminal);
+        self.panel_seen = 0.0          # last time a `gondo-pi panel` polled (no-zellij mode)
+        # requests always queue for the panel (zellij tab, or `gondo-pi panel` in any terminal);
         # without zellij and no panel open, they fall back to a desktop dialog (prompt.py)
         prompt.QUEUE = self.pending
-        prompt.PANEL_ALIVE = lambda: bool(os.environ.get("NONO_PI_ZELLIJ_SESSION")) or time.time() - self.panel_seen < 5
+        prompt.PANEL_ALIVE = lambda: bool(os.environ.get("GONDO_PI_ZELLIJ_SESSION")) or time.time() - self.panel_seen < 5
 
     # ------------------------------------------------------------ helpers
     def who(self) -> str:
@@ -123,7 +125,7 @@ class Supervisor:
             if self.store.is_unlocked():
                 return True
             for attempt in range(3):
-                pw = prompt.secret("unlock nono-pi keychain",
+                pw = prompt.secret("unlock gondo-pi keychain",
                                    f"{self.who()}: {why}\nUnlocks for {fmt_left(self.cfg['keychain']['lock_after'])}."
                                    + ("\n\nWrong password, try again." if attempt else ""), pid="unlock")
                 if pw is None:
@@ -156,7 +158,7 @@ class Supervisor:
             return v
         v = prompt.secret(f"secret needed: {name}",
                           f"{self.who()} called {host}, which needs '{name}'.\n"
-                          f"Stored in the nono-pi keychain; the agent never sees it.", pid="secret")
+                          f"Stored in the gondo-pi keychain; the agent never sees it.", pid="secret")
         if v:
             self.ks_set(name, v)
             self.audit.log("secret-stored", name=name, host=host)
@@ -284,7 +286,7 @@ class Supervisor:
             ok = self.decide("aws-use", account, f"to switch AWS to {account}",
                              f"role {acct['role_arn']}\nevery plain `aws` in the VM will use it", always_ok=False)
             if not ok:
-                return {"ok": False, "error": "denied in the nono-pi panel"}
+                return {"ok": False, "error": "denied in the gondo-pi panel"}
         if account not in self.picked_aws:
             self.picked_aws.append(account)
         c = self.aws_creds(account)
@@ -312,9 +314,9 @@ class Supervisor:
                            AWS_CONFIG_FILE=os.path.join(d, "cfg"),
                            # Okta 6-digit code -> our pinentry -> trusted prompt
                            PATH=BIN + os.pathsep + env.get("PATH", ""),
-                           PI_NONO_CTL=proto.CTL)
+                           PI_GONDO_CTL=proto.CTL)
                 args = ["saml2aws", "login", "--skip-prompt", "--force", "--quiet", "--credential-process",
-                        "--prompter", "pinentry-nono-pi",
+                        "--prompter", "pinentry-gondo-pi",
                         "--idp-account", acct.get("idp_account", "default"), "--profile", account,
                         "--role", acct["role_arn"], "--session-duration", str(acct.get("session_duration", 3600))]
                 r = subprocess.run(args, env=env, capture_output=True, text=True, stdin=subprocess.DEVNULL,
@@ -400,22 +402,22 @@ class Supervisor:
         try:
             argv = shlex.split(command)
         except ValueError:
-            return False, "nono-pi: unparseable remote command"
+            return False, "gondo-pi: unparseable remote command"
         if len(argv) != 2 or argv[0] not in GIT_OPS:
-            return False, f"nono-pi: only git fetch/push over ssh is brokered (got {argv[:1]})"
+            return False, f"gondo-pi: only git fetch/push over ssh is brokered (got {argv[:1]})"
         op, repo = GIT_OPS[argv[0]], argv[1].strip("/").removesuffix(".git")
         host = _host_of(dest)
         if not re.fullmatch(r"[A-Za-z0-9._~/-]+", repo) or ".." in repo:
-            return False, "nono-pi: refusing odd repo path"
+            return False, "gondo-pi: refusing odd repo path"
         res = f"{host}/{repo}"
         if op == "fetch":
             if not self.cfg["grants"].get("fetch_auto", True) and not self.decide(
                     "git-fetch", res, f"to fetch {res}", f"git-upload-pack on {host}"):
-                return False, "nono-pi: fetch denied"
+                return False, "gondo-pi: fetch denied"
         else:
             if not self.decide("git-push", res, f"to PUSH to {res}",
                                f"git-receive-pack {repo} on {host}:{port}", always_ok=False):
-                return False, f"nono-pi: push to {res} denied"
+                return False, f"gondo-pi: push to {res} denied"
         self.audit.log("git", op=op, repo=res)
         return True, ""
 
@@ -425,14 +427,14 @@ class Supervisor:
         repo = repo.strip("/").removesuffix(".git")
         if repo:
             if not re.fullmatch(r"[A-Za-z0-9._-]+/[A-Za-z0-9._-]+", repo):
-                return False, "nono-pi: odd repo name"
+                return False, "gondo-pi: odd repo name"
             res = f"{host}/{repo}"
             ok = self.decide("git-push", res, f"to PUSH to {res} (via the GitHub API)", what[:200], always_ok=False)
         else:
             ok = self.decide("gh-write", host, "a GitHub API write without a repo name", what[:200],
                              always_ok=False, window_ok=False)
         self.audit.log("gh-api-write", repo=repo or "?", what=what[:120], ok=ok)
-        return ok, ("" if ok else "nono-pi: denied in the panel")
+        return ok, ("" if ok else "gondo-pi: denied in the panel")
 
     def check_interactive(self, dest: str, argv: list[str]) -> bool:
         return self.decide("ssh", _host_of(dest), f"an ssh session to {dest}",
@@ -448,9 +450,9 @@ class Supervisor:
     # ------------------------------------------------------------ signing broker
     def sign(self, payload: bytes, pubkey: str) -> tuple[bool, str]:
         if not re.match(rb"^(tree [0-9a-f]{40,64}\n|object [0-9a-f]{40,64}\n)", payload):
-            return False, "nono-pi: only git commit/tag objects are signed"
+            return False, "gondo-pi: only git commit/tag objects are signed"
         if not self.ensure_key("sign git commit"):
-            return False, "nono-pi: ssh key unavailable"
+            return False, "gondo-pi: ssh key unavailable"
         with tempfile.TemporaryDirectory(dir=HOST_DIR) as d:
             msg, pub = os.path.join(d, "m"), os.path.join(d, "k.pub")
             with open(msg, "wb") as f:
@@ -459,7 +461,7 @@ class Supervisor:
             r = subprocess.run(["ssh-keygen", "-Y", "sign", "-n", "git", "-f", pub, "-U", msg],
                                env=self._agent_env(), capture_output=True, text=True)
             if r.returncode != 0:
-                return False, "nono-pi: signing failed: " + r.stderr.strip()[:200]
+                return False, "gondo-pi: signing failed: " + r.stderr.strip()[:200]
             sig = open(msg + ".sig").read()
         m = re.search(rb"\ncommitter [^\n]*", payload)
         self.signed += 1
@@ -480,6 +482,116 @@ class Supervisor:
         if not self.cfg["network"].get("ask", True):
             return False
         return self.decide("net", host, f"network access to {host}", "host is not on the allowlist")
+
+    # ------------------------------------------------------------ ports (VM -> host 127.0.0.1)
+    def ports(self, max_age: float = 2.0) -> dict:
+        from .vm import vmd_call
+        c = getattr(self, "_ports_cache", None)
+        if c and time.time() - c[0] < max_age:
+            return c[1]
+        try:
+            r = vmd_call({"op": "ports"}, timeout=5)
+        except OSError as e:
+            r = {"ok": False, "error": str(e)}
+        self._ports_cache = (time.time(), r)
+        return r
+
+    def forward(self, port: int, via: str, host_port: int | None = None) -> dict:
+        """Expose a VM port on the host's 127.0.0.1 (never other interfaces). From the VM it
+        asks in the panel (once per port per window); from the panel it's your own action."""
+        from .vm import vmd_call
+        if not (1024 <= int(port) <= 65535):
+            return {"ok": False, "error": "ports 1024-65535 only"}
+        if via == "vm" and not self.decide("port", str(port), f"to open VM port {port} on this machine (127.0.0.1 only)",
+                                           "e.g. a dev server, for your browser", always_ok=True):
+            return {"ok": False, "error": "denied in the panel"}
+        try:
+            r = vmd_call({"op": "forward", "port": int(port), **({"hostPort": int(host_port)} if host_port else {})})
+        except OSError as e:
+            return {"ok": False, "error": str(e)}
+        self._ports_cache = None
+        if r.get("ok"):
+            self.audit.log("port-forward", guest=port, host=r.get("host"), via=via)
+            self.forwarded[int(port)] = r["host"]
+            if self.bar:
+                self.bar.push_now()
+        return r
+
+    def unforward(self, port: int) -> dict:
+        from .vm import vmd_call
+        try:
+            r = vmd_call({"op": "unforward", "port": int(port)})
+        except OSError as e:
+            return {"ok": False, "error": str(e)}
+        self.forwarded.pop(int(port), None)
+        self._ports_cache = None
+        self.audit.log("port-unforward", guest=port)
+        return r
+
+    def open_url(self, url: str) -> dict:
+        """A URL from the VM, opened in your browser on the host after you OK it in the panel
+        (per host, 4h). OAuth logins that redirect to http://localhost:PORT get PORT forwarded."""
+        from urllib.parse import parse_qs, urlparse
+        u = urlparse(url)
+        if u.scheme not in ("http", "https") or not u.hostname or len(url) > 8000:
+            return {"ok": False, "error": "only http(s) URLs"}
+        host = u.hostname.lower()
+        if host in ("localhost", "127.0.0.1") and u.port and int(u.port) not in self.forwarded:
+            fw = self.forward(int(u.port), via="vm")          # a local dev server in the VM
+            if not fw.get("ok"):
+                return fw
+            url = url.replace(f":{u.port}", f":{fw['host']}", 1)
+        elif not self.decide("open-url", host, f"to open {host} in your browser", url[:300], always_ok=True):
+            return {"ok": False, "error": "denied in the panel"}
+        # OAuth: a redirect back to localhost in the VM needs that port on the host too
+        q = parse_qs(u.query)
+        for ru in q.get("redirect_uri", []) + q.get("redirect_url", []):
+            r = urlparse(ru)
+            if r.hostname in ("localhost", "127.0.0.1") and r.port and int(r.port) not in self.forwarded:
+                self.forward(int(r.port), via="host", host_port=int(r.port))
+        opener = ["open", url] if MAC else ["xdg-open", url]
+        try:
+            subprocess.Popen(opener, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                             start_new_session=True)
+        except OSError as e:
+            return {"ok": False, "error": str(e)}
+        self.audit.log("open-url", host=host)
+        return {"ok": True}
+
+    def sync_pi_auth(self, text: str) -> dict:
+        """auth.json from pi in the VM -> the host's ~/.pi/agent/auth.json. pi refreshes OAuth
+        tokens and stores new logins there. Validated + merged per provider (the newer `expires`
+        wins; API-key entries only when you log in to something new), never wholesale."""
+        try:
+            guest = json.loads(text)
+        except ValueError:
+            return {"ok": False, "error": "not JSON"}
+        if not isinstance(guest, dict) or len(text) > 1_000_000:
+            return {"ok": False, "error": "bad shape"}
+        path = os.path.join(HOME, ".pi", "agent", "auth.json")
+        try:
+            host = json.load(open(path))
+        except (OSError, ValueError):
+            host = {}
+        changed = []
+        for prov, entry in guest.items():
+            if not isinstance(entry, dict) or not re.fullmatch(r"[A-Za-z0-9._-]{1,64}", str(prov)):
+                continue
+            if not all(isinstance(v, (str, int, float, bool, list)) or v is None for v in entry.values()):
+                continue
+            cur = host.get(prov)
+            if cur == entry:
+                continue
+            if cur is None or (isinstance(entry.get("expires"), (int, float)) and
+                               entry.get("expires", 0) > (cur.get("expires") or 0)):
+                host[prov] = entry
+                changed.append(prov)
+        if changed:
+            tmp = path + ".gondo-pi.tmp"
+            write_private(tmp, json.dumps(host, indent=2))
+            os.replace(tmp, path)
+            self.audit.log("pi-auth-sync", providers=",".join(changed))
+        return {"ok": True, "changed": changed}
 
     def route_secret(self, name: str, host: str) -> str | None:
         """vmd asks for the real value behind a route placeholder (never sent to the guest)."""
@@ -534,7 +646,7 @@ class Supervisor:
     def request_access(self, req: dict) -> dict:
         path = os.path.realpath(os.path.expanduser(req.get("path", "")))
         mode = "write" if req.get("write") else "read"
-        if not path.startswith(HOME) or any(s in path for s in ("/.ssh", "/.aws", "/.config/nono-pi",
+        if not path.startswith(HOME) or any(s in path for s in ("/.ssh", "/.aws", "/.config/gondo-pi",
                                                                    "/Library/Keychains", "/.gnupg")):
             return {"ok": False, "error": "path not allowed"}
         choice = prompt.choose(f"{self.who()} requests {mode} access", path +
@@ -549,7 +661,7 @@ class Supervisor:
         from .paths import save_config
         save_config(cfg)
         # a new directory needs a new VM mount: the VM restarts (shells reopen fresh,
-        # pi resumes) once pi is idle - `pi` in the VM calls `nono-pi apply` - or after 20s
+        # pi resumes) once pi is idle - `pi` in the VM calls `gondo-pi apply` - or after 20s
         self.pending_restart = {"why": f"{mode} {path}"}
         self._vm_apply_soon()
         return {"ok": True, "restart": True}
@@ -570,7 +682,7 @@ class Supervisor:
 
     def _vm_apply_soon(self) -> None:
         # pi exits 75 and calls vm-apply when its turn ends; if pi isn't the one that
-        # asked (e.g. you ran `nono-pi request-secret` in a shell), apply after a grace period
+        # asked (e.g. you ran `gondo-pi request-secret` in a shell), apply after a grace period
         if self.vmhost:
             def later():
                 time.sleep(20)
@@ -582,7 +694,7 @@ class Supervisor:
 
     # ------------------------------------------------------------ panel
     def zellij(self, args: list[str]) -> None:
-        sess = os.environ.get("NONO_PI_ZELLIJ_SESSION")
+        sess = os.environ.get("GONDO_PI_ZELLIJ_SESSION")
         if sess:
             subprocess.run(["zellij", "-s", sess, *args], capture_output=True)
 
@@ -623,6 +735,8 @@ class Supervisor:
     def panel_state(self) -> dict:
         st = self.status()
         st["pending"] = self.pending.list()
+        st["workspace"] = list(self.wsguard.events) if self.wsguard else []
+        st["ports"] = self.ports() if self.vmhost else {"ok": False}
         st["allow"] = sorted(load_config()["network"].get("allow", []))
         prod = set(self.cfg["aws"].get("prod_accounts", []))
         aws = []
@@ -652,8 +766,9 @@ class Supervisor:
     # ------------------------------------------------------------ status
     def status(self) -> dict:
         return {"ok": True, "project": self.label, "vm": self.vm, "pid": os.getpid(),
-                "zellij_session": os.environ.get("NONO_PI_ZELLIJ_SESSION", ""),
+                "zellij_session": os.environ.get("GONDO_PI_ZELLIJ_SESSION", ""),
                 "aws_picked": self.picked_aws, "aws_current": self.aws_current,
+                "forwards": {str(k): v for k, v in self.forwarded.items()},
                 "aws_accounts": sorted(self.cfg["aws"].get("accounts", {})),
                 "grants": self.grants.active(), "signed": self.signed,
                 "keychain_unlocked": self.store.exists() and self.store.is_unlocked(),
@@ -681,6 +796,14 @@ class Supervisor:
             self.servers.append(srv)
             threading.Thread(target=srv.serve_forever, daemon=True).start()
         threading.Thread(target=self._reaper, daemon=True).start()
+        sess = os.environ.get("GONDO_PI_ZELLIJ_SESSION", "")
+        if sess or self.vm:
+            from .notify import Notifier
+            Notifier(self, sess).start()
+        if self.vm and os.path.isdir(self.cwd):
+            from .wsguard import WorkspaceGuard
+            self.wsguard = WorkspaceGuard(self.cwd, self.audit, notify=lambda e: self.bar and self.bar.push_now())
+            self.wsguard.start()
         from . import zjbar
         self.bar = zjbar.maybe_start(self)
         if self.bar:
@@ -694,6 +817,12 @@ class Supervisor:
                 self.audit.log("ssh-key-expired")
 
     def shutdown(self) -> None:
+        if self.wsguard:
+            try:
+                self.wsguard.check()       # last pass: catch anything written just before exit
+            except Exception:
+                pass
+            self.wsguard.stop()
         for s in self.servers:
             s.shutdown()
         if self.agent_pid:
@@ -735,7 +864,7 @@ class _Base(socketserver.StreamRequestHandler):
 
 
 class CtlHandler(_Base):
-    """Host-side only (vmd, panel, nono-pi-key, pinentry)."""
+    """Host-side only (vmd, panel, gondo-pi-key, pinentry)."""
 
     def handle(self):
         try:
@@ -743,7 +872,7 @@ class CtlHandler(_Base):
         except Exception as e:
             self.sup.audit.log("ctl-error", err=f"{type(e).__name__}: {e}"[:200])
             try:
-                self.reply({"ok": False, "error": f"nono-pi supervisor error: {type(e).__name__}"})
+                self.reply({"ok": False, "error": f"gondo-pi supervisor error: {type(e).__name__}"})
             except OSError:
                 pass
 
@@ -774,7 +903,7 @@ class CtlHandler(_Base):
             self.reply({"ok": True, "applied": s.vm_apply()})
         elif op == "shutdown-orphan":
             # only honoured when our zellij session really is gone (the launcher checked; re-check here)
-            sess = os.environ.get("NONO_PI_ZELLIJ_SESSION", "")
+            sess = os.environ.get("GONDO_PI_ZELLIJ_SESSION", "")
             alive = True
             if sess:
                 try:
@@ -791,7 +920,7 @@ class CtlHandler(_Base):
             host, port, cmd = req.get("host", ""), str(req.get("port", 22)), req.get("command", "")
             ok, msg = s.check_git(f"{req.get('user') or 'git'}@{host}", port, cmd)
             if ok and not s.ensure_key(f"git over ssh to {host}"):
-                ok, msg = False, "nono-pi: ssh key unavailable"
+                ok, msg = False, "gondo-pi: ssh key unavailable"
             self.reply({"ok": ok, "error": msg})
         elif op == "revoke":
             self.reply({"ok": s.grants.revoke(req["key"])})
@@ -825,10 +954,28 @@ class CtlHandler(_Base):
         elif op == "aws-logout":
             s.aws_logout(req.get("account") or "")
             self.reply({"ok": True})
-        elif op == "aws-use":                # panel / nono-pi-key: your own action
+        elif op == "aws-use":                # panel / gondo-pi-key: your own action
             self.reply(s.aws_use(str(req.get("account", "")), via="host"))
         elif op == "aws-accounts":
             self.reply({"ok": True, "accounts": s.aws_accounts(), "current": s.aws_current})
+        elif op == "forwarded":              # vmd: an auto-forward (project settings) happened
+            s.forwarded[int(req.get("port", 0))] = int(req.get("host", 0))
+            s._ports_cache = None
+            s.audit.log("port-forward", guest=req.get("port"), host=req.get("host"), via="project")
+            self.reply({"ok": True})
+        elif op == "forward":                # panel / gondo-pi-key: your own action
+            self.reply(s.forward(int(req.get("port", 0)), via="host", host_port=req.get("hostPort")))
+        elif op == "unforward":
+            self.reply(s.unforward(int(req.get("port", 0))))
+        elif op == "ports":
+            self.reply(s.ports())
+        elif op == "net-ask":                # vmd: a policy question for you (gists, foreign creds)
+            kind = re.sub(r"[^a-z-]", "", str(req.get("kind", "net-ask")))[:32] or "net-ask"
+            ok = s.decide(kind, str(req.get("resource", ""))[:200], str(req.get("title", "a network action"))[:200],
+                          str(req.get("body", ""))[:400], always_ok=False)
+            self.reply({"ok": ok})
+        elif op == "pi-auth-sync":           # vmd: pi's auth.json from the VM (refreshed OAuth tokens)
+            self.reply(s.sync_pi_auth(str(req.get("auth", ""))))
         elif op == "gh-push-check":          # vmd: a GitHub API content write needs a push grant
             ok, msg = s.gh_push_check(str(req.get("host", "github.com")), str(req.get("repo", "")), str(req.get("what", "")))
             self.reply({"ok": ok, "error": msg})
@@ -873,7 +1020,7 @@ class BrokerHandler(_Base):
         except Exception as e:  # never crash the server thread; tell the client
             self.sup.audit.log("broker-error", err=f"{type(e).__name__}: {e}"[:200])
             try:
-                self.reply({"ok": False, "error": f"nono-pi supervisor error: {type(e).__name__}"})
+                self.reply({"ok": False, "error": f"gondo-pi supervisor error: {type(e).__name__}"})
             except OSError:
                 pass
 
@@ -895,6 +1042,12 @@ class BrokerHandler(_Base):
             return self.reply(s.request_secret(req))
         if op == "request-access":
             return self.reply(s.request_access(req))
+        if op == "open-url":                 # from the VM (xdg-open, $BROWSER): asks in the panel
+            return self.reply(s.open_url(str(req.get("url", ""))))
+        if op == "forward":                  # from the VM (`gondo-pi forward 3000`): asks in the panel
+            return self.reply(s.forward(int(req.get("port", 0) or 0), via="vm"))
+        if op == "ports":
+            return self.reply(s.ports())
         if op == "aws-use":                  # from the VM: asks you in the panel (once per window)
             r = s.aws_use(str(req.get("account", "")), via="vm")
             return self.reply({k: v for k, v in r.items() if k in ("ok", "error", "account", "arn", "account_id", "expires", "verified")})
@@ -924,12 +1077,12 @@ class BrokerHandler(_Base):
             ok, msg = s.check_git(dest, port, " ".join(rest))
             tty = False
         else:
-            ok, msg = s.check_interactive(dest, rest), "nono-pi: ssh denied"
+            ok, msg = s.check_interactive(dest, rest), "gondo-pi: ssh denied"
             tty = bool(req.get("tty"))
         if not ok:
             return self.reply({"ok": False, "error": msg})
         if not s.ensure_key(f"ssh to {dest}"):
-            return self.reply({"ok": False, "error": "nono-pi: ssh key unavailable"})
+            return self.reply({"ok": False, "error": "gondo-pi: ssh key unavailable"})
         self.reply({"ok": True, "stream": True})
         cmd = s.ssh_cmd(dest, port, rest, tty)
         sock = self.request

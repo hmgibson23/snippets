@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """pinentry-compatible prompter for saml2aws (trusted side).
 
-saml2aws --prompter pinentry-nono-pi runs us with `--ttyname /dev/tty` and
+saml2aws --prompter pinentry-gondo-pi runs us with `--ttyname /dev/tty` and
 speaks a subset of the Assuan protocol on stdin/stdout:
   SETPROMPT <text>\nGETPIN\n   ->  D <pin>\nOK\n
-We forward the prompt to the nono-pi supervisor (ctl.sock), which shows it
+We forward the prompt to the gondo-pi supervisor (ctl.sock), which shows it
 in a trusted prompt (zellij floating pane / dialog).
 """
 import json
@@ -14,7 +14,7 @@ import sys
 
 
 def ask(prompt: str) -> str | None:
-    path = os.environ.get("PI_NONO_CTL")
+    path = os.environ.get("PI_GONDO_CTL")
     if not path:
         return None
     s = socket.socket(socket.AF_UNIX)

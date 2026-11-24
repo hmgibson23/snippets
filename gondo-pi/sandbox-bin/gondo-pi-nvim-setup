@@ -1,0 +1,31 @@
+#!/bin/sh
+# gondo-pi (VM, run by vmd at boot): set up neovim.
+#   - your config: a writable copy of the host's (read-only mount)
+#   - plugins/Mason/parsers: from the host tarball (built for Linux in an earlier session), or on
+#     the first run seeded from your host's plugin checkouts (same git trees on every OS) with
+#     host-native binaries dropped so they get rebuilt for Linux
+set -e
+H="$1"
+mkdir -p "$H/.config" "$H/.local/share/nvim"
+rm -rf "$H/.config/nvim"
+cp -R /gondo-pi-host/nvim-config "$H/.config/nvim"
+chmod -R u+w "$H/.config/nvim"
+if [ -f /gondo-pi-host/nvim-data/nvim-data.tar ]; then
+  tar -xf /gondo-pi-host/nvim-data/nvim-data.tar -C "$H/.local/share/nvim"
+elif [ -d /gondo-pi-host/nvim-lazy ]; then
+  cp -a /gondo-pi-host/nvim-lazy "$H/.local/share/nvim/lazy"
+  find "$H/.local/share/nvim/lazy" -type f \( -name '*.so' -o -name '*.dylib' \) ! -path '*/tests/*' 2>/dev/null |
+    while read -r f; do
+      magic=$(head -c4 "$f" | od -An -tx1 | tr -d ' \n')
+      case "$magic" in cffaedfe|cefaedfe|cafebabe) rm -f "$f" ;; esac
+    done
+  touch /run/gondo-pi-nvim.seeded
+fi
+# VM-only additions (clipboard over OSC 52): a plugin dir loaded after your config
+if [ -d /gondo-pi/nvim-site ]; then
+  mkdir -p "$H/.local/share/nvim/site"
+  cp -R /gondo-pi/nvim-site/. "$H/.local/share/nvim/site/"
+fi
+# fingerprint: save back at exit only when plugins / Mason / parsers changed
+(cd "$H/.local/share/nvim" && find lazy mason site -maxdepth 2 2>/dev/null | sort | md5sum | cut -c1-32) > /run/gondo-pi-nvim.fp || true
+touch /run/gondo-pi-nvim.ready

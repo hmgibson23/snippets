@@ -1,12 +1,12 @@
-"""nono-pi launcher (trusted side).
+"""gondo-pi launcher (trusted side).
 
 Flow:
   pis                   outer: pick access (remembered per project), then start/attach
-                        zellij session `pi-<project>`: tab "shell" runs `nono-pi --inner`
-                        (supervisor + VM, then your fish shell in it), tab "nono-pi" the
+                        zellij session `pi-<project>`: tab "shell" runs `gondo-pi --inner`
+                        (supervisor + VM, then your fish shell in it), tab "gondo-pi" the
                         panel. Type `pi` in any VM shell.
   pis --no-zellij       the same in this terminal: your fish shell in the VM, requests
-                        answered in `nono-pi panel` in another terminal (or a dialog).
+                        answered in `gondo-pi panel` in another terminal (or a dialog).
   pis -- <pi args>      no zellij, run pi directly in the VM (scripts: -p, --mode ...).
 """
 from __future__ import annotations
@@ -27,7 +27,7 @@ RESTART_EXIT = 75   # pi-extension: exit with this to restart pi with new access
 
 
 def die(msg: str):
-    sys.exit(f"nono-pi: {msg}")
+    sys.exit(f"gondo-pi: {msg}")
 
 
 # ------------------------------------------------------------------ choices
@@ -54,11 +54,11 @@ def pick_accounts(cfg: dict, preset: list[str] | None) -> list[str]:
     ordered = first + [a for a in accounts if a not in first]
     if shutil.which("fzf"):
         r = subprocess.run(["fzf", "--multi", "--height=~50%", "--reverse", "--prompt=AWS> ",
-                            "--header=nono-pi: AWS account(s) to pre-approve (TAB = several, Enter = top, ESC = none).\n"
+                            "--header=gondo-pi: AWS account(s) to pre-approve (TAB = several, Enter = top, ESC = none).\n"
                                       "Others still work: they ask on first use."],
                            input="\n".join(label(a) for a in ordered), stdout=subprocess.PIPE, text=True)
         return [l.split()[0] for l in r.stdout.splitlines() if l.strip()]
-    print("nono-pi: AWS account(s) to pre-approve (others ask on first use):", file=sys.stderr)
+    print("gondo-pi: AWS account(s) to pre-approve (others ask on first use):", file=sys.stderr)
     for i, a in enumerate(ordered, 1):
         print(f"  {i}) {label(a)}", file=sys.stderr)
     print("  0) none", file=sys.stderr)
@@ -85,7 +85,7 @@ def resolve_choices(cfg: dict, pid: str, argv: list[str]) -> tuple[dict, list[st
             configure = True
         elif a in ("--vm", "--no-vm", "--nono"):
             if a != "--vm":
-                die("the nono sandbox is gone: nono-pi always runs in the microVM now")
+                die("the nono sandbox is gone: gondo-pi always runs in the microVM now")
         else:
             rest.append(a)
     saved = load_choices(pid) or {}
@@ -109,8 +109,8 @@ def resolve_choices(cfg: dict, pid: str, argv: list[str]) -> tuple[dict, list[st
 
 # ------------------------------------------------------------------ outer
 def outer(argv: list[str]) -> None:
-    if os.environ.get("PI_SANDBOX") == "nono-pi":
-        die("already inside a nono-pi sandbox")
+    if os.environ.get("PI_SANDBOX") == "gondo-pi":
+        die("already inside a gondo-pi sandbox")
     from .vm import kvm_ok
     ok, why = kvm_ok()
     if not ok:
@@ -131,25 +131,25 @@ def outer(argv: list[str]) -> None:
     ch, rest = resolve_choices(cfg, pid, argv)
     # `pis -- <pi args>`: pi itself in the VM, in this terminal (scripts, -p, --mode json ...)
     run_pi = "--" in argv
-    inner_cmd = [sys.executable, os.path.join(BIN, "nono-pi"), "--inner", "--project", pid,
+    inner_cmd = [sys.executable, os.path.join(BIN, "gondo-pi"), "--inner", "--project", pid,
                  "--aws", ",".join(ch["aws"]) or "none"] + (["--pi"] if run_pi else []) + ["--"] + rest
     if run_pi or no_zellij or not shutil.which("zellij") or not sys.stdout.isatty():
         os.execv(sys.executable, inner_cmd)
     sess = "pi-" + pid
     if os.environ.get("ZELLIJ"):
         # already in a zellij session: run inner here; requests show in this session's panel
-        os.environ["NONO_PI_ZELLIJ_SESSION"] = os.environ.get("ZELLIJ_SESSION_NAME", "")
-        os.environ["NONO_PI_IN_USER_ZELLIJ"] = "1"
+        os.environ["GONDO_PI_ZELLIJ_SESSION"] = os.environ.get("ZELLIJ_SESSION_NAME", "")
+        os.environ["GONDO_PI_IN_USER_ZELLIJ"] = "1"
         os.execv(sys.executable, inner_cmd)
     if _zellij_alive(sess):
         os.execvp("zellij", ["zellij", "attach", sess])
     layout = os.path.join(RUN_DIR, f"layout-{pid}.kdl")
     os.makedirs(RUN_DIR, mode=0o700, exist_ok=True)
     q = lambda xs: " ".join(json.dumps(a) for a in xs)
-    me = [sys.executable, os.path.join(BIN, "nono-pi")]
+    me = [sys.executable, os.path.join(BIN, "gondo-pi")]
     # Same look as your normal zellij: the shared zjstatus bar (if you have it)
-    # with nono-pi's state in its {pipe_nonopi} slot; otherwise stock bars plus a
-    # 1-line nono-pi status pane.
+    # with gondo-pi's state in its {pipe_gondopi} slot; otherwise stock bars plus a
+    # 1-line gondo-pi status pane.
     bar = _zjstatus_bar()
     if bar:
         template = bar + "\n        children"
@@ -161,10 +161,11 @@ def outer(argv: list[str]) -> None:
         pane size=2 borderless=true {
             plugin location="zellij:status-bar"
         }"""
-    env_args = f'"NONO_PI_ZELLIJ_SESSION={sess}" "NONO_PI_HOLD_ON_ERROR=1" "NONO_PI_ZJSTATUS={'1' if bar else ''}"'
+    zjflag = "1" if bar else ""
+    env_args = f'"GONDO_PI_ZELLIJ_SESSION={sess}" "GONDO_PI_HOLD_ON_ERROR=1" "GONDO_PI_ZJSTATUS={zjflag}"'
     # every new pane / tab in this session = another fish shell in the same VM
     vm_shell = os.path.join(RUN_DIR, "vm-shell")
-    write_private(vm_shell, f"#!/bin/sh\nexec {json.dumps(sys.executable)} {json.dumps(os.path.join(BIN, 'nono-pi'))} --vm-shell\n")
+    write_private(vm_shell, f"#!/bin/sh\nexec {json.dumps(sys.executable)} {json.dumps(os.path.join(BIN, 'gondo-pi'))} --vm-shell\n")
     os.chmod(vm_shell, 0o700)
     write_private(layout, f"""layout {{
     default_tab_template {{
@@ -176,8 +177,8 @@ def outer(argv: list[str]) -> None:
         close_on_exit true
     }}
     }}
-    tab name="nono-pi" {{
-    pane name="🔒 nono-pi control" command={json.dumps(me[0])} {{
+    tab name="gondo-pi" {{
+    pane name="🔒 gondo-pi control" command={json.dumps(me[0])} {{
         args {q(me[1:] + ["--panel"])}
     }}
     }}
@@ -197,20 +198,20 @@ ZJSTATUS_PART = os.path.join(HOME, ".config", "zellij", "parts", "zjstatus-bar.k
 ZJSTATUS_WASM = os.path.join(HOME, ".config", "zellij", "plugins", "zjstatus.wasm")
 
 
-# Alt-a in a nono-pi session: the AWS account picker (fzf) in a floating pane, in the VM.
+# Alt-a in a gondo-pi session: the AWS account picker (fzf) in a floating pane, in the VM.
 _AWS_BIND = ('        bind "Alt a" {{ Run {cmd} {{ floating true; close_on_exit true; name "AWS account"; '
              'width "80%"; height "50%"; x "10%"; y "15%"; }}; }}')
 
 
 def _session_zellij_config(pid: str, vm_shell: str) -> str | None:
-    """Your zellij config + nono-pi's session keys (Alt-a = aws-use), for this session only.
+    """Your zellij config + gondo-pi's session keys (Alt-a = aws-use), for this session only.
     Your own config file is never changed. Returns None if there is nothing to extend."""
     src = os.environ.get("ZELLIJ_CONFIG_FILE") or os.path.join(HOME, ".config", "zellij", "config.kdl")
     try:
         text = open(src).read()
     except OSError:
         text = ""
-    cmd = " ".join(json.dumps(a) for a in [sys.executable, os.path.join(BIN, "nono-pi"), "--vm-run", "aws-use"])
+    cmd = " ".join(json.dumps(a) for a in [sys.executable, os.path.join(BIN, "gondo-pi"), "--vm-run", "aws-use"])
     bind = _AWS_BIND.format(cmd=cmd)
     if 'bind "Alt a"' in text:
         return None                    # you bound Alt-a yourself: leave it alone
@@ -220,7 +221,7 @@ def _session_zellij_config(pid: str, vm_shell: str) -> str | None:
     if m:
         text = text[:m.end()] + "\n" + block + text[m.end():]
     else:
-        text += "\n// nono-pi session keys\nkeybinds {\n" + block + "\n}\n"
+        text += "\n// gondo-pi session keys\nkeybinds {\n" + block + "\n}\n"
     out = os.path.join(RUN_DIR, f"zellij-{pid}.kdl")
     write_private(out, text)
     return out
@@ -270,14 +271,37 @@ def inner(argv: list[str]) -> None:
         where = other.get("project", "?")
         zs = other.get("zellij_session") or ""
         hint = f"`pis` in that project, or `zellij attach {zs}`" if zs else "`pis` in that project"
-        print(f"nono-pi: another nono-pi session is running for project '{where}' (pid {other.get('pid', '?')}); "
+        print(f"gondo-pi: another gondo-pi session is running for project '{where}' (pid {other.get('pid', '?')}); "
               f"one at a time for now. Reattach with {hint}, or quit it there.", file=sys.stderr)
         _hold_if_error(1)
         sys.exit(1)
     sup = Supervisor(pid, cwd, os.path.basename(cwd), vm=True)
     sup.picked_aws = aws
     sup.aws_current = aws[0] if aws else None       # pis --aws a,b: a is current from the start
+    from . import projcfg
+    proj, note = projcfg.load(pid, cwd, ask=None)     # an unapproved repo file is asked about below
+    sup.project_settings = proj
+    if proj.get("aws") and not sup.aws_current and proj["aws"] in cfg["aws"].get("accounts", {}):
+        sup.aws_current = proj["aws"]
+        if proj["aws"] not in sup.picked_aws:
+            sup.picked_aws.append(proj["aws"])
+    if note and sys.stderr.isatty():
+        sys.stderr.write(f"\033[38;2;238;212;159mgondo-pi: {note}\033[0m\n")
     sup.serve()
+    if note and "approve" in note:
+        # the repo's .gondo-pi.json changed: ask in the panel, then apply it to the running VM
+        def _approve():
+            ok_proj, _ = projcfg.load(pid, cwd, ask=lambda t, b: sup.decide(
+                "project-settings", pid, t, b, always_ok=False, window_ok=False))
+            if ok_proj != sup.project_settings:
+                sup.project_settings = ok_proj
+                if sup.vmhost:
+                    try:
+                        sup.vmhost.reload()
+                    except OSError:
+                        pass
+        import threading
+        threading.Thread(target=_approve, daemon=True).start()
     return _inner_vm(sup, cfg, aws, rest, run_pi)
 
 
@@ -295,10 +319,15 @@ def _inner_vm(sup, cfg: dict, aws: list[str], rest: list[str], run_pi: bool = Fa
     signal.signal(signal.SIGHUP, _bye)
     host = VmHost(sup, cfg, {"aws": aws})
     sup.vmhost = host
+    from .vm import image_drift
+    drift = image_drift()
+    if drift and sys.stderr.isatty():
+        sys.stderr.write(f"\033[38;2;238;212;159mgondo-pi: the VM image is out of date ({drift}): "
+                         f"run `gondo-pi image rebuild` (on the host) when convenient\033[0m\n")
     rc = 0
     try:
         if sys.stderr.isatty():
-            sys.stderr.write("\033[38;2;110;115;141m⬡ starting the nono-pi VM…\033[0m")
+            sys.stderr.write("\033[38;2;110;115;141m⬡ starting the gondo-pi VM…\033[0m")
             sys.stderr.flush()
         host.start()
         if sys.stderr.isatty():
@@ -306,14 +335,14 @@ def _inner_vm(sup, cfg: dict, aws: list[str], rest: list[str], run_pi: bool = Fa
         if run_pi:
             rc, _ = attach.run("pi", rest)
         else:
-            if not os.environ.get("NONO_PI_ZELLIJ_SESSION") and sys.stderr.isatty():
-                sys.stderr.write("\033[38;2;110;115;141mnono-pi: requests (push, new host, AWS login, secrets) wait for "
-                                 "`nono-pi panel` in another terminal (or a dialog if you have a desktop)\033[0m\n")
+            if not os.environ.get("GONDO_PI_ZELLIJ_SESSION") and sys.stderr.isatty():
+                sys.stderr.write("\033[38;2;110;115;141mgondo-pi: requests (push, new host, AWS login, secrets) wait for "
+                                 "`gondo-pi panel` in another terminal (or a dialog if you have a desktop)\033[0m\n")
             rc = attach.shell_loop(main=True)
     except SystemExit as e:
         rc = e.code if isinstance(e.code, int) else 0
     except BaseException as e:
-        print(f"\nnono-pi: {type(e).__name__}: {e}", file=sys.stderr)
+        print(f"\ngondo-pi: {type(e).__name__}: {e}", file=sys.stderr)
         _hold_if_error(1)
         rc = 1
     finally:
@@ -331,10 +360,10 @@ _PI_VALUE_OPTS = {"--provider", "--model", "--api-key", "--system-prompt", "--ap
 
 
 def _end_zellij_session() -> None:
-    """The main VM shell exited: close the whole nono-pi zellij session (and the VM).
+    """The main VM shell exited: close the whole gondo-pi zellij session (and the VM).
     Detaching (zellij session mode `d`) keeps everything running instead."""
-    sess = os.environ.get("NONO_PI_ZELLIJ_SESSION", "")
-    if sess.startswith("pi-") and not os.environ.get("NONO_PI_IN_USER_ZELLIJ"):
+    sess = os.environ.get("GONDO_PI_ZELLIJ_SESSION", "")
+    if sess.startswith("pi-") and not os.environ.get("GONDO_PI_IN_USER_ZELLIJ"):
         # detached + delayed: killing the session kills this pane (and us) mid-cleanup otherwise
         subprocess.Popen(["/bin/sh", "-c", 'sleep 0.3; zellij kill-session "$1"; zellij delete-session "$1"', "sh", sess],
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -343,8 +372,8 @@ def _end_zellij_session() -> None:
 
 def _hold_if_error(rc: int) -> None:
     """Inside zellij the pane would just vanish; keep the error on screen."""
-    if rc not in (0, None) and os.environ.get("NONO_PI_HOLD_ON_ERROR") and sys.stdin.isatty():
-        print(f"\nnono-pi: pi exited with status {rc}. Press Enter to close this session.", file=sys.stderr)
+    if rc not in (0, None) and os.environ.get("GONDO_PI_HOLD_ON_ERROR") and sys.stdin.isatty():
+        print(f"\ngondo-pi: pi exited with status {rc}. Press Enter to close this session.", file=sys.stderr)
         try:
             input()
         except (EOFError, KeyboardInterrupt):
@@ -386,7 +415,7 @@ def _supervisor_running() -> dict | None:
         return None
     zs = st.get("zellij_session") or ""
     if zs.startswith("pi-") and not _zellij_alive(zs):
-        print(f"nono-pi: cleaning up an orphaned session for '{st.get('project')}' "
+        print(f"gondo-pi: cleaning up an orphaned session for '{st.get('project')}' "
               f"(its zellij session {zs} is gone)…", file=sys.stderr)
         try:
             proto.call(proto.CTL, {"op": "shutdown-orphan"}, timeout=5)
@@ -422,12 +451,22 @@ def main(argv: list[str]) -> None:
         # one command in the session's VM, e.g. `aws-use` from Alt-a (fish -lc: your env + PATH)
         from . import attach
         if not attach.wait_for_vm(30):
-            sys.exit("nono-pi: the VM is not running")
+            sys.exit("gondo-pi: the VM is not running")
         rc, _ = attach.run("cmd", ["fish", "-lc", " ".join(argv[1:])])
         sys.exit(rc)
     if argv[:1] in (["--panel"], ["panel"]):
         from . import panel
         return panel.main()
+    if argv[:1] == ["doctor"]:
+        from . import doctor
+        sys.exit(doctor.doctor())
+    if argv[:1] == ["gc"]:
+        from . import doctor
+        sys.exit(doctor.gc(argv[1:]))
+    if argv[:2] == ["image", "rebuild"]:
+        from . import vm
+        vm.ensure_image(rebuild=True)
+        return print("gondo-pi: image rebuilt; new sessions use it")
     if argv[:1] in (["setup"], ["--setup"]):
         from . import setup
         return setup.main(argv[1:])

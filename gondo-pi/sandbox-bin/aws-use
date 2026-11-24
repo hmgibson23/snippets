@@ -6,8 +6,8 @@
   aws-use --list          names (for completion), current marked with *
   aws-use --current       print the current account
 
-Switching logs in if needed (Okta password / 6-digit code in the nono-pi tab, Alt-2).
-A switch started here needs one Enter in the nono-pi tab per 4h window: the VM can't
+Switching logs in if needed (Okta password / 6-digit code in the gondo-pi tab, Alt-2).
+A switch started here needs one Enter in the gondo-pi tab per 4h window: the VM can't
 prove it was you and not pi. Credentials never enter the VM; this only changes which
 account the host signs `[default]` requests for. `--profile X` keeps targeting X.
 """
@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import nonopi_client  # noqa: E402
+import gondopi_client  # noqa: E402
 
 DIM, GREEN, RED, YEL, BOLD, RST = "\033[38;2;110;115;141m", "\033[38;2;166;218;149m", "\033[38;2;237;135;150m", "\033[38;2;238;212;159m", "\033[1m", "\033[0m"
 
@@ -30,9 +30,9 @@ def left(s):
 
 
 def accounts():
-    r = nonopi_client.call({"op": "aws-accounts"})
+    r = gondopi_client.call({"op": "aws-accounts"})
     if not r.get("ok"):
-        sys.exit(f"aws-use: {r.get('error', 'nono-pi supervisor unreachable')}")
+        sys.exit(f"aws-use: {r.get('error', 'gondo-pi supervisor unreachable')}")
     return r["accounts"], r.get("current")
 
 
@@ -80,14 +80,14 @@ def preview(name):
     live = a.get("session_left")
     print(f"{BOLD}{a['name']}{RST}  {a['role']} @ {a['account_id']}  region {a['region']}"
           + (f"  {RED}PROD{RST}" if a.get("prod") else ""))
-    print(f"{GREEN}session ✓ {left(live)} left{RST}" if live else f"{YEL}no session: switching logs in (Okta in the nono-pi tab){RST}")
+    print(f"{GREEN}session ✓ {left(live)} left{RST}" if live else f"{YEL}no session: switching logs in (Okta in the gondo-pi tab){RST}")
     if a.get("current"):
         print(f"{GREEN}● current: plain `aws` uses this account{RST}")
 
 
 def use(name):
-    print(f"{DIM}aws-use: switching to {name}… (if asked: Alt-2 → nono-pi tab){RST}", file=sys.stderr)
-    r = nonopi_client.call({"op": "aws-use", "account": name})
+    print(f"{DIM}aws-use: switching to {name}… (if asked: Alt-2 → gondo-pi tab){RST}", file=sys.stderr)
+    r = gondopi_client.call({"op": "aws-use", "account": name})
     if not r.get("ok"):
         sys.exit(f"{RED}aws-use: {r.get('error', 'failed')}{RST}")
     who = (r.get("arn") or "").split(":assumed-role/")[-1]

@@ -1,7 +1,7 @@
 """Pending-request queue for the zellij control panel.
 
 In a zellij session, a prompt becomes a pending item: the bar shows
-"⚠ N waiting · Alt-2" and the nono-pi tab lists it; you answer there. Nothing
+"⚠ N waiting · Alt-2" and the gondo-pi tab lists it; you answer there. Nothing
 pops up. Outside zellij, prompts go to the terminal / dialog path in prompt.py.
 
 Identical requests (same kind/title/body, e.g. retries of one AWS login) share

@@ -1,0 +1,13 @@
+#!/bin/sh
+# gondo-pi (VM): open a URL in your browser ON THE HOST (asks in the panel).
+# Installed as xdg-open, open, sensible-browser, www-browser, and used as $BROWSER.
+# Files/dirs (not URLs) can't be opened on the host: they live in the VM.
+for a in "$@"; do
+  case "$a" in
+    -*) continue ;;
+    http://*|https://*) exec python3 "$(dirname "$(readlink -f "$0")")/gondo-pi" open "$a" ;;
+    *) echo "gondo-pi: only http(s) URLs can be opened on the host (got: $a)" >&2; exit 1 ;;
+  esac
+done
+echo "usage: $(basename "$0") URL" >&2
+exit 2

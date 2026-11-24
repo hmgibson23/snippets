@@ -34,17 +34,26 @@ const PUSH_REST = [
 ];
 
 const DENY_GQL = /\b(addSshKey|addGpgKey|createSshSigningKey|deleteSshKey|deleteGpgKey|addDeployKey|deleteDeployKey|createRepositoryRuleset|updateRepositoryRuleset|deleteRepositoryRuleset|createBranchProtectionRule|updateBranchProtectionRule|deleteBranchProtectionRule|updateRepository|deleteRepository|transferRepository|archiveRepository|unarchiveRepository|updateTeamsRepository|inviteEnterpriseAdmin|updateEnterprise\w*|updateOrganization\w*|removeOutsideCollaborator|updateIpAllowList\w*|createIpAllowListEntry|createEnvironment|deleteEnvironment|addEnterpriseSupportEntitlement|createSponsorship\w*|createApp\w*|regenerate\w*)\s*\(/;
+const ASK_GQL = /\b(createGist|updateGist|createRepository|cloneTemplateRepository)\s*\(/;
 const PUSH_GQL = /\b(createCommitOnBranch|createRef|updateRef|updateRefs|deleteRef|mergeBranch|mergePullRequest|enablePullRequestAutoMerge|updatePullRequestBranch|createRelease|updateRelease|deleteRelease)\s*\(/;
 
 function methodMatches(spec, method) {
 	return spec === "*" || spec.split("|").includes(method);
 }
 
-/** -> {action: "allow"} | {action: "deny", why} | {action: "push", repo} ; repo = "owner/name" */
+// data leaving through your account where anyone can read it: ask each time
+const ASK_REST = [
+	[/^\/gists(\/[^/]+)?$/, "POST|PATCH"],
+	[/^\/user\/repos$/, "POST"],            // new repos (public by default for some tools)
+	[/^\/orgs\/[^/]+\/repos$/, "POST"],
+];
+
+/** -> {action: "allow"} | {action: "deny", why} | {action: "push", repo} | {action: "ask", why}; repo = "owner/name" */
 export function classifyRest(method, path) {
 	method = method.toUpperCase();
 	if (method === "GET" || method === "HEAD" || method === "OPTIONS") return { action: "allow" };
 	const p = decodeURIComponent(path).replace(/\/+$/, "") || "/";
+	for (const [re, spec] of ASK_REST) if (re.test(p) && methodMatches(spec, method)) return { action: "ask", why: `${method} ${p}` };
 	for (const [re, spec] of DENY_REST) if (re.test(p) && methodMatches(spec, method)) return { action: "deny", why: `${method} ${p}` };
 	for (const [re, spec] of PUSH_REST) {
 		const m = re.exec(p);
@@ -65,6 +74,8 @@ export function classifyGraphql(bodyText) {
 	if (!/^\s*(#[^\n]*\n\s*)*mutation\b/m.test(q) && !/\bmutation\b/.test(q)) return { action: "allow" };
 	const d = DENY_GQL.exec(q);
 	if (d) return { action: "deny", why: `GraphQL ${d[1]}` };
+	const a = ASK_GQL.exec(q);
+	if (a) return { action: "ask", why: `GraphQL ${a[1]}` };
 	const pmatch = PUSH_GQL.exec(q);
 	if (pmatch) return { action: "push", repo: null, what: pmatch[1] };
 	return { action: "allow" };

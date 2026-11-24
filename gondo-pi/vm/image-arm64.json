@@ -43,7 +43,6 @@
       "rust",
       "cargo",
       "fish",
-      "neovim",
       "vim",
       "tmux",
       "htop",
@@ -60,7 +59,10 @@
       "shadow",
       "tzdata",
       "git-lfs",
-      "delta"
+      "delta",
+      "tree-sitter-cli",
+      "luarocks5.1",
+      "lua5.1"
     ],
     "initramfsPackages": [],
     "krunfwVersion": "v5.2.1"
@@ -71,6 +73,7 @@
   },
   "postBuild": {
     "commands": [
+      "set -e; apk add --no-cache -X https://dl-cdn.alpinelinux.org/alpine/edge/community -X https://dl-cdn.alpinelinux.org/alpine/edge/main \"neovim>=0.12\" && nvim --version | head -1",
       "set -e; cd /tmp && curl -fsSLo tf.zip https://releases.hashicorp.com/terraform/1.17.2/terraform_1.17.2_linux_arm64.zip && echo '858e08c181a76b6b223e8c767a8e983922eebe2d062db949a2de66ce040c368c  tf.zip' | sha256sum -c - && unzip -o tf.zip terraform -d /usr/local/bin && rm tf.zip",
       "set -e; npm install -g --no-audit --no-fund @earendil-works/pi-coding-agent@1.6.0",
       "set -e; adduser -D -u 501 -s /usr/bin/fish pi || true; sed -i 's#^root:x:0:0:root:/root:.*#root:x:0:0:root:/home/pi:/usr/bin/fish#' /etc/passwd"

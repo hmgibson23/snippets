@@ -1,0 +1,10 @@
+#!/bin/sh
+# gondo-pi (VM): your neovim. On boot, the config copy + plugin data are set up in the background;
+# wait for that (first run of a new image only takes long), then run the real nvim.
+if [ ! -f /run/gondo-pi-nvim.ready ] && [ -d /gondo-pi-host/nvim-config ]; then
+  printf 'gondo-pi: setting up neovim…' >&2
+  i=0; while [ ! -f /run/gondo-pi-nvim.ready ] && [ $i -lt 300 ]; do sleep 1; i=$((i+1)); printf '.' >&2; done; echo >&2
+fi
+real=$(PATH=$(printf '%s' "$PATH" | sed 's#/gondo-pi/bin:##g') command -v nvim)
+[ -n "$real" ] || { echo "gondo-pi: nvim is not installed in this VM image" >&2; exit 127; }
+exec "$real" "$@"

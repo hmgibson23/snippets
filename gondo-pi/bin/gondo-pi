@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""nono-pi: an isolated microVM devbox per project; pi runs in it and never holds a credential.
+"""gondo-pi: an isolated microVM devbox per project; pi runs in it and never holds a credential.
 
-  pis / nono-pi [pi args]      start or reattach this project's session: zellij
-                               `pi-<project>` with tabs shell (fish in the VM) / pi / nono-pi
-  nono-pi --aws a,b | none     pre-approve AWS accounts (others ask on first use)
-  nono-pi --configure          re-pick the remembered choices for this project
-  nono-pi --print-policy       show the generated network/credential policy
-  nono-pi setup                one-time: nono-pi keychain, ssh key passphrase, migration
-  nono-pi-key ls|set|rm|status|grants|revoke|aws-refresh
+  pis / gondo-pi [pi args]      start or reattach this project's session: zellij
+                               `pi-<project>` with tabs shell (fish in the VM) / pi / gondo-pi
+  gondo-pi --aws a,b | none     pre-approve AWS accounts (others ask on first use)
+  gondo-pi --configure          re-pick the remembered choices for this project
+  gondo-pi --print-policy       show the generated network/credential policy
+  gondo-pi setup                one-time: gondo-pi keychain, ssh key passphrase, migration
+  gondo-pi-key ls|set|rm|status|grants|revoke|aws-refresh
 
 See DESIGN.md: the trusted side (this machine) holds every credential; the VM
 gets only placeholders and brokers that ask you once per scoped time window.
@@ -17,10 +17,10 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "lib"))
 
-from nonopi.launcher import main  # noqa: E402
+from gondopi.launcher import main  # noqa: E402
 
 if __name__ == "__main__":
-    if sys.argv[1:2] == ["--help-nono-pi"]:
+    if sys.argv[1:2] == ["--help-gondo-pi"]:
         print(__doc__)
         sys.exit(0)
     main(sys.argv[1:])

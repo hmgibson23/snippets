@@ -18,7 +18,7 @@ GITHUB_EXCLUDE = ["/copilot_internal"]
 
 
 def placeholder_key(i: int) -> str:
-    return f"NONOPI{i:014d}"
+    return f"GONDOP{i:014d}"
 
 
 # The guest's [default] profile: "whatever account is current" (`aws-use` / the panel switch
@@ -31,7 +31,7 @@ _SESSION_PLACEHOLDERS: dict[str, str] = {}   # stable for the life of the proces
 
 def placeholder(name: str) -> str:
     if name not in _SESSION_PLACEHOLDERS:
-        _SESSION_PLACEHOLDERS[name] = f"nonopi_{name}_{secrets.token_hex(12)}"
+        _SESSION_PLACEHOLDERS[name] = f"gondopi_{name}_{secrets.token_hex(12)}"
     return _SESSION_PLACEHOLDERS[name]
 
 
@@ -65,13 +65,13 @@ def aws(cfg: dict, session: dict) -> tuple[dict, dict, str | None]:
         key = placeholder_key(i)
         profiles[key] = name
         lines += [f"[profile {name}]", f"region = {acct.get('region', 'eu-west-2')}",
-                  f"aws_access_key_id = {key}", "aws_secret_access_key = nono-pi-placeholder-not-a-secret", ""]
+                  f"aws_access_key_id = {key}", "aws_secret_access_key = gondo-pi-placeholder-not-a-secret", ""]
     # region of [default] is only a starting point: the re-signer uses the request's real region
     region = accounts.get(a.get("default_account", ""), {}).get("region", "eu-west-2")
     lines = ["[default]", f"region = {region}", f"aws_access_key_id = {CURRENT_KEY}",
-             "aws_secret_access_key = nono-pi-placeholder-not-a-secret", ""] + lines
+             "aws_secret_access_key = gondo-pi-placeholder-not-a-secret", ""] + lines
     env = {"AWS_SHARED_CREDENTIALS_FILE": "/dev/null", "AWS_EC2_METADATA_DISABLED": "true",
-           "AWS_SDK_UA_APP_ID": "nono-pi",
+           "AWS_SDK_UA_APP_ID": "gondo-pi",
            # SDKs default to chunked-signed uploads; vmd re-signs whole bodies, so ask for that
            "AWS_REQUEST_CHECKSUM_CALCULATION": "when_required",
            "AWS_RESPONSE_CHECKSUM_VALIDATION": "when_required"}
@@ -89,7 +89,8 @@ def build(cfg: dict, session: dict) -> tuple[dict, dict]:
     elif os.path.exists(path):
         os.unlink(path)
     net = cfg["network"]
-    spec = {"net": {"allow": sorted(set(net.get("allow", []) + session.get("allow_hosts", []))),
+    spec = {"net": {"allow": sorted(set(net.get("allow", []) + session.get("allow_hosts", []) +
+                                        (session.get("project") or {}).get("allow", []))),
                     "ask": bool(net.get("ask", True))},
             "routes": r, "aws": aspec}
     return spec, env

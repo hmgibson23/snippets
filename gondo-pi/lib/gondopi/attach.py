@@ -44,7 +44,7 @@ def wait_for_vm(timeout: float = 180) -> bool:
                 pass
         if sys.stderr.isatty() and time.time() - t0 > 0.3:
             shown = True
-            sys.stderr.write(f"\r{DIM}{spin[int(time.time() * 10) % 10]} starting the nono-pi VM…{RST}")
+            sys.stderr.write(f"\r{DIM}{spin[int(time.time() * 10) % 10]} starting the gondo-pi VM…{RST}")
             sys.stderr.flush()
         time.sleep(0.1)
     return False
@@ -69,7 +69,7 @@ def run(kind: str, args: list[str] | None = None) -> tuple[int, str]:
     line, buf = buf.split(b"\n", 1)
     hello = json.loads(line)
     if not hello.get("ok"):
-        sys.stderr.write(f"nono-pi: {hello.get('error', 'VM refused the session')}\n")
+        sys.stderr.write(f"gondo-pi: {hello.get('error', 'VM refused the session')}\n")
         return 1, "exit"
 
     def on_winch(*_):
@@ -125,7 +125,7 @@ def run(kind: str, args: list[str] | None = None) -> tuple[int, str]:
 def shell_loop(main: bool = False) -> int:
     """A fish shell in the VM; reconnects (fresh shell) when the VM is recreated."""
     if not wait_for_vm():
-        sys.stderr.write("nono-pi: the VM is not running (quit and rerun `pis`)\n")
+        sys.stderr.write("gondo-pi: the VM is not running (quit and rerun `pis`)\n")
         return 1
     while True:
         code, reason = run("shell")

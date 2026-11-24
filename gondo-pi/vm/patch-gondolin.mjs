@@ -1,17 +1,34 @@
 #!/usr/bin/env node
-// Workaround for gondolin 0.14.0 image builds on Linux (seen on CachyOS / node 26):
-// fs.cpSync of the kernel-modules tree fails with EACCES in the build work dir,
-// although every directory is ours and writable. A plain recursive copy works.
-// Idempotent; run by install.sh after `npm ci`.
+// Workarounds for gondolin 0.14.0. Idempotent; run by install.sh after `npm ci`.
+//  1. image builds on Linux: fs.cpSync of the kernel-modules tree fails with EACCES in the
+//     build work dir, although every directory is ours and writable. A plain copy works.
+//  2. TLS interception: a client's 2nd connection to a host resumes the TLS 1.3 session and
+//     gondolin's MITM server failed it with "decrypt error" (every `git clone https://...`,
+//     node keep-alive / fetch, curl with several URLs). Fixed by selecting the host
+//     certificate before the handshake (gondolin's own SNI pre-parse, normally Bun-only).
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const file = path.join(here, "node_modules/@earendil-works/gondolin/dist/src/alpine/kernel-modules.js");
-const MARK = "// nono-pi: plain recursive copy";
-const OLD = "    fs.cpSync(srcDir, dstDir, { recursive: true, dereference: false });";
-const NEW = `    ${MARK} (fs.cpSync hits EACCES here on some Linux hosts)
+const dist = path.join(here, "node_modules/@earendil-works/gondolin/dist/src");
+
+function patch(file, mark, old, neu, label) {
+	if (!fs.existsSync(file)) return;
+	const src = fs.readFileSync(file, "utf8");
+	if (src.includes(mark)) return;
+	if (!src.includes(old)) {
+		console.error(`gondo-pi: gondolin ${label} changed upstream; patch not applied`);
+		return;
+	}
+	fs.writeFileSync(file, src.replace(old, neu));
+	console.log(`gondo-pi: patched gondolin ${label}`);
+}
+
+// 1 ------------------------------------------------------------------------------------
+patch(path.join(dist, "alpine/kernel-modules.js"), "// gondo-pi: plain recursive copy",
+	"    fs.cpSync(srcDir, dstDir, { recursive: true, dereference: false });",
+	`    // gondo-pi: plain recursive copy (fs.cpSync hits EACCES here on some Linux hosts)
     const walk = (s, d) => {
         const st = fs.lstatSync(s);
         if (st.isDirectory()) {
@@ -23,14 +40,16 @@ const NEW = `    ${MARK} (fs.cpSync hits EACCES here on some Linux hosts)
             fs.copyFileSync(s, d);
         }
     };
-    walk(srcDir, dstDir);`;
+    walk(srcDir, dstDir);`,
+	"kernel-modules copy");
 
-if (!fs.existsSync(file)) process.exit(0);
-const src = fs.readFileSync(file, "utf8");
-if (src.includes(MARK)) process.exit(0);
-if (!src.includes(OLD)) {
-	console.error("nono-pi: gondolin kernel-modules.js changed upstream; patch not applied");
-	process.exit(0);
-}
-fs.writeFileSync(file, src.replace(OLD, NEW));
-console.log("nono-pi: patched gondolin kernel-modules copy");
+// 2 ------------------------------------------------------------------------------------
+// Root cause (reproduced with plain node:tls): with SNICallback switching to a per-host
+// context that is NOT the server's default secureContext, TLS 1.3 resumption fails with
+// "decrypt error". gondolin already pre-parses the ClientHello SNI as an option (used on
+// Bun); turning that on means every MITM socket gets its host context as THE secureContext.
+const net = path.join(dist, "qemu/net.js");
+patch(net, "// gondo-pi: sni preparse",
+	"        this.tlsSniPreparse = options.tlsSniPreparse ?? isBunRuntime();",
+	"        this.tlsSniPreparse = options.tlsSniPreparse ?? true; // gondo-pi: sni preparse (TLS resumption fix)",
+	"TLS SNI pre-parse (session resumption)");

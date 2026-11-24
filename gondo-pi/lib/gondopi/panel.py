@@ -1,4 +1,4 @@
-"""nono-pi control panel: a trusted TUI in the zellij tab "nono-pi".
+"""gondo-pi control panel: a trusted TUI in the zellij tab "gondo-pi".
 
 Catppuccin-macchiato curses UI, styled like the zjstatus bar. Tabs:
   1 Overview  keychain / ssh key / AWS / pending / recent activity at a glance
@@ -9,7 +9,7 @@ Catppuccin-macchiato curses UI, styled like the zjstatus bar. Tabs:
   5 AWS       accounts with login state; Enter logs in and shows progress
   6 Secrets   stored secret names (never values); add / replace / delete
   7 Log       audit trail
-Global: Alt-1 / Alt-2 (zellij) switch shell <-> nono-pi; here: ←/→ or 1-7 tabs, ↑/↓ or j/k,
+Global: Alt-1 / Alt-2 (zellij) switch shell <-> gondo-pi; here: ←/→ or 1-7 tabs, ↑/↓ or j/k,
 u unlock, L lock now, P deny-all-new 10 min, q back to pi.
 
 Trusted side only: talks to the supervisor over ctl.sock; the agent can reach
@@ -25,9 +25,9 @@ import time
 from . import proto
 from .grants import fmt_left
 
-TABS = ["Overview", "Requests", "Grants", "Network", "AWS", "Secrets", "Log"]
+TABS = ["Overview", "Requests", "Grants", "Network", "Ports", "AWS", "Secrets", "Log"]
 ICON = {"Overview": "\uf015", "Requests": "\uf0f3", "Grants": "\uf084", "Network": "\uf0ac",
-        "AWS": "\uf0c2", "Secrets": "\uf023", "Log": "\uf03a"}
+        "Ports": "\uf1e6", "AWS": "\uf0c2", "Secrets": "\uf023", "Log": "\uf03a"}
 
 # catppuccin macchiato (hex -> nearest xterm-256 when the terminal can't redefine colours)
 PALETTE = {
@@ -117,6 +117,14 @@ class Panel:
             return st.get("grants", [])
         if t == "Network":
             return [{"host": h} for h in st.get("allow", [])]
+        if t == "Ports":
+            ps = st.get("ports") or {}
+            fw = {f["guest"]: f for f in ps.get("forwards", [])}
+            rows = [{"guest": p, "host": fw.get(p, {}).get("host"), "conns": fw.get(p, {}).get("conns", 0), "live": True}
+                    for p in ps.get("listening", [])]
+            rows += [{"guest": g, "host": f["host"], "conns": f["conns"], "live": False}
+                     for g, f in fw.items() if g not in ps.get("listening", [])]
+            return sorted(rows, key=lambda r: r["guest"])
         if t == "AWS":
             return st.get("aws", [])
         if t == "Secrets":
@@ -254,6 +262,19 @@ class Panel:
                     r = call({"op": "net-allow", "host": h.strip()})
             elif key in ("x", "\x7f") and cur:
                 r = call({"op": "net-remove", "host": cur["host"]})
+        elif t == "Ports":
+            if key in ("\n", "\r") and cur and not cur["host"]:
+                r = call({"op": "forward", "port": cur["guest"]})
+                if r.get("ok"):
+                    self.flash(f"VM :{cur['guest']} → http://127.0.0.1:{r['host']}", "ok")
+            elif key in ("x", "\x7f") and cur and cur["host"]:
+                r = call({"op": "unforward", "port": cur["guest"]})
+            elif key == "a":
+                n = self.ask("forward a VM port", "port number in the VM, e.g. 5173")
+                if n and n.strip().isdigit():
+                    r = call({"op": "forward", "port": int(n.strip())})
+                    if r.get("ok"):
+                        self.flash(f"VM :{n.strip()} → http://127.0.0.1:{r['host']}", "ok")
         elif t == "AWS" and cur:
             if key in ("\n", "\r"):
                 def done_use(r, name=cur["name"]):
@@ -277,13 +298,13 @@ class Panel:
             if key in ("s", "a"):
                 n = self.ask("secret name", "letters, digits, _ . : -")
                 if n:
-                    v = self.ask(f"value for {n}", "stored in the nono-pi keychain; never shown to the agent", hidden=True)
+                    v = self.ask(f"value for {n}", "stored in the gondo-pi keychain; never shown to the agent", hidden=True)
                     if v:
                         r = call({"op": "secret-set", "name": n, "value": v})
             elif key in ("x", "\x7f") and cur:
                 r = call({"op": "secret-rm", "name": cur["name"]})
         if key == "u":
-            pw = self.ask("unlock nono-pi keychain", hidden=True)
+            pw = self.ask("unlock gondo-pi keychain", hidden=True)
             if pw:
                 r = call({"op": "unlock", "password": pw})
                 if r and not r.get("ok"):
@@ -304,7 +325,7 @@ class Panel:
         h, w = self.s.getmaxyx()
         # row 0: title (left) · status chips (right)
         x = 2
-        x += self.put(0, x, "\uf023 nono-pi", t("mauve", None, curses.A_BOLD))
+        x += self.put(0, x, "\uf023 gondo-pi", t("mauve", None, curses.A_BOLD))
         x += self.put(0, x, "  ·  ", t("overlay0"))
         x += self.put(0, x, st.get("project", "?"), t("text", None, curses.A_BOLD))
         if st.get("vm"):
@@ -344,6 +365,7 @@ class Panel:
         h, w = self.s.getmaxyx()
         tab_keys = {"Overview": [], "Requests": [("⏎", "allow"), ("1-5", "choose"), ("d", "deny")],
                     "Grants": [("x", "revoke")], "Network": [("a", "add host"), ("x", "remove")],
+                    "Ports": [("⏎", "open on this machine"), ("a", "add port"), ("x", "close")],
                     "AWS": [("⏎", "use (switch)"), ("l", "log in only"), ("R", "re-login"), ("o", "log out")],
                     "Secrets": [("s", "add"), ("x", "delete")], "Log": []}[TABS[self.tab]]
         common = [("←→", "tabs"), ("u", "unlock"), ("L", "lock"), ("P", "deny new 10m"), ("Alt-1", "shell")]
@@ -393,15 +415,15 @@ class Panel:
             aws_s = f"{a.get('role', '')} @ {a.get('account_id', '')} · {fmt_left(a['session_left'])} left"
             aws_c = "green"
         elif picked:
-            aws_v, aws_s, aws_c = picked[0]["name"], "session expired: Enter on tab 5", "yellow"
+            aws_v, aws_s, aws_c = picked[0]["name"], "session expired: Enter on tab 6", "yellow"
         else:
-            aws_v, aws_s, aws_c = "none yet", "aws-use in the VM · Alt-a · or Enter on tab 5", "overlay0"
+            aws_v, aws_s, aws_c = "none yet", "aws-use in the VM · Alt-a · or Enter on tab 6", "overlay0"
         signed = st.get("signed", 0)
         cards = [
             ("\uf09c" if unlocked else "\uf023", "Keychain", "unlocked" if unlocked else "locked",
              "auto-locks after the window" if unlocked else "press u to unlock", "green" if unlocked else "red"),
             ("\uf084", "SSH key", f"{fmt_left(ssh)} left" if ssh else "not loaded",
-             "in nono-pi's private agent" if ssh else "loads on first push / commit", "green" if ssh else "overlay0"),
+             "in gondo-pi's private agent" if ssh else "loads on first push / commit", "green" if ssh else "overlay0"),
             ("\uf0c2", "AWS", aws_v, aws_s, aws_c),
             ("\uf0f3", "Requests", f"{n} waiting" if n else "none",
              "Enter on tab 2" if n else "all caught up", "yellow" if n else "green"),
@@ -502,6 +524,7 @@ class Panel:
         self.sel = max(0, min(self.sel, len(items) - 1)) if items else 0
         y = self.TOP
         heads = {"Grants": [("grant", 58), ("left", 9), ("where", 8)], "Network": [("allowed host (others ask)", 60)],
+                 "Ports": [("vm port", 10), ("on this machine", 30), ("state", 30)],
                  "AWS": [("account", 32), ("role @ id", 30), ("session", 16), ("", 12)], "Secrets": [("name (values are never shown)", 60)],
                  "Log": [("time      event", 0)]}[tab]
         x = 3
@@ -511,6 +534,7 @@ class Panel:
         y += 1
         if not items:
             empty = {"Grants": "no active grants", "Network": "empty", "AWS": "no AWS accounts configured",
+                     "Ports": "nothing listening in the VM (start a dev server; it shows up here)",
                      "Secrets": "none stored (or keychain locked — press u)", "Log": "nothing yet"}[tab]
             self.put(y + 1, 4, empty, t("overlay0"))
             return
@@ -522,6 +546,13 @@ class Panel:
                         (fmt_left(it["left"]), "text", 9, False), (it["where"], "overlay0", 8, False)]
             elif tab == "Network":
                 cols = [(it["host"], "text", 60, False)]
+            elif tab == "Ports":
+                url = f"http://127.0.0.1:{it['host']}" if it["host"] else "—  (⏎ to open)"
+                state = ("● forwarded" + (f" · {it['conns']} conn" if it["conns"] else "")) if it["host"] else "listening in the VM"
+                if not it["live"]:
+                    state = "forwarded · nothing listening now"
+                cols = [(str(it["guest"]), "text", 10, True), (url, "green" if it["host"] else "overlay0", 30, bool(it["host"])),
+                        (state, "green" if it["host"] and it["live"] else "overlay0", 30, False)]
             elif tab == "AWS":
                 live = it.get("session_left")
                 state = f"✓ {fmt_left(live)}" if live else "— not logged in"
@@ -543,7 +574,7 @@ class Panel:
         self.s.erase()
         h, w = self.s.getmaxyx()
         if h < 10 or w < 50:
-            self.put(0, 0, "nono-pi: make this pane bigger", self.t("yellow"))
+            self.put(0, 0, "gondo-pi: make this pane bigger", self.t("yellow"))
             self.s.refresh()
             return
         self.draw_header()
@@ -587,7 +618,7 @@ class Panel:
                 self.sel = min(self.sel + 1, max(0, n - 1))
             elif ch in (curses.KEY_UP, "k"):
                 self.sel = max(0, self.sel - 1)
-            elif isinstance(ch, str) and ch in "1234567" and not (TABS[self.tab] == "Requests" and self.items()):
+            elif isinstance(ch, str) and ch in "12345678" and not (TABS[self.tab] == "Requests" and self.items()):
                 self.tab, self.sel = int(ch) - 1, 0
             elif ch == curses.KEY_RESIZE:
                 pass

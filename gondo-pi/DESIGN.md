@@ -1,4 +1,4 @@
-# nono-pi design
+# gondo-pi design
 
 Goal: the agent (pi and everything it runs, including a compromised dependency)
 never holds a credential, yet the user just types the command and it works.
@@ -13,9 +13,9 @@ $ pis                       # in any project
 
 - Starts (or reattaches to) zellij session `pi-<project>` and drops you in fish
   inside a microVM at `/workspace` (the project); `pi` when you want it. Tabs:
-  shell / nono-pi (the control panel). Every new pane is another shell in the
+  shell / gondo-pi (the control panel). Every new pane is another shell in the
   same VM. `pis --no-zellij`: the same shell in the current terminal, requests
-  answered with `nono-pi panel` elsewhere.
+  answered with `gondo-pi panel` elsewhere.
 - First credential use of the day: one keychain unlock. That's it.
 - Inside, everything just works with no credential handling by agent or user:
   `git clone/pull/push`, `git commit` (auto-signed), `gh pr create`,
@@ -27,7 +27,7 @@ $ pis                       # in any project
   - interactive `ssh <host>` (every time),
   - a brand new API token (once, then stored).
 - Prompts are one keystroke (`enter` = the default scope) and wait in the
-  nono-pi tab (Alt-2) or `nono-pi panel`; never a pop-up while a panel is open,
+  gondo-pi tab (Alt-2) or `gondo-pi panel`; never a pop-up while a panel is open,
   never a VM pane.
 - Reconnect: `pis` again reattaches; detaching keeps the session.
 
@@ -44,18 +44,18 @@ $ pis                       # in any project
 One VM per session, owned by `vm/vmd.mjs` on the trusted side. pty sessions
 (fish shells, pi, commands) are multiplexed over `RUN_DIR/vmd.sock` (0600 in a
 0700 dir, never mounted into the guest). zellij panes are thin clients
-(`lib/nonopi/attach.py`); `--default-shell` makes every new pane a VM shell. The
+(`lib/gondopi/attach.py`); `--default-shell` makes every new pane a VM shell. The
 main shell pane hosts the supervisor + `VmHost`; exiting it ends the session.
 
 `~/.pi` is mounted; its symlinked entries (extensions, skills, models.json ->
 `~/snippets/...`) are mounted at the paths the links resolve to. `~/.pi/agent/npm`
 is overlaid with a Linux build of the same lockfile (`npm ci` in the guest,
-cached in `~/.local/state/nono-pi/vm-pi-npm`), since the host copy has native
+cached in `~/.local/state/gondo-pi/vm-pi-npm`), since the host copy has native
 binaries for the host OS. The guest `pi` wrapper waits for it on first use.
 
 The rootfs is copy-on-write and discarded at exit. Persistent: `/workspace` (the
 project), `~/.pi` (pi state), and a per-project tool cache
-(`~/.local/state/nono-pi/projects/<p>/vm-cache` -> `/nono-pi-cache`: mise, uv,
+(`~/.local/state/gondo-pi/projects/<p>/vm-cache` -> `/gondo-pi-cache`: mise, uv,
 npm, cargo, go, zig). Images: macOS arm64 = Alpine (`vm/image-arm64.json`);
 Linux x86_64 = Arch (`vm/Containerfile.arch` built rootless with podman, wrapped
 by `vm/image-x86_64-arch.json`).
@@ -95,14 +95,14 @@ Long-running parent of the session. Owns:
   `git-push:github.com/newsuk/donk 4h`, `aws:nuk-cdn-dev 4h`,
   `net:registry.npmjs.org always(project)`, `ssh:linux once`.
   Per-project persistence for `always`; session grants in memory.
-- **Prompt service**: in zellij, a queue shown in the nono-pi tab (the bar pill
+- **Prompt service**: in zellij, a queue shown in the gondo-pi tab (the bar pill
   turns yellow); outside zellij, /dev/tty, else an OS dialog. Facts come from
   the broker (host, repo, operation, account); agent-supplied reasons are shown
   separately and labelled.
 - **Audit log**: every credential use and decision (append-only, per session).
 - **Private ssh-agent**: not the login agent. Keys loaded only while a grant is
   live (`ssh-add -t <remaining>`), removed at expiry.
-- **Dedicated keystore**: macOS `nono-pi.keychain` (Security.framework, no UI);
+- **Dedicated keystore**: macOS `gondo-pi.keychain` (Security.framework, no UI);
   Linux Secret Service (`secret-tool`). API tokens, Okta password, AWS session
   cache, ssh key passphrases. Auto-locks after the window (default 4h).
 
@@ -112,7 +112,7 @@ Long-running parent of the session. Owns:
 |---|---|---|
 | API token | netpolicy route → `route-secret` → supervisor → keystore | placeholder |
 | GitHub API | same, token from host `gh auth token` | placeholder |
-| AWS | netpolicy SigV4 re-sign → `aws-creds` → supervisor → saml2aws (`--prompter pinentry-nono-pi`) | placeholder keys |
+| AWS | netpolicy SigV4 re-sign → `aws-creds` → supervisor → saml2aws (`--prompter pinentry-gondo-pi`) | placeholder keys |
 | new host | netpolicy → `net-approve` → supervisor (panel) | allowed / 403 |
 | git over ssh | Gondolin ssh egress + `execPolicy` → supervisor; host ssh with the private agent | nothing |
 | commit signing | `gpg.ssh.program` shim → broker → `ssh-keygen -Y sign -n git` | signature |
@@ -145,7 +145,7 @@ Long-running parent of the session. Owns:
 | interactive ssh | prompt every time |
 | secrets | keystore unlock once per window |
 
-Windows are configurable per kind in `~/.config/nono-pi/config.json`.
+Windows are configurable per kind in `~/.config/gondo-pi/config.json`.
 
 ## Prompt integrity
 - The guest can't reach zellij, the supervisor's ctl socket, vmd's socket, the

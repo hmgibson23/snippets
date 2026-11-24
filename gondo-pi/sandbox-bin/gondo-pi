@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
-"""nono-pi client inside the sandbox / VM (no credentials, ever).
+"""gondo-pi client inside the sandbox / VM (no credentials, ever).
 
-  nono-pi status                         grants, AWS, keychain state
-  nono-pi aws-login [account]            log in to an AWS account now (prompts on the host)
-  nono-pi request-secret NAME https://api.host [--header H] [--format 'Bearer {}'] [--env VAR] [--reason TEXT]
+  gondo-pi status                         grants, AWS, keychain state
+  gondo-pi aws-login [account]            log in to an AWS account now (prompts on the host)
+  gondo-pi request-secret NAME https://api.host [--header H] [--format 'Bearer {}'] [--env VAR] [--reason TEXT]
                                          ask the user for a new API credential (restarts pi, keeps session)
-  nono-pi request-access PATH [--write] [--reason TEXT]
-  nono-pi revoke KEY
-  nono-pi apply                          apply granted access that needs a VM restart (new directory)
+  gondo-pi request-access PATH [--write] [--reason TEXT]
+  gondo-pi revoke KEY
+  gondo-pi apply                          apply granted access that needs a VM restart (new directory)
+  gondo-pi forward PORT                   open VM port PORT on your machine (127.0.0.1; asks in the panel)
+  gondo-pi ports                          what's listening in the VM / what's forwarded
+  gondo-pi open URL                       open URL in your browser on the host (asks in the panel)
 """
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-import nonopi_client  # noqa: E402
+import gondopi_client  # noqa: E402
 
 
 def opt(args, name, default=None):
@@ -33,25 +36,45 @@ def main():
         return
     cmd = a.pop(0)
     if cmd == "status":
-        r = nonopi_client.call({"op": "status"})
+        r = gondopi_client.call({"op": "status"})
     elif cmd == "aws-login":
-        r = nonopi_client.call({"op": "aws-login", "account": a[0] if a else None})
+        r = gondopi_client.call({"op": "aws-login", "account": a[0] if a else None})
     elif cmd == "request-secret":
         header, fmt, env, reason = opt(a, "--header"), opt(a, "--format"), opt(a, "--env"), opt(a, "--reason")
         if len(a) != 2:
-            sys.exit("usage: nono-pi request-secret NAME https://host [...]")
-        r = nonopi_client.call({"op": "request-secret", "name": a[0], "upstream": a[1], "header": header,
+            sys.exit("usage: gondo-pi request-secret NAME https://host [...]")
+        r = gondopi_client.call({"op": "request-secret", "name": a[0], "upstream": a[1], "header": header,
                                 "format": fmt, "env_var": env, "reason": reason})
     elif cmd == "request-access":
         write = "--write" in a
         if write:
             a.remove("--write")
         reason = opt(a, "--reason")
-        r = nonopi_client.call({"op": "request-access", "path": a[0], "write": write, "reason": reason})
+        r = gondopi_client.call({"op": "request-access", "path": a[0], "write": write, "reason": reason})
+    elif cmd == "forward":
+        if not a or not a[0].isdigit():
+            sys.exit("usage: gondo-pi forward PORT")
+        r = gondopi_client.call({"op": "forward", "port": int(a[0])})
+        if r.get("ok"):
+            print(f"VM :{a[0]} -> http://127.0.0.1:{r['host']} on your machine")
+            sys.exit(0)
+    elif cmd == "ports":
+        r = gondopi_client.call({"op": "ports"})
+        if r.get("ok"):
+            fw = {f["guest"]: f["host"] for f in r.get("forwards", [])}
+            for p in sorted(set(r.get("listening", [])) | set(fw)):
+                print(f"{p:>6}  " + (f"-> http://127.0.0.1:{fw[p]}" if p in fw else "listening (not forwarded: gondo-pi forward %d)" % p))
+            sys.exit(0)
+    elif cmd == "open":
+        if not a:
+            sys.exit("usage: gondo-pi open URL")
+        r = gondopi_client.call({"op": "open-url", "url": a[0]})
+        if r.get("ok"):
+            sys.exit(0)
     elif cmd == "apply":
-        r = nonopi_client.call({"op": "vm-apply"})
+        r = gondopi_client.call({"op": "vm-apply"})
     elif cmd == "revoke":
-        r = nonopi_client.call({"op": "revoke", "key": a[0]})
+        r = gondopi_client.call({"op": "revoke", "key": a[0]})
     else:
         sys.exit(f"unknown command {cmd}")
     print(json.dumps(r, indent=2))

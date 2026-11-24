@@ -1,4 +1,4 @@
-// nono-pi extension: loaded only inside a nono-pi sandbox (PI_SANDBOX=nono-pi).
+// gondo-pi extension: loaded only inside a gondo-pi sandbox (PI_SANDBOX=gondo-pi).
 // Talks to the trusted supervisor through the broker socket. Never handles a
 // credential: it can only ask the supervisor, which prompts the user on the
 // trusted side.
@@ -38,7 +38,7 @@ function brokerCall(obj: Record<string, unknown>, timeoutMs = 600_000): Promise<
 				}
 			}
 		});
-		sock.on("error", (e) => done({ ok: false, error: `nono-pi broker unavailable: ${e.message}` }));
+		sock.on("error", (e) => done({ ok: false, error: `gondo-pi broker unavailable: ${e.message}` }));
 	});
 }
 
@@ -50,38 +50,38 @@ function left(s: number | null): string {
 
 async function refreshStatus(ctx: ExtensionContext) {
 	const st = await brokerCall({ op: "status" }, 5000);
-	// The zellij bar (zjstatus) already shows nono-pi state; don't duplicate it in pi's footer.
-	if (process.env.PI_NONO_ZJSTATUS_BAR === "1") {
-		ctx.ui.setStatus("nono-pi", undefined);
+	// The zellij bar (zjstatus) already shows gondo-pi state; don't duplicate it in pi's footer.
+	if (process.env.PI_GONDO_ZJSTATUS_BAR === "1") {
+		ctx.ui.setStatus("gondo-pi", undefined);
 		return st;
 	}
 	if (!st.ok) {
-		ctx.ui.setStatus("nono-pi", "🔒 nono-pi: supervisor unreachable");
+		ctx.ui.setStatus("gondo-pi", "🔒 gondo-pi: supervisor unreachable");
 		return st;
 	}
 	const aws = st.aws_current ? `AWS ${st.aws_current}` : "AWS –";
 	const pushes = (st.grants ?? []).filter((g: any) => g.key.startsWith("git-push:") && g.scope !== "deny").length;
-	const parts = [`🔒 nono-pi${st.vm ? " VM" : ""}`, aws, `push ${pushes}`, st.keychain_unlocked ? "🔓" : "🔐"];
-	ctx.ui.setStatus("nono-pi", parts.join(" · "));
+	const parts = [`🔒 gondo-pi${st.vm ? " VM" : ""}`, aws, `push ${pushes}`, st.keychain_unlocked ? "🔓" : "🔐"];
+	ctx.ui.setStatus("gondo-pi", parts.join(" · "));
 	return st;
 }
 
-// Restart (to load new nono routes / grants) only once pi is idle, so the
+// Restart (to load new routes / grants) only once pi is idle, so the
 // session file is complete; the launcher reruns pi with --continue.
 let restartWanted = false;
 function restartWhenIdle(ctx: ExtensionContext) {
 	restartWanted = true;
-	ctx.ui.notify("nono-pi: pi restarts with the new access when this turn ends (same session)", "info");
+	ctx.ui.notify("gondo-pi: pi restarts with the new access when this turn ends (same session)", "info");
 	if (ctx.isIdle()) setTimeout(() => process.exit(RESTART_EXIT), 300);
 }
 async function maybeRestart(ctx: ExtensionContext, r: any) {
 	if (r?.ok && r.restart) restartWhenIdle(ctx);
 }
 
-export default function nonoPi(pi: ExtensionAPI) {
-	if (process.env.PI_SANDBOX !== "nono-pi") return;
+export default function gondoPi(pi: ExtensionAPI) {
+	if (process.env.PI_SANDBOX !== "gondo-pi") return;
 
-	// Inside nono-pi the old in-process AWS vault (saml2aws-login ext: aws_exec,
+	// Inside gondo-pi the old in-process AWS vault (saml2aws-login ext: aws_exec,
 	// /saml2aws-login) cannot work and must not be used: AWS creds never enter the
 	// sandbox. Plain `aws`/terraform/SDKs work through the proxy instead.
 	const LEGACY_TOOLS = new Set(["aws_exec"]);
@@ -102,23 +102,23 @@ export default function nonoPi(pi: ExtensionAPI) {
 		const aws = st.ok
 			? `AWS: run plain \`aws ...\` / terraform / SDKs; credentials are injected outside the sandbox. ` +
 			  `Current account (what plain \`aws\` uses): ${st.aws_current ?? "none selected"}. ` +
-			  `Switch with \`aws-use <account>\` (asks the user to confirm in the nono-pi tab) or target one call with \`aws --profile <name>\` ` +
+			  `Switch with \`aws-use <account>\` (asks the user to confirm in the gondo-pi tab) or target one call with \`aws --profile <name>\` ` +
 			  `(names: ${(st.aws_accounts ?? []).join(", ")}). The first call to an account may wait for the user to approve / log in ` +
-			  `(Okta) in the nono-pi tab; do NOT ask the user to run /saml2aws-login and never use aws_exec.`
+			  `(Okta) in the gondo-pi tab; do NOT ask the user to run /saml2aws-login and never use aws_exec.`
 			: "";
 		const sec =
-			"You run inside nono-pi: you never see credentials. git push/pull, commit signing, gh, aws and allowlisted hosts just work. " +
-			"If a command is blocked or waiting, the user is answering a nono-pi request; if access is missing, use the nono_request tool. " +
+			"You run inside gondo-pi: you never see credentials. git push/pull, commit signing, gh, aws and allowlisted hosts just work. " +
+			"If a command is blocked or waiting, the user is answering a gondo-pi request; if access is missing, use the gondo_request tool. " +
 			aws;
-		return { systemPrompt: event.systemPrompt + "\n\n<nono-pi>\n" + sec + "\n</nono-pi>" };
+		return { systemPrompt: event.systemPrompt + "\n\n<gondo-pi>\n" + sec + "\n</gondo-pi>" };
 	});
 
-	// Keep muscle memory working: /saml2aws-login becomes an AWS login via nono-pi.
+	// Keep muscle memory working: /saml2aws-login becomes an AWS login via gondo-pi.
 	pi.registerCommand("saml2aws-login", {
-		description: "nono-pi: log in to AWS (answer the Okta prompt in the nono-pi tab)",
+		description: "gondo-pi: log in to AWS (answer the Okta prompt in the gondo-pi tab)",
 		handler: async (args, ctx) => {
 			const acct = args.trim() || undefined;
-			ctx.ui.notify(`nono-pi: AWS login${acct ? ` ${acct}` : ""}: answer the prompt in the nono-pi tab`, "info");
+			ctx.ui.notify(`gondo-pi: AWS login${acct ? ` ${acct}` : ""}: answer the prompt in the gondo-pi tab`, "info");
 			const r = await brokerCall({ op: "aws-login", account: acct ?? null });
 			ctx.ui.notify(r.ok ? `AWS ${r.account}: logged in (credentials stay outside the sandbox)` : `AWS login failed: ${r.error ?? "denied/cancelled"}`, r.ok ? "info" : "error");
 			await refreshStatus(ctx);
@@ -130,7 +130,7 @@ export default function nonoPi(pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("grants", {
-		description: "nono-pi: show active grants (push, AWS, hosts) and recent credential use",
+		description: "gondo-pi: show active grants (push, AWS, hosts) and recent credential use",
 		handler: async (args, ctx) => {
 			if (args.trim().startsWith("revoke ")) {
 				const r = await brokerCall({ op: "revoke", key: args.trim().slice(7) });
@@ -142,7 +142,7 @@ export default function nonoPi(pi: ExtensionAPI) {
 			const g = (st.grants ?? []).map((x: any) => `  ${x.scope === "deny" ? "✗" : "✓"} ${x.key}  (${left(x.left)}, ${x.where})`);
 			ctx.ui.notify(
 				[
-					`nono-pi ${st.vm ? "(VM) " : ""}· ${st.project}`,
+					`gondo-pi ${st.vm ? "(VM) " : ""}· ${st.project}`,
 					`keychain: ${st.keychain_unlocked ? "unlocked" : "locked"} · ssh key loaded: ${st.ssh_key_loaded_for ? left(st.ssh_key_loaded_for) : "no"} · commits signed: ${st.signed}`,
 					`AWS current: ${st.aws_current ?? "none"} (switch: /aws use)`,
 					"grants:",
@@ -157,14 +157,14 @@ export default function nonoPi(pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("aws", {
-		description: "nono-pi: AWS: `/aws use [account]` switches the VM's account (picker without a name), `/aws login [account]`",
+		description: "gondo-pi: AWS: `/aws use [account]` switches the VM's account (picker without a name), `/aws login [account]`",
 		handler: async (args, ctx) => {
 			const [sub, acct] = args.trim().split(/\s+/);
 			if (sub === "use") {
 				let name = acct;
 				if (!name) {
 					const r = await brokerCall({ op: "aws-accounts" });
-					if (!r.ok) return ctx.ui.notify(`nono-pi: ${r.error ?? "supervisor unreachable"}`, "error");
+					if (!r.ok) return ctx.ui.notify(`gondo-pi: ${r.error ?? "supervisor unreachable"}`, "error");
 					const left = (s: number | null) => (s ? ` ✓${Math.floor(s / 3600) ? `${Math.floor(s / 3600)}h` : ""}${Math.floor((s % 3600) / 60)}m` : "");
 					const labels = r.accounts.map((a: any) => `${a.current ? "● " : "  "}${a.name}  ${a.role}@${a.account_id}${left(a.session_left)}${a.prod ? "  PROD" : ""}`);
 					const pick = await ctx.ui.select("AWS account for this VM", labels);
@@ -172,13 +172,13 @@ export default function nonoPi(pi: ExtensionAPI) {
 					name = r.accounts[labels.indexOf(pick)]?.name;
 					if (!name) return;
 				}
-				ctx.ui.notify(`nono-pi: switching AWS to ${name} (confirm / log in in the nono-pi tab, Alt-2)`, "info");
+				ctx.ui.notify(`gondo-pi: switching AWS to ${name} (confirm / log in in the gondo-pi tab, Alt-2)`, "info");
 				const r = await brokerCall({ op: "aws-use", account: name });
 				ctx.ui.notify(r.ok ? `AWS → ${name}: plain \`aws\` now uses it (${r.account_id ?? "?"})` : `AWS switch failed: ${r.error ?? "denied"}`, r.ok ? "info" : "error");
 				return refreshStatus(ctx);
 			}
 			if (sub === "login") {
-				ctx.ui.notify(`nono-pi: AWS login${acct ? ` ${acct}` : ""}: answer the prompt on the nono-pi pane`, "info");
+				ctx.ui.notify(`gondo-pi: AWS login${acct ? ` ${acct}` : ""}: answer the prompt on the gondo-pi pane`, "info");
 				const r = await brokerCall({ op: "aws-login", account: acct || null });
 				ctx.ui.notify(r.ok ? `AWS ${r.account}: logged in (credentials stay outside the sandbox)` : `AWS login failed: ${r.error ?? "denied"}`, r.ok ? "info" : "error");
 				return refreshStatus(ctx);
@@ -189,7 +189,7 @@ export default function nonoPi(pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("secret", {
-		description: "nono-pi: add an API credential: /secret NAME https://api.host [Header] [format]",
+		description: "gondo-pi: add an API credential: /secret NAME https://api.host [Header] [format]",
 		handler: async (args, ctx) => {
 			const [name, upstream, header, ...fmt] = args.trim().split(/\s+/);
 			if (!name || !upstream) return ctx.ui.notify("usage: /secret NAME https://api.host [Header] [format e.g. 'Bearer {}']", "warning");
@@ -200,10 +200,10 @@ export default function nonoPi(pi: ExtensionAPI) {
 	});
 
 	pi.registerTool({
-		name: "nono_request",
-		label: "nono-pi request",
+		name: "gondo_request",
+		label: "gondo-pi request",
 		description:
-			"You run inside the nono-pi sandbox: you never see credentials, the user grants access on a trusted prompt. " +
+			"You run inside the gondo-pi sandbox: you never see credentials, the user grants access on a trusted prompt. " +
 			"git push/pull, commit signing, gh, aws (any account via --profile; unpicked accounts prompt the user), and allowlisted hosts already work: just run the command. " +
 			"Use this tool only when a command fails for lack of access that cannot work otherwise: " +
 			"kind=secret to request a NEW API credential for an HTTPS API (give name, upstream https://host, header, format like 'Bearer {}'); then use the returned $ENV_VAR as the token in the documented header (it is a placeholder the proxy swaps for the real value). " +

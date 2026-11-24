@@ -1,10 +1,10 @@
 #!/bin/sh
-# Install nono-pi (macOS / Linux): links commands into ~/.local/bin, adds the
+# Install gondo-pi (macOS / Linux): links commands into ~/.local/bin, adds the
 # `pis` alias, installs the VM deps (Gondolin), writes a starter config.
-# Then run `nono-pi setup` once (keychain + ssh key passphrase).
+# Then run `gondo-pi setup` once (keychain + ssh key passphrase).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
-BIN=${NONO_PI_BIN:-$HOME/.local/bin}
+BIN=${GONDO_PI_BIN:-$HOME/.local/bin}
 
 command -v node >/dev/null || { echo "node (>= 22) is required for the microVM daemon" >&2; exit 1; }
 if [ "$(uname)" = Linux ] && [ ! -w /dev/kvm ]; then
@@ -17,9 +17,17 @@ if [ "$(uname)" = Linux ] && ! command -v secret-tool >/dev/null; then
 fi
 
 mkdir -p "$BIN"
-ln -sf "$HERE/bin/nono-pi" "$BIN/nono-pi"
-ln -sf "$HERE/bin/nono-pi-helper" "$BIN/nono-pi-key"
-echo "linked $BIN/nono-pi and $BIN/nono-pi-key"
+# renamed from nono-pi: drop the old links and alias lines
+for old in nono-pi nono-pi-key; do
+  [ -L "$BIN/$old" ] && rm -f "$BIN/$old" && echo "removed old link $BIN/$old"
+done
+rm -f "$HOME/.config/fish/conf.d/nono-pi.fish"
+for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
+  [ -f "$rc" ] && grep -qF 'alias pis="nono-pi"' "$rc" && sed -i.bak-nono-pi 's/^alias pis="nono-pi"$/alias pis="gondo-pi"/' "$rc" && echo "updated $rc (backup $rc.bak-nono-pi)"
+done
+ln -sf "$HERE/bin/gondo-pi" "$BIN/gondo-pi"
+ln -sf "$HERE/bin/gondo-pi-helper" "$BIN/gondo-pi-key"
+echo "linked $BIN/gondo-pi and $BIN/gondo-pi-key"
 
 add_line() { # file line
   [ -f "$1" ] || return 0
@@ -27,17 +35,17 @@ add_line() { # file line
 }
 if [ -d "$HOME/.config/fish" ]; then
   mkdir -p "$HOME/.config/fish/conf.d"
-  printf 'alias pis "nono-pi"\n' > "$HOME/.config/fish/conf.d/nono-pi.fish"
+  printf 'alias pis "gondo-pi"\n' > "$HOME/.config/fish/conf.d/gondo-pi.fish"
 fi
-add_line "$HOME/.bashrc" 'alias pis="nono-pi"'
-add_line "$HOME/.zshrc" 'alias pis="nono-pi"'
+add_line "$HOME/.bashrc" 'alias pis="gondo-pi"'
+add_line "$HOME/.zshrc" 'alias pis="gondo-pi"'
 
 if command -v npm >/dev/null; then
   (cd "$HERE/vm" && npm ci --ignore-scripts --no-audit --no-fund --silent && node patch-gondolin.mjs) \
     && echo "VM deps installed (Gondolin)"
 fi
 
-python3 "$HERE/bin/nono-pi" --init-config
+python3 "$HERE/bin/gondo-pi" --init-config
 echo
-echo "next: nono-pi setup     (one-time: nono-pi keychain, ssh key passphrase)"
+echo "next: gondo-pi setup     (one-time: gondo-pi keychain, ssh key passphrase)"
 echo "then: cd <project> && pis"

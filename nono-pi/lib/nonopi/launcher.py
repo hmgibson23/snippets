@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -213,13 +214,13 @@ def _session_zellij_config(pid: str, vm_shell: str) -> str | None:
     bind = _AWS_BIND.format(cmd=cmd)
     if 'bind "Alt a"' in text:
         return None                    # you bound Alt-a yourself: leave it alone
-    marker = 'shared_except "locked" {'
-    if marker in text:
-        text = text.replace(marker, marker + "\n" + bind, 1)
-    elif "keybinds" in text:
-        return None                    # unusual layout of the file: don't guess
+    # zellij 0.46 only reads the FIRST `keybinds` block, so ours goes inside yours
+    block = '    shared_except "locked" {\n' + bind + '\n    }'
+    m = re.search(r'^keybinds\b[^{\n]*\{', text, re.M)
+    if m:
+        text = text[:m.end()] + "\n" + block + text[m.end():]
     else:
-        text += "\nkeybinds {\n    shared_except \"locked\" {\n" + bind + "\n    }\n}\n"
+        text += "\n// nono-pi session keys\nkeybinds {\n" + block + "\n}\n"
     out = os.path.join(RUN_DIR, f"zellij-{pid}.kdl")
     write_private(out, text)
     return out

@@ -20,6 +20,9 @@ RUN npm install -g --no-audit --no-fund @earendil-works/pi-coding-agent@1.6.0 &&
 # fish as the login shell; home is /home/pi (the VM runs commands as root)
 RUN sed -i 's#^root:x:0:0:root:/root:.*#root:x:0:0:root:/home/pi:/usr/bin/fish#' /etc/passwd \
  && mkdir -p /home/pi && echo nono-pi-vm > /etc/hostname \
- # rootless image builds extract this as your user: read-only dirs (e.g. 0555 cadir) would be
- # unwritable/undeletable there. Inside the VM everything runs as root, so this changes nothing.
- && find / -xdev \( -path /proc -o -path /sys -o -path /dev \) -prune -o -type d ! -perm -u+w -exec chmod u+w {} +
+ # rootless image builds extract this as your user: dirs/files we can't read or write (0555
+ # cadir, 0000 /run/systemd/dissect-root, 4750 dbus helper) break the build there. /run is
+ # runtime state anyway; inside the VM everything runs as root, so the rest changes nothing.
+ && rm -rf /run/* \
+ && find / -xdev \( -path /proc -o -path /sys -o -path /dev \) -prune -o -type d ! -perm -u=rwx -exec chmod u+rwx {} + \
+ && find / -xdev \( -path /proc -o -path /sys -o -path /dev \) -prune -o -type f ! -perm -u=r -exec chmod u+r {} +

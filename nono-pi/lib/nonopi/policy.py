@@ -48,6 +48,7 @@ def routes(cfg: dict) -> tuple[dict, dict]:
             r["paths"] = svc["paths"]
         if svc.get("source") == "gh-token":
             r["excludePaths"] = GITHUB_EXCLUDE
+            r["guard"] = "github"          # vm/github-guard.mjs: no admin/persistence with your token
         out[name] = r
         env[svc.get("env_var", name.upper() + "_TOKEN")] = ph
     return out, env

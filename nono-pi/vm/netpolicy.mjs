@@ -10,6 +10,7 @@
 // cached briefly, fetched from the supervisor over its host-only ctl socket.
 import { SignatureV4 } from "@smithy/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
+import { classifyGraphql, classifyRest } from "./github-guard.mjs";
 
 const AWS_DENY_OPS = new Set(["AssumeRole", "AssumeRoleWithSAML", "AssumeRoleWithWebIdentity", "GetSessionToken",
 	"GetFederationToken", "GetAuthorizationToken", "CreateAccessKey", "GetCredentialsForIdentity"]);
@@ -79,10 +80,35 @@ export function createPolicy({ ctl, getSpec, log }) {
 			return r.ok ? r.value : null;
 		});
 		if (!value) return new Response(`nono-pi: no credential for ${route.name}\n`, { status: 401 });
+		if (route.guard === "github") {
+			const blocked = await guardGithub(req, url);
+			if (blocked) return blocked;
+		}
 		const h = new Headers(req.headers);
 		h.set(header, (route.format ?? "Bearer {}").replace("{}", value));
 		log(`route ${route.name} ${req.method} ${url.hostname}${url.pathname.slice(0, 60)}`);
 		return new Request(req, { headers: h });
+	}
+
+	// GitHub: requests made with YOUR token (injected above) are classified first
+	async function guardGithub(req, url) {
+		let c;
+		if (url.pathname === "/graphql" && req.method === "POST") {
+			c = classifyGraphql(new TextDecoder().decode(await req.clone().arrayBuffer()));
+		} else {
+			c = classifyRest(req.method, url.pathname);
+		}
+		if (c.action === "allow") return null;
+		if (c.action === "deny") {
+			log(`github deny ${c.why}`);
+			return new Response(JSON.stringify({ message: `nono-pi: blocked: ${c.why} (account/repo admin changes with your token are not allowed from the VM)` }),
+				{ status: 403, headers: { "content-type": "application/json" } });
+		}
+		// content writes through the API = a push: same grant as `git push` (asks in the panel)
+		const r = await ctl({ op: "gh-push-check", host: "github.com", repo: c.repo ?? "", what: c.what ?? `${req.method} ${url.pathname}` });
+		if (r.ok) return null;
+		log(`github push denied ${c.repo ?? c.what}`);
+		return new Response(JSON.stringify({ message: r.error ?? "nono-pi: push denied" }), { status: 403, headers: { "content-type": "application/json" } });
 	}
 
 	// ---------------------------------------------------------------- 3. AWS re-signing

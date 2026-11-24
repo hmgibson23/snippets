@@ -419,6 +419,21 @@ class Supervisor:
         self.audit.log("git", op=op, repo=res)
         return True, ""
 
+    def gh_push_check(self, host: str, repo: str, what: str) -> tuple[bool, str]:
+        """A GitHub API call that writes repository content = a push: same per-repo grant
+        as `git push`. Without a repo (GraphQL mutations) it asks every time."""
+        repo = repo.strip("/").removesuffix(".git")
+        if repo:
+            if not re.fullmatch(r"[A-Za-z0-9._-]+/[A-Za-z0-9._-]+", repo):
+                return False, "nono-pi: odd repo name"
+            res = f"{host}/{repo}"
+            ok = self.decide("git-push", res, f"to PUSH to {res} (via the GitHub API)", what[:200], always_ok=False)
+        else:
+            ok = self.decide("gh-write", host, "a GitHub API write without a repo name", what[:200],
+                             always_ok=False, window_ok=False)
+        self.audit.log("gh-api-write", repo=repo or "?", what=what[:120], ok=ok)
+        return ok, ("" if ok else "nono-pi: denied in the panel")
+
     def check_interactive(self, dest: str, argv: list[str]) -> bool:
         return self.decide("ssh", _host_of(dest), f"an ssh session to {dest}",
                            "interactive / remote command: " + (" ".join(argv) or "(shell)"),
@@ -814,6 +829,9 @@ class CtlHandler(_Base):
             self.reply(s.aws_use(str(req.get("account", "")), via="host"))
         elif op == "aws-accounts":
             self.reply({"ok": True, "accounts": s.aws_accounts(), "current": s.aws_current})
+        elif op == "gh-push-check":          # vmd: a GitHub API content write needs a push grant
+            ok, msg = s.gh_push_check(str(req.get("host", "github.com")), str(req.get("repo", "")), str(req.get("what", "")))
+            self.reply({"ok": ok, "error": msg})
         elif op == "aws-current":            # vmd: which account the "current" placeholder key means
             self.reply({"ok": True, "account": s.aws_current})
         elif op == "secret-set":

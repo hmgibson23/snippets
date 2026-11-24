@@ -3,6 +3,7 @@
 // real session so that an independent signer with the real creds produces the same signature.
 import assert from "node:assert/strict";
 import { createPolicy, decodeAwsChunked } from "./netpolicy.mjs";
+import { classifyGraphql, classifyRest } from "./github-guard.mjs";
 import { SignatureV4 } from "@smithy/signature-v4";
 import { Sha256 } from "@aws-crypto/sha256-js";
 
@@ -10,11 +11,12 @@ const REAL = { AccessKeyId: "AKIAREALREALREALREAL", SecretAccessKey: "realsecret
 const PH = "NONOPI00000000000001";
 const spec = {
 	aws: { enabled: true, profiles: { [PH]: "acct-a" }, currentKey: "NONOPI00000000000000" },
-	routes: { github: { host: "api.github.com", placeholder: "nonopi_github_x", format: "token {}", header: "authorization", excludePaths: ["/copilot_internal"] } },
+	routes: { github: { host: "api.github.com", placeholder: "nonopi_github_x", format: "token {}", header: "authorization", excludePaths: ["/copilot_internal"], guard: "github" } },
 	net: { allow: ["registry.npmjs.org", "*.pythonhosted.org"], ask: true },
 };
 const asked = [];
 let current = null;
+const pushAsked = [];
 const pol = createPolicy({
 	getSpec: () => spec,
 	log: () => {},
@@ -23,6 +25,7 @@ const pol = createPolicy({
 		if (o.op === "aws-current") return { ok: true, account: current };
 		if (o.op === "route-secret") return o.name === "github" && o.host === "api.github.com" ? { ok: true, value: "gho_REAL" } : { ok: false };
 		if (o.op === "net-approve") { asked.push(o.host); return { ok: o.host === "ok.example.com" }; }
+		if (o.op === "gh-push-check") { pushAsked.push(o.repo || o.what); return { ok: o.repo === "me/granted", error: "denied" }; }
 		return { ok: false };
 	},
 });
@@ -105,6 +108,44 @@ assert.equal(Buffer.from(decodeAwsChunked(Buffer.from("5;chunk-signature=aa\r\nh
 	assert.equal(await pol.onRequest(new Request("https://api.github.com/copilot_internal/v2/token", { headers: { authorization: "token nonopi_github_x" } })), undefined, "copilot path excluded");
 	assert.equal(await pol.onRequest(new Request("https://api.github.com/user", { headers: { authorization: "token gho_user_brought" } })), undefined, "foreign tokens pass through");
 	assert.equal(await pol.onRequest(new Request("https://evil.example.com/", { headers: { authorization: "token nonopi_github_x" } })), undefined, "never injected on other hosts");
+}
+
+// --- GitHub guard: your token can't be used for account/repo admin or persistence
+{
+	const gh = (method, path, body) => pol.onRequest(new Request(`https://api.github.com${path}`,
+		{ method, headers: { authorization: "token nonopi_github_x", "content-type": "application/json" }, body, duplex: "half" }));
+	const isBlocked = async (r) => r instanceof Response && r.status === 403;
+	for (const [m, p] of [["POST", "/user/keys"], ["POST", "/user/ssh_signing_keys"], ["POST", "/user/gpg_keys"],
+		["POST", "/repos/me/repo/keys"], ["POST", "/repos/me/repo/hooks"], ["PUT", "/repos/me/repo/collaborators/evil"],
+		["PUT", "/repos/me/repo/actions/secrets/X"], ["DELETE", "/repos/me/repo"], ["PATCH", "/repos/me/repo"],
+		["POST", "/repos/me/repo/transfer"], ["PUT", "/repos/me/repo/branches/main/protection"], ["PATCH", "/user"],
+		["PUT", "/orgs/newsuk/memberships/evil"], ["POST", "/orgs/newsuk/hooks"], ["POST", "/repos/me/repo/actions/runners/registration-token"]]) {
+		assert.ok(await isBlocked(await gh(m, p, m === "DELETE" ? undefined : "{}")), `${m} ${p} must be blocked`);
+	}
+	// reads and normal collaboration work
+	for (const [m, p] of [["GET", "/user/keys"], ["GET", "/repos/me/repo"], ["POST", "/repos/me/repo/issues"], ["POST", "/repos/me/repo/pulls"],
+		["POST", "/repos/me/repo/issues/1/comments"], ["POST", "/repos/me/repo/pulls/1/reviews"], ["PATCH", "/repos/me/repo/pulls/1"], ["POST", "/gists"]]) {
+		const r = await gh(m, p, m === "GET" ? undefined : "{}");
+		assert.ok(r instanceof Request && r.headers.get("authorization") === "token gho_REAL", `${m} ${p} allowed with the real token`);
+	}
+	// content writes through the API need the repo's push grant
+	const ok = await gh("PUT", "/repos/me/granted/contents/README.md", "{}");
+	assert.ok(ok instanceof Request, "granted repo: API content write allowed");
+	assert.ok(await isBlocked(await gh("PUT", "/repos/me/other/contents/README.md", "{}")), "no grant: API content write refused");
+	assert.ok(await isBlocked(await gh("POST", "/repos/me/other/git/refs", "{}")), "no grant: create ref refused");
+	assert.ok(await isBlocked(await gh("PUT", "/repos/me/other/pulls/3/merge", "{}")), "no grant: merge refused");
+	assert.deepEqual(pushAsked, ["me/granted", "me/other", "me/other", "me/other"]);
+	// GraphQL
+	const q = (query) => gh("POST", "/graphql", JSON.stringify({ query }));
+	assert.ok((await q("query { viewer { login } }")) instanceof Request, "graphql query allowed");
+	assert.ok(await isBlocked(await q('mutation { addSshKey(input:{title:"x", key:"ssh-ed25519 AAA"}) { clientMutationId } }')), "graphql addSshKey blocked");
+	assert.ok(await isBlocked(await q("mutation { deleteRepository(input:{repositoryId:\"R\"}) { clientMutationId } }")), "graphql deleteRepository blocked");
+	assert.ok((await q('mutation { addComment(input:{subjectId:"I", body:"hi"}) { clientMutationId } }')) instanceof Request, "graphql addComment allowed");
+	assert.ok(await isBlocked(await q('mutation { createCommitOnBranch(input:{}) { clientMutationId } }')), "graphql commit without grant refused");
+	assert.equal(classifyRest("GET", "/user/keys").action, "allow");
+	assert.equal(classifyGraphql("not json").action, "deny");
+	// a token the VM brought itself is not ours: untouched (and not guarded - it isn't your token)
+	assert.equal(await pol.onRequest(new Request("https://api.github.com/user/keys", { method: "POST", headers: { authorization: "token gho_theirs" }, body: "{}", duplex: "half" })), undefined);
 }
 
 // --- host policy

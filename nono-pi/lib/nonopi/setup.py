@@ -100,7 +100,16 @@ def passphrase_keys(store, keys: list[str]) -> None:
         backup = f"{path}.nono-pi-backup-{time.strftime('%Y%m%d%H%M%S')}"
         shutil.copy2(path, backup)
         os.chmod(backup, 0o600)
-        pp = secrets.token_urlsafe(24)
+        if MAC:
+            pp = secrets.token_urlsafe(24)   # also goes into the login keychain below
+        else:
+            # Linux: no login-keychain equivalent wired up for your own ssh, so you choose it
+            # (you type it for ssh/git outside nono-pi; nono-pi keeps it in the Secret Service)
+            while True:
+                pp = getpass.getpass(f"new passphrase for {path} (min 10 chars): ")
+                if len(pp) >= 10 and pp == getpass.getpass("again: "):
+                    break
+                print("passphrases differ or are too short")
         r = subprocess.run(["ssh-keygen", "-p", "-q", "-P", "", "-N", pp, "-f", path], capture_output=True, text=True)
         if r.returncode != 0:
             say(f"failed: {r.stderr.strip()} (backup kept at {backup})")
@@ -116,8 +125,7 @@ def passphrase_keys(store, keys: list[str]) -> None:
             subprocess.run(["/usr/bin/ssh-add", "--apple-use-keychain", path], env=env, capture_output=True,
                            stdin=subprocess.DEVNULL)
             os.unlink(ask)
-        say(f"{path}: passphrase added (random, kept in the nono-pi keychain"
-            f"{' and the login keychain for your own ssh' if MAC else ''}). Backup: {backup}")
+        say(f"{path}: passphrase added ({'random, kept in the nono-pi keychain and the login keychain for your own ssh' if MAC else 'kept in the Secret Service for nono-pi; you type it for your own ssh'}). Backup: {backup}")
         say(f"  verify, then delete the backup:  ssh -T git@github.com && rm {backup}")
 
 

@@ -165,6 +165,7 @@ grep -q nono-pi-vm /etc/hosts 2>/dev/null || echo "127.0.1.1 nono-pi-vm" >> /etc
 mkdir -p /home/pi/.config /home/pi/.local/bin
 rm -rf /home/pi/.config/fish && cp -R /nono-pi/fish /home/pi/.config/fish
 [ -f /nono-pi/gitconfig ] && cp /nono-pi/gitconfig /home/pi/.gitconfig || true
+[ -d /nono-pi/git ] && mkdir -p /home/pi/.config/git && cp /nono-pi/git/* /home/pi/.config/git/ || true
 mkdir -p /home/pi/.ssh && for f in known_hosts id_ed25519.pub id_rsa.pub; do [ -f /nono-pi/$f ] && cp /nono-pi/$f /home/pi/.ssh/ || true; done
 [ -f /nono-pi/aws-config ] && mkdir -p /home/pi/.aws && cp /nono-pi/aws-config /home/pi/.aws/config || true
 '''
@@ -226,7 +227,18 @@ class VmHost:
                 shutil.copy(src, os.path.join(share, f))
         gitcfg = os.path.join(HOME, ".gitconfig")
         if os.path.exists(gitcfg):
-            shutil.copy(gitcfg, os.path.join(share, "gitconfig"))
+            # host paths (signingkey, allowedSignersFile, includeIf path) -> the guest home,
+            # where the share's copies land (GUEST_SETUP)
+            text = open(gitcfg).read().replace(HOME + "/", GUEST_HOME + "/").replace("~/", GUEST_HOME + "/")
+            with open(os.path.join(share, "gitconfig"), "w") as f:
+                f.write(text)
+        gdir = os.path.join(HOME, ".config", "git")
+        if os.path.isdir(gdir):
+            os.makedirs(os.path.join(share, "git"), exist_ok=True)
+            for f in ("allowed_signers", "newsuk.gitconfig", "ignore", "config", "attributes"):
+                src = os.path.join(gdir, f)
+                if os.path.isfile(src):
+                    shutil.copy(src, os.path.join(share, "git", f))
 
     def _env(self, extra: dict) -> dict:
         bin_dir = "/nono-pi/bin"

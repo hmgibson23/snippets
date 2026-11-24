@@ -33,6 +33,8 @@ def main():
             pub = open(keyarg).read().strip()   # literal key file
     elif keyarg.startswith("key::"):
         pub = keyarg[5:]
+    if not pub.startswith(("ssh-", "ecdsa-", "sk-")):
+        sys.exit(f"nono-pi: signing key {keyarg!r} not found in the VM (user.signingkey must be a .pub file or key::...)")
     msgfile = a[-1]
     payload = open(msgfile, "rb").read().decode("latin-1")
     r = nonopi_client.call({"op": "sign", "payload": payload, "pubkey": pub})

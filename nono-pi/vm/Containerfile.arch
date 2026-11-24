@@ -22,4 +22,4 @@ RUN sed -i 's#^root:x:0:0:root:/root:.*#root:x:0:0:root:/home/pi:/usr/bin/fish#'
  && mkdir -p /home/pi && echo nono-pi-vm > /etc/hostname \
  # rootless image builds extract this as your user: read-only dirs (e.g. 0555 cadir) would be
  # unwritable/undeletable there. Inside the VM everything runs as root, so this changes nothing.
- && find / -xdev -type d ! -perm -u+w -exec chmod u+w {} +
+ && find / -xdev \( -path /proc -o -path /sys -o -path /dev \) -prune -o -type d ! -perm -u+w -exec chmod u+w {} +
